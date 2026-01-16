@@ -1,4 +1,4 @@
-const { Enrollment, Course } = require('../db/models')
+const { Enrollment, Course, User, UserProfile } = require('../db/models')
 
 class EnrollmentService {
   async request (userId, courseId) {
@@ -33,6 +33,32 @@ class EnrollmentService {
     enrollment.status = 'REJECTED'
     await enrollment.save()
     return enrollment
+  }
+  async getCourseEnrollments (courseId, status) {
+    const where = { courseId }
+
+    if (status) {
+      where.status = status.toUpperCase()
+    }
+
+    return Enrollment.findAll({
+      where,
+      include: [
+        {
+          model: User,
+          as: 'student',
+          attributes: ['id', 'email'],
+          include: [
+            {
+              model: UserProfile,
+              as: 'profile',
+              attributes: ['firstName', 'lastName', 'avatarUrl']
+            }
+          ]
+        }
+      ],
+      order: [['createdAt', 'DESC']]
+    })
   }
 }
 

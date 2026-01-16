@@ -45,6 +45,13 @@ router.post(
   controller.rejectEnroll
 )
 
+router.get(
+  '/:id/enrollments',
+  auth,
+  role(['TEACHER', 'ADMIN']),
+  controller.getEnrollments
+)
+
 router.delete('/:id', auth, role(['TEACHER', 'ADMIN']), controller.deleteCourse)
 
 module.exports = router

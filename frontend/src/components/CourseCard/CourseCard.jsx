@@ -15,9 +15,10 @@ export default function CourseCard ({ course, user, onEnroll }) {
   const getButton = () => {
     if (!user) return null
 
+    /* ===== STUDENT ===== */
     if (isStudent) {
       const isRequested = course.enrollmentStatus === 'PENDING'
-      const isApproved = course.enrollmentStatus === 'APPROVED'
+      const isApproved = course.enrollmentStatus === 'ACTIVE'
 
       if (isRequested) {
         return (
@@ -31,7 +32,7 @@ export default function CourseCard ({ course, user, onEnroll }) {
         return (
           <Link
             className={`${styles.btn} ${styles.btnPrimary}`}
-            to={`teacher/courses/${course.id}/builder`}
+            to={`/courses/${course.id}`}
           >
             Open
           </Link>
@@ -48,26 +49,47 @@ export default function CourseCard ({ course, user, onEnroll }) {
       )
     }
 
-    // teacher or admin
-    if (isAdmin || isOwner) {
+    /* ===== TEACHER ===== */
+    if (isTeacher) {
       return (
-        <Link
-          className={`${styles.btn} ${styles.btnOutline}`}
-          to={`teacher/courses/${course.id}/builder`}
-        >
-          Edit
-        </Link>
+        <div className={styles.actions}>
+          <Link
+            className={`${styles.btn} ${styles.btnPrimary}`}
+            to={`/courses/${course.id}`}
+          >
+            View
+          </Link>
+
+          {isOwner && (
+            <Link
+              className={`${styles.btn} ${styles.btnOutline}`}
+              to={`/teacher/courses/${course.id}/builder`}
+            >
+              Edit
+            </Link>
+          )}
+        </div>
       )
     }
 
-    if (isTeacher && !isOwner) {
+    /* ===== ADMIN ===== */
+    if (isAdmin) {
       return (
-        <Link
-          className={`${styles.btn} ${styles.btnPrimary}`}
-          to={`/courses/${course.id}`}
-        >
-          View
-        </Link>
+        <div className={styles.actions}>
+          <Link
+            className={`${styles.btn} ${styles.btnPrimary}`}
+            to={`/courses/${course.id}`}
+          >
+            View
+          </Link>
+
+          <Link
+            className={`${styles.btn} ${styles.btnOutline}`}
+            to={`/teacher/courses/${course.id}/builder`}
+          >
+            Edit
+          </Link>
+        </div>
       )
     }
 

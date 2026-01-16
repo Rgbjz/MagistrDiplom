@@ -1,0 +1,31 @@
+.test {
+  max-width: 700px;
+}
+
+.title {
+  font-size: 22px;
+  margin-bottom: 12px;
+}
+
+.meta {
+  margin-bottom: 24px;
+  font-size: 14px;
+  color: #374151;
+}
+
+.startBtn {
+  padding: 10px 18px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.startBtn:hover {
+  background: #1d4ed8;
+}
+
+.empty {
+  color: #6b7280;
+}

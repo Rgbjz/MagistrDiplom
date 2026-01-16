@@ -1,8 +1,8 @@
 import { useSelector } from 'react-redux'
 import styles from './CourseBuilder.module.scss'
 
-import LessonEditor from './editors/LessonEditor/LessonEditor'
-import TestEditor from './editors/TestEditor/TestEditor'
+import LessonEditor from '../../../components/editors/LessonEditor/LessonEditor'
+import TestEditor from '../../../components/editors/TestEditor/TestEditor'
 
 export default function EditorPanel () {
   const activeItem = useSelector(state => state.courseBuilder.activeItem)

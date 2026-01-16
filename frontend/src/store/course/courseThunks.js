@@ -19,6 +19,30 @@ export const enrollCourse = createAsyncThunk(
   }
 )
 
+export const fetchEnrollRequests = createAsyncThunk(
+  'courses/fetchEnrollRequests',
+  async courseId => {
+    const { data } = await courseApi.getEnrollRequests(courseId)
+    return { courseId, requests: data }
+  }
+)
+
+export const approveEnroll = createAsyncThunk(
+  'courses/approveEnroll',
+  async ({ courseId, userId }) => {
+    await courseApi.approveEnroll(courseId, userId)
+    return { courseId, userId }
+  }
+)
+
+export const rejectEnroll = createAsyncThunk(
+  'courses/rejectEnroll',
+  async ({ courseId, userId }) => {
+    await courseApi.rejectEnroll(courseId, userId)
+    return { courseId, userId }
+  }
+)
+
 // ✅ UPDATE COURSE
 export const updateCourse = createAsyncThunk(
   'courses/update',

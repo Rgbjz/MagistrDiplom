@@ -90,6 +90,23 @@ class CourseController {
     }
   }
 
+  async getEnrollments (req, res, next) {
+    try {
+      const { id: courseId } = req.params
+      const { status } = req.query
+
+      const enrollments = await enrollmentService.getCourseEnrollments(
+        courseId,
+        status,
+        req.user
+      )
+
+      res.json(enrollments)
+    } catch (e) {
+      next(e)
+    }
+  }
+
   async deleteCourse (req, res, next) {
     try {
       await courseService.remove(req.params.id)

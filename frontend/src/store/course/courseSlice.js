@@ -3,6 +3,9 @@ import {
   fetchCourses,
   fetchMyCourses,
   enrollCourse,
+  fetchEnrollRequests,
+  approveEnroll,
+  rejectEnroll,
   updateCourse,
   deleteCourse
 } from './courseThunks'
@@ -10,6 +13,7 @@ import {
 const initialState = {
   all: [],
   my: [],
+  enrollRequests: {},
   loading: false,
   error: null
 }
@@ -53,6 +57,31 @@ const courseSlice = createSlice({
         const id = action.payload
         state.all = state.all.filter(c => c.id !== id)
         state.my = state.my.filter(c => c.id !== id)
+      })
+      // 📥 FETCH ENROLL REQUESTS
+      .addCase(fetchEnrollRequests.fulfilled, (state, action) => {
+        const { courseId, requests } = action.payload
+        state.enrollRequests[courseId] = requests
+      })
+
+      // ✅ APPROVE
+      .addCase(approveEnroll.fulfilled, (state, action) => {
+        const { courseId, userId } = action.payload
+
+        if (!state.enrollRequests?.[courseId]) return
+
+        state.enrollRequests[courseId] = state.enrollRequests[courseId].filter(
+          r => r.userId !== userId
+        )
+      })
+
+      // ❌ REJECT
+      .addCase(rejectEnroll.fulfilled, (state, action) => {
+        const { courseId, userId } = action.payload
+
+        state.enrollRequests[courseId] =
+          state.enrollRequests[courseId]?.filter(r => r.user.id !== userId) ||
+          []
       })
   }
 })

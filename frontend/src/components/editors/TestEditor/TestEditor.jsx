@@ -8,8 +8,8 @@ import {
   createAnswer,
   updateAnswer,
   deleteAnswer
-} from '../../../../../store/tests/testThunks'
-import { updateTest } from '../../../../../store/courseBuilder/courseBuilderThunks'
+} from '../../../store/tests/testThunks'
+import { updateTest } from '../../../store/courseBuilder/courseBuilderThunks'
 import styles from './TestEditor.module.scss'
 
 /* ====================================================== */

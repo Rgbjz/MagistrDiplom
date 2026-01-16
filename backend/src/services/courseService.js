@@ -50,7 +50,7 @@ class CourseService {
         where: {
           userId: user.id,
           courseId,
-          status: 'APPROVED'
+          status: 'ACTIVE'
         }
       })
 

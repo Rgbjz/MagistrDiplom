@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { useEffect, useState } from 'react'
 import styles from './LessonEditor.module.scss'
-import { updateLesson } from '../../../../../store/courseBuilder/courseBuilderThunks'
+import { updateLesson } from '../../../store/courseBuilder/courseBuilderThunks'
 
 // ===== helpers =====
 const toEmbedUrl = url => {

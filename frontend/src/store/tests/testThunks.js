@@ -21,7 +21,7 @@ export const createQuestion = createAsyncThunk(
 export const updateQuestion = createAsyncThunk(
   'test/updateQuestion',
   async ({ id, data }) => {
-    const { data: updated } = await testApi.patch(`/questions/${id}`, data)
+    const { data: updated } = await testApi.updateQuestion(id, data)
     return updated
   }
 )
@@ -29,7 +29,7 @@ export const updateQuestion = createAsyncThunk(
 export const deleteQuestion = createAsyncThunk(
   'test/deleteQuestion',
   async id => {
-    await testApi.delete(`/questions/${id}`)
+    await testApi.deleteQuestion(id)
     return id
   }
 )
@@ -47,12 +47,15 @@ export const createAnswer = createAsyncThunk(
 export const updateAnswer = createAsyncThunk(
   'test/updateAnswer',
   async ({ id, data }) => {
-    const { data: updated } = await testApi.patch(`/answers/${id}`, data)
+    const { data: updated } = await testApi.updateAnswer(id, data)
     return updated
   }
 )
 
-export const deleteAnswer = createAsyncThunk('test/deleteAnswer', async id => {
-  await testApi.delete(`/answers/${id}`)
-  return id
-})
+export const deleteAnswer = createAsyncThunk(
+  'test/deleteAnswer',
+  async ({ id, questionId }) => {
+    await testApi.deleteAnswer(id)
+    return { id, questionId }
+  }
+)

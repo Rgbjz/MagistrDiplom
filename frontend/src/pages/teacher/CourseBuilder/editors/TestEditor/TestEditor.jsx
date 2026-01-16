@@ -12,6 +12,10 @@ import {
 import { updateTest } from '../../../../../store/courseBuilder/courseBuilderThunks'
 import styles from './TestEditor.module.scss'
 
+/* ====================================================== */
+/* ===================== TEST EDITOR ==================== */
+/* ====================================================== */
+
 export default function TestEditor ({ testId }) {
   const dispatch = useDispatch()
   const { current: test, loading } = useSelector(state => state.test)
@@ -48,15 +52,11 @@ export default function TestEditor ({ testId }) {
     )
   }
 
-  /* ===== QUESTIONS ===== */
   const addQuestion = () => {
     dispatch(
       createQuestion({
         testId: test.id,
-        data: {
-          text: 'New question',
-          type: 'SINGLE'
-        }
+        data: { text: 'Новый вопрос', type: 'SINGLE' }
       })
     )
   }
@@ -105,104 +105,188 @@ export default function TestEditor ({ testId }) {
         </div>
 
         {test.questions.map(q => (
-          <div key={q.id} className={styles.questionCard}>
-            {/* ===== QUESTION TOP ===== */}
-            <div className={styles.questionTop}>
-              <input
-                value={q.text}
-                placeholder='Текст вопроса'
-                onChange={e =>
-                  dispatch(
-                    updateQuestion({
-                      id: q.id,
-                      data: { text: e.target.value }
-                    })
+          <QuestionItem key={q.id} q={q} dispatch={dispatch} />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/* ====================================================== */
+/* =================== QUESTION ITEM ==================== */
+/* ====================================================== */
+
+function QuestionItem ({ q, dispatch }) {
+  const [text, setText] = useState(q.text)
+  const [type, setType] = useState(q.type)
+  const [answers, setAnswers] = useState(q.answers || [])
+
+  /* ===== SYNC FROM STORE ===== */
+  useEffect(() => {
+    setText(q.text)
+    setType(q.type)
+    setAnswers(q.answers || [])
+  }, [q])
+
+  /* ===== SAVE QUESTION TEXT ONLY ===== */
+  const saveQuestionText = () => {
+    if (text !== q.text) {
+      dispatch(
+        updateQuestion({
+          id: q.id,
+          data: { text }
+        })
+      )
+    }
+  }
+
+  /* ===== CHANGE TYPE (🔥 FIXED) ===== */
+  const changeType = newType => {
+    if (newType === type) return
+
+    setType(newType)
+
+    // ✅ СРАЗУ сохраняем тип вопроса
+    dispatch(
+      updateQuestion({
+        id: q.id,
+        data: { type: newType }
+      })
+    )
+
+    // ✅ если SINGLE — оставляем только один правильный
+    if (newType === 'SINGLE') {
+      setAnswers(prev => {
+        if (!prev.length) return prev
+
+        const firstCorrect = prev.find(a => a.isCorrect) || prev[0]
+
+        const normalized = prev.map(a => ({
+          ...a,
+          isCorrect: a.id === firstCorrect.id
+        }))
+
+        // ✅ синхронно сохраняем ответы
+        normalized.forEach(a => {
+          dispatch(
+            updateAnswer({
+              id: a.id,
+              data: { isCorrect: a.isCorrect }
+            })
+          )
+        })
+
+        return normalized
+      })
+    }
+  }
+
+  /* ===== TOGGLE CORRECT ===== */
+  const toggleCorrect = answerId => {
+    setAnswers(prev =>
+      prev.map(a => {
+        if (type === 'SINGLE') {
+          return { ...a, isCorrect: a.id === answerId }
+        }
+
+        if (a.id === answerId) {
+          return { ...a, isCorrect: !a.isCorrect }
+        }
+
+        return a
+      })
+    )
+  }
+
+  /* ===== SAVE ANSWERS ===== */
+  const saveAnswers = () => {
+    answers.forEach(a => {
+      const original = q.answers.find(x => x.id === a.id)
+      if (!original) return
+
+      if (original.text !== a.text || original.isCorrect !== a.isCorrect) {
+        dispatch(
+          updateAnswer({
+            id: a.id,
+            data: {
+              text: a.text,
+              isCorrect: a.isCorrect
+            }
+          })
+        )
+      }
+    })
+  }
+
+  return (
+    <div className={styles.questionCard}>
+      <div className={styles.questionTop}>
+        <input
+          value={text}
+          placeholder='Текст вопроса'
+          onChange={e => setText(e.target.value)}
+          onBlur={saveQuestionText}
+        />
+
+        <select value={type} onChange={e => changeType(e.target.value)}>
+          <option value='SINGLE'>Один правильный</option>
+          <option value='MULTIPLE'>Несколько правильных</option>
+        </select>
+
+        <button onClick={() => dispatch(deleteQuestion(q.id))}>🗑</button>
+      </div>
+
+      <div className={styles.answers}>
+        {answers.map(a => (
+          <div key={a.id} className={styles.answer}>
+            <input
+              type={type === 'SINGLE' ? 'radio' : 'checkbox'}
+              checked={a.isCorrect}
+              onChange={() => toggleCorrect(a.id)}
+              onBlur={saveAnswers}
+            />
+
+            <input
+              value={a.text}
+              placeholder='Вариант ответа'
+              onChange={e =>
+                setAnswers(prev =>
+                  prev.map(x =>
+                    x.id === a.id ? { ...x, text: e.target.value } : x
                   )
-                }
-              />
+                )
+              }
+              onBlur={saveAnswers}
+            />
 
-              <select
-                value={q.type}
-                onChange={e =>
-                  dispatch(
-                    updateQuestion({
-                      id: q.id,
-                      data: { type: e.target.value }
-                    })
-                  )
-                }
-              >
-                <option value='SINGLE'>Один правильный</option>
-                <option value='MULTIPLE'>Несколько правильных</option>
-              </select>
-
-              <button onClick={() => dispatch(deleteQuestion(q.id))}>🗑</button>
-            </div>
-
-            {/* ===== ANSWERS ===== */}
-            <div className={styles.answers}>
-              {(q.answers || []).map(a => (
-                <div key={a.id} className={styles.answer}>
-                  <input
-                    type={q.type === 'SINGLE' ? 'radio' : 'checkbox'}
-                    checked={a.isCorrect}
-                    onChange={() => {
-                      if (q.type === 'SINGLE') {
-                        // сбрасываем все ответы
-                        q.answers.forEach(ans => {
-                          dispatch(
-                            updateAnswer({
-                              id: ans.id,
-                              data: { isCorrect: ans.id === a.id }
-                            })
-                          )
-                        })
-                      } else {
-                        dispatch(
-                          updateAnswer({
-                            id: a.id,
-                            data: { isCorrect: !a.isCorrect }
-                          })
-                        )
-                      }
-                    }}
-                  />
-
-                  <input
-                    value={a.text}
-                    placeholder='Вариант ответа'
-                    onChange={e =>
-                      dispatch(
-                        updateAnswer({
-                          id: a.id,
-                          data: { text: e.target.value }
-                        })
-                      )
-                    }
-                  />
-
-                  <button onClick={() => dispatch(deleteAnswer(a.id))}>
-                    🗑
-                  </button>
-                </div>
-              ))}
-
-              <button
-                className={styles.addAnswer}
-                onClick={() =>
-                  dispatch(
-                    createAnswer({
-                      questionId: q.id,
-                      data: { text: 'new answer' }
-                    })
-                  )
-                }
-              >
-                + Добавить ответ
-              </button>
-            </div>
+            <button
+              onClick={() =>
+                dispatch(
+                  deleteAnswer({
+                    id: a.id,
+                    questionId: q.id
+                  })
+                )
+              }
+            >
+              🗑
+            </button>
           </div>
         ))}
+
+        <button
+          className={styles.addAnswer}
+          onClick={() =>
+            dispatch(
+              createAnswer({
+                questionId: q.id,
+                data: { text: 'New answer' }
+              })
+            )
+          }
+        >
+          + Ответ
+        </button>
       </div>
     </div>
   )

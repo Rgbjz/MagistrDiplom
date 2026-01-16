@@ -42,10 +42,14 @@ const testSlice = createSlice({
       })
 
       .addCase(updateQuestion.fulfilled, (state, action) => {
-        const q = action.payload
-        state.current.questions = state.current.questions.map(x =>
-          x.id === q.id ? q : x
-        )
+        const updated = action.payload
+
+        const q = state.current.questions.find(q => q.id === updated.id)
+        if (!q) return
+
+        q.text = updated.text
+        q.type = updated.type
+        q.difficulty = updated.difficulty
       })
       .addCase(deleteQuestion.fulfilled, (state, action) => {
         state.current.questions = state.current.questions.filter(
@@ -58,6 +62,26 @@ const testSlice = createSlice({
         const a = action.payload
         const q = state.current.questions.find(q => q.id === a.questionId)
         q.answers.push(a)
+      })
+      .addCase(updateAnswer.fulfilled, (state, action) => {
+        const updated = action.payload
+
+        const q = state.current.questions.find(q => q.id === updated.questionId)
+        if (!q) return
+
+        const a = q.answers.find(a => a.id === updated.id)
+        if (!a) return
+
+        a.text = updated.text
+        a.isCorrect = updated.isCorrect
+      })
+      .addCase(deleteAnswer.fulfilled, (state, action) => {
+        const { id, questionId } = action.payload
+
+        const q = state.current.questions.find(q => q.id === questionId)
+        if (!q) return
+
+        q.answers = q.answers.filter(a => a.id !== id)
       })
   }
 })

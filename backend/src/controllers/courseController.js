@@ -39,6 +39,24 @@ class CourseController {
     }
   }
 
+  async getStudentsProgress (req, res, next) {
+    try {
+      const { courseId } = req.params
+      const teacherId = req.user.id
+      const role = req.user.role
+
+      const data = await courseService.getStudentsProgress({
+        courseId,
+        teacherId,
+        role
+      })
+
+      res.json(data)
+    } catch (e) {
+      next(e)
+    }
+  }
+
   async updateCourse (req, res, next) {
     try {
       const course = await courseService.update(

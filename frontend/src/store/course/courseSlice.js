@@ -4,6 +4,7 @@ import {
   fetchMyCourses,
   enrollCourse,
   fetchEnrollRequests,
+  fetchCourseStudentsProgress,
   approveEnroll,
   rejectEnroll,
   updateCourse,
@@ -14,6 +15,7 @@ const initialState = {
   all: [],
   my: [],
   enrollRequests: {},
+  studentsProgress: {},
   loading: false,
   error: null
 }
@@ -38,6 +40,20 @@ const courseSlice = createSlice({
 
       .addCase(fetchMyCourses.fulfilled, (state, action) => {
         state.my = action.payload
+      })
+
+      .addCase(fetchCourseStudentsProgress.pending, state => {
+        state.loading = true
+      })
+
+      .addCase(fetchCourseStudentsProgress.fulfilled, (state, action) => {
+        state.loading = false
+        state.studentsProgress[action.meta.arg] = action.payload
+      })
+
+      .addCase(fetchCourseStudentsProgress.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload
       })
 
       .addCase(updateCourse.fulfilled, (state, action) => {

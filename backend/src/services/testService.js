@@ -4,7 +4,9 @@ const {
   Answer,
   Lesson,
   TestResult,
-  UserAnswer
+  UserAnswer,
+  User,
+  UserProfile
 } = require('../db/models')
 const { Op } = require('sequelize')
 const ApiError = require('../utils/ApiError')
@@ -112,6 +114,62 @@ class TestService {
     if (!a) throw ApiError.notFound('Answer not found')
 
     await a.destroy()
+  }
+
+  async getTestResults ({ testId, teacherId }) {
+    const test = await Test.findByPk(testId)
+
+    if (!test) throw new Error('Test not found')
+
+    const results = await TestResult.findAll({
+      where: {
+        testId,
+        finishedAt: {
+          [Op.ne]: null
+        }
+      },
+      include: [
+        {
+          model: User,
+          as: 'user',
+          attributes: ['id', 'email'],
+          include: [
+            {
+              model: UserProfile,
+              as: 'profile',
+              attributes: ['firstName', 'lastName']
+            }
+          ]
+        }
+      ],
+      order: [
+        ['userId', 'ASC'],
+        ['attempt', 'DESC']
+      ]
+    })
+
+    // берём только последнюю попытку каждого пользователя
+    const lastResultsMap = new Map()
+
+    for (const r of results) {
+      if (!lastResultsMap.has(r.userId)) {
+        lastResultsMap.set(r.userId, r)
+      }
+    }
+
+    return Array.from(lastResultsMap.values()).map(r => ({
+      userId: r.user.id,
+      userName: r.user.profile
+        ? `${r.user.profile.firstName ?? ''} ${
+            r.user.profile.lastName ?? ''
+          }`.trim()
+        : 'Без имени',
+      email: r.user.email,
+      attempt: r.attempt,
+      score: r.score,
+      passed: r.passed,
+      finishedAt: r.finishedAt
+    }))
   }
 
   async getMyTestResult ({ userId, testId }) {

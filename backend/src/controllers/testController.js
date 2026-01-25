@@ -109,6 +109,22 @@ class TestController {
     }
   }
 
+  async getTestResults (req, res, next) {
+    try {
+      const { testId } = req.params
+      const teacherId = req.user.id
+
+      const results = await testService.getTestResults({
+        testId,
+        teacherId
+      })
+
+      res.json(results)
+    } catch (e) {
+      next(e)
+    }
+  }
+
   // ===== PASS TEST =====
   async startTest (req, res, next) {
     try {

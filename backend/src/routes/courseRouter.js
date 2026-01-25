@@ -28,6 +28,13 @@ router.get('/:id', auth, controller.getCourse)
 
 router.get('/', auth, controller.getCourses)
 
+router.get(
+  '/:courseId/students/progress',
+  auth,
+  role(['TEACHER', 'ADMIN']),
+  controller.getStudentsProgress
+)
+
 // ===== ENROLLMENT =====
 router.post('/:id/enroll', auth, role(['STUDENT']), controller.requestEnroll)
 

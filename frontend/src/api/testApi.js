@@ -14,6 +14,10 @@ export const testApi = {
     return api.get(`/tests/${testId}/my-result`)
   },
 
+  getTestResult (testId) {
+    return api.get(`/tests/${testId}/results`)
+  },
+
   // ===== QUESTIONS =====
   addQuestion (testId, data) {
     return api.post(`/tests/${testId}/questions`, data)

@@ -7,12 +7,14 @@ import {
   createAnswer,
   updateAnswer,
   deleteAnswer,
-  fetchMyTestResult
+  fetchMyTestResult,
+  fetchTestResults
 } from './testThunks'
 
 const initialState = {
   current: null,
   lastResult: null,
+  results: [],
   loading: false,
   error: null
 }
@@ -41,6 +43,19 @@ const testSlice = createSlice({
       .addCase(fetchMyTestResult.fulfilled, (state, action) => {
         state.loading = false
         state.lastResult = action.payload // null или объект
+      })
+
+      /* ===== TEACHER RESULTS ===== */
+      .addCase(fetchTestResults.pending, state => {
+        state.loading = true
+      })
+      .addCase(fetchTestResults.fulfilled, (state, action) => {
+        state.loading = false
+        state.results = action.payload
+      })
+      .addCase(fetchTestResults.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload
       })
 
       /* ===== QUESTION ===== */

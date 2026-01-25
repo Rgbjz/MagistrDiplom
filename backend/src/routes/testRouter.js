@@ -73,6 +73,13 @@ router.get(
   testController.getMyTestResult
 )
 
+router.get(
+  '/:testId/results',
+  auth,
+  role(['TEACHER']),
+  testController.getTestResults
+)
+
 // ===== PASS TEST =====
 router.post('/:id/start', auth, role(['STUDENT']), testController.startTest)
 

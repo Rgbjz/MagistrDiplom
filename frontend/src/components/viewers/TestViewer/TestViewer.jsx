@@ -10,22 +10,22 @@ import {
   tick,
   clearSession
 } from '../../../store/testSession/testSessionSlice'
-import { fetchMyTestResult, fetchTest } from '../../../store/tests/testThunks'
+import {
+  fetchMyTestResult,
+  fetchTest,
+  fetchTestResults
+} from '../../../store/tests/testThunks'
 
 import styles from './TestViewer.module.scss'
 
 export default function TestViewer ({ testId }) {
   const dispatch = useDispatch()
 
-  /* ===== LOAD DATA ===== */
-  useEffect(() => {
-    dispatch(clearSession())
-    dispatch(fetchMyTestResult(testId))
-    dispatch(fetchTest(testId))
-  }, [testId, dispatch])
+  const user = useSelector(state => state.user.user)
+  const isTeacher = user?.role === 'TEACHER'
 
   const test = useSelector(state => state.test.current)
-  const { lastResult, loading } = useSelector(state => state.test)
+  const { lastResult, results, loading } = useSelector(state => state.test)
   const { session, answers, timeLeft, finished, result } = useSelector(
     state => state.testSession
   )
@@ -37,6 +37,18 @@ export default function TestViewer ({ testId }) {
   const questions = test?.questions || []
   const details = finalResult?.details || []
 
+  /* ===== LOAD DATA ===== */
+  useEffect(() => {
+    dispatch(clearSession())
+    dispatch(fetchTest(testId))
+
+    if (isTeacher) {
+      dispatch(fetchTestResults(testId))
+    } else {
+      dispatch(fetchMyTestResult(testId))
+    }
+  }, [testId, isTeacher, dispatch])
+
   /* ===== START ===== */
   const handleStart = () => {
     dispatch(clearSession())
@@ -44,10 +56,10 @@ export default function TestViewer ({ testId }) {
   }
 
   useEffect(() => {
-    if (finished) {
+    if (finished && !isTeacher) {
       dispatch(fetchMyTestResult(testId))
     }
-  }, [finished, dispatch, testId])
+  }, [finished, isTeacher, dispatch, testId])
 
   /* ===== TIMER ===== */
   useEffect(() => {
@@ -87,12 +99,61 @@ export default function TestViewer ({ testId }) {
     return <p className={styles.empty}>Тест не найден</p>
   }
 
-  /* ===== RESULT ===== */
+  /* ================= TEACHER ================= */
+
+  if (isTeacher) {
+    return (
+      <div className={styles.card}>
+        <h2 className={styles.title}>{test.title}</h2>
+
+        <div className={styles.meta}>
+          <span>⏱ {test.timeLimit} мин</span>
+          <span>Проходной балл: {test.passingScore}%</span>
+          <span>Вопросов: {test.questions.length}</span>
+        </div>
+
+        {results.length === 0 ? (
+          <p className={styles.empty}>Нет завершённых попыток</p>
+        ) : (
+          <table className={styles.resultsTable}>
+            <thead>
+              <tr>
+                <th>Студент</th>
+                <th>Email</th>
+                <th>Попытка</th>
+                <th>Баллы</th>
+                <th>Статус</th>
+                <th>Дата</th>
+              </tr>
+            </thead>
+            <tbody>
+              {results.map(r => (
+                <tr key={`${r.userId}-${r.attempt}`}>
+                  <td>{r.userName}</td>
+                  <td>{r.email}</td>
+                  <td>{r.attempt}</td>
+                  <td>{r.score}%</td>
+                  <td>
+                    <span className={r.passed ? styles.passed : styles.failed}>
+                      {r.passed ? 'Пройден' : 'Не пройден'}
+                    </span>
+                  </td>
+                  <td>{new Date(r.finishedAt).toLocaleString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+    )
+  }
+
+  /* ================= STUDENT RESULT ================= */
+
   if (!session && finalResult) {
     return (
       <div className={styles.resultCard}>
         <div className={styles.resultLayout}>
-          {/* LEFT */}
           <aside className={styles.resultSide}>
             <h2 className={styles.title}>
               {isPerfect
@@ -119,7 +180,6 @@ export default function TestViewer ({ testId }) {
             )}
           </aside>
 
-          {/* RIGHT */}
           <section className={styles.resultMain}>
             <div className={styles.details}>
               {questions.map(q => {
@@ -161,7 +221,8 @@ export default function TestViewer ({ testId }) {
     )
   }
 
-  /* ===== PREVIEW ===== */
+  /* ================= PREVIEW ================= */
+
   if (!session) {
     return (
       <div className={styles.card}>
@@ -183,7 +244,8 @@ export default function TestViewer ({ testId }) {
     )
   }
 
-  /* ===== IN PROGRESS ===== */
+  /* ================= IN PROGRESS ================= */
+
   return (
     <div className={styles.card}>
       <div className={styles.timer}>

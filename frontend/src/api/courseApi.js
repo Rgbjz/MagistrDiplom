@@ -11,5 +11,7 @@ export const courseApi = {
   rejectEnroll: (courseId, userId) =>
     api.post(`/courses/${courseId}/enroll/${userId}/reject`),
   update: (id, data) => api.patch(`/courses/${id}`, data),
-  delete: id => api.delete(`/courses/${id}`)
+  delete: id => api.delete(`/courses/${id}`),
+  getCourseStudentsProgress: courseId =>
+    api.get(`/courses/${courseId}/students/progress`)
 }

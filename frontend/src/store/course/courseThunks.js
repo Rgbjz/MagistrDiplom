@@ -1,6 +1,29 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 import { courseApi } from '../../api/courseApi'
 
+const mapStudentProgress = s => {
+  const totalItems = s.lessons.total + s.tests.total
+  const completedItems = s.lessons.completed + s.tests.completed
+
+  return {
+    userId: s.userId,
+    fullName: s.name || s.email,
+    email: s.email,
+
+    completedLessons: s.lessons.completed,
+    totalLessons: s.lessons.total,
+
+    passedTests: s.tests.completed,
+    totalTests: s.tests.total,
+
+    progressPercent: totalItems
+      ? Math.round((completedItems / totalItems) * 100)
+      : 0,
+
+    completed: completedItems === totalItems
+  }
+}
+
 export const fetchCourses = createAsyncThunk('courses/fetchAll', async () => {
   const { data } = await courseApi.getAll()
   return data
@@ -10,6 +33,22 @@ export const fetchMyCourses = createAsyncThunk('courses/fetchMy', async () => {
   const { data } = await courseApi.getAll()
   return data.filter(c => c.enrolled)
 })
+
+export const fetchCourseStudentsProgress = createAsyncThunk(
+  'courses/fetchStudentsProgress',
+  async (courseId, { rejectWithValue }) => {
+    try {
+      const { data } = await courseApi.getCourseStudentsProgress(courseId)
+
+      // 🔥 ВАЖНО: маппинг здесь
+      return data.map(mapStudentProgress)
+    } catch (e) {
+      return rejectWithValue(
+        e.response?.data?.message || 'Failed to load students progress'
+      )
+    }
+  }
+)
 
 export const enrollCourse = createAsyncThunk(
   'courses/enroll',

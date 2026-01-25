@@ -8,6 +8,20 @@ export const fetchTest = createAsyncThunk('test/fetch', async testId => {
   return data
 })
 
+export const fetchTestResults = createAsyncThunk(
+  'test/fetchTestResults',
+  async (testId, { rejectWithValue }) => {
+    try {
+      const { data } = await testApi.getTestResult(testId)
+      return data
+    } catch (e) {
+      return rejectWithValue(
+        e.response?.data?.message || 'Failed to load results'
+      )
+    }
+  }
+)
+
 export const fetchMyTestResult = createAsyncThunk(
   'test/fetchMyTestResult',
   async (testId, { rejectWithValue }) => {

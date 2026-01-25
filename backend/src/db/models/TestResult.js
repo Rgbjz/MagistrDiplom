@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'testId',
         as: 'test'
       })
+
       TestResult.hasMany(models.UserAnswer, {
         foreignKey: 'testResultId',
         as: 'answers'
@@ -32,14 +33,29 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false
       },
 
-      score: {
+      attempt: {
         type: DataTypes.INTEGER,
         allowNull: false
       },
 
+      startedAt: {
+        type: DataTypes.DATE,
+        allowNull: false
+      },
+
+      finishedAt: {
+        type: DataTypes.DATE,
+        allowNull: true
+      },
+
+      score: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+      },
+
       passed: {
         type: DataTypes.BOOLEAN,
-        allowNull: false
+        allowNull: true
       }
     },
     {

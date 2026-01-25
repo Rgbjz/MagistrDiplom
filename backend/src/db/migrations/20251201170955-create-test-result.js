@@ -1,5 +1,5 @@
 'use strict'
-/** @type {import('sequelize-cli').Migration} */
+
 module.exports = {
   async up (queryInterface, Sequelize) {
     await queryInterface.createTable('TestResults', {
@@ -32,14 +32,30 @@ module.exports = {
         onDelete: 'CASCADE'
       },
 
-      score: {
+      attempt: {
         type: Sequelize.INTEGER,
         allowNull: false
       },
 
+      startedAt: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.fn('NOW')
+      },
+
+      finishedAt: {
+        type: Sequelize.DATE,
+        allowNull: true
+      },
+
+      score: {
+        type: Sequelize.INTEGER,
+        allowNull: true
+      },
+
       passed: {
         type: Sequelize.BOOLEAN,
-        allowNull: false
+        allowNull: true
       },
 
       createdAt: {
@@ -56,9 +72,9 @@ module.exports = {
     })
 
     await queryInterface.addConstraint('TestResults', {
-      fields: ['userId', 'testId'],
+      fields: ['userId', 'testId', 'attempt'],
       type: 'unique',
-      name: 'unique_user_test_result'
+      name: 'unique_user_test_attempt'
     })
   },
 

@@ -10,6 +10,10 @@ export const testApi = {
     return api.patch(`/tests/${id}`, data)
   },
 
+  getMyTestResult (testId) {
+    return api.get(`/tests/${testId}/my-result`)
+  },
+
   // ===== QUESTIONS =====
   addQuestion (testId, data) {
     return api.post(`/tests/${testId}/questions`, data)

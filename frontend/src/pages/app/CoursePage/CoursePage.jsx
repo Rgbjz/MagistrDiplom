@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import { fetchCourse } from '../../../store/courseBuilder/courseBuilderThunks'
+import { fetchMyCourseProgress } from '../../../store/courseProgress/courseProgressThunks'
 
 import StructurePanel from '../../../components/StructurePanel/StructurePanel'
 import CourseEnrollRequests from '../../../components/CourseEnrollRequests/CourseEnrollRequests'
@@ -19,7 +20,11 @@ export default function CoursePage () {
   useEffect(() => {
     dispatch(fetchCourse(id))
   }, [dispatch, id])
-
+  useEffect(() => {
+    if (course?.id && user?.role === 'STUDENT') {
+      dispatch(fetchMyCourseProgress(course.id))
+    }
+  }, [dispatch, course?.id, user?.role])
   if (!course) return null
 
   return (

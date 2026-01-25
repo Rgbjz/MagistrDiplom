@@ -8,6 +8,17 @@ export const fetchTest = createAsyncThunk('test/fetch', async testId => {
   return data
 })
 
+export const fetchMyTestResult = createAsyncThunk(
+  'test/fetchMyTestResult',
+  async (testId, { rejectWithValue }) => {
+    try {
+      const { data } = await testApi.getMyTestResult(testId)
+      return data // null или объект
+    } catch (e) {
+      return rejectWithValue(e.response?.data || 'Ошибка загрузки результата')
+    }
+  }
+)
 /* ===== QUESTION ===== */
 
 export const createQuestion = createAsyncThunk(

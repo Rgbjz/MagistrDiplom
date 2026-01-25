@@ -7,6 +7,14 @@ const testController = require('../controllers/testController')
 
 // ===== TEST =====
 router.get('/:id', auth, testController.getTest)
+
+router.post(
+  '/:lessonId',
+  auth,
+  role(['TEACHER', 'ADMIN']),
+  testController.createTest
+)
+
 router.patch(
   '/:id',
   auth,
@@ -57,5 +65,17 @@ router.delete(
   role(['TEACHER', 'ADMIN']),
   testController.deleteAnswer
 )
+
+router.get(
+  '/:testId/my-result',
+  auth,
+  role(['STUDENT']),
+  testController.getMyTestResult
+)
+
+// ===== PASS TEST =====
+router.post('/:id/start', auth, role(['STUDENT']), testController.startTest)
+
+router.post('/:id/submit', auth, role(['STUDENT']), testController.submitTest)
 
 module.exports = router

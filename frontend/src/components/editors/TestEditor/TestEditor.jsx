@@ -56,7 +56,7 @@ export default function TestEditor ({ testId }) {
     dispatch(
       createQuestion({
         testId: test.id,
-        data: { text: 'Новый вопрос', type: 'SINGLE' }
+        data: { text: 'New question', type: 'SINGLE' }
       })
     )
   }
@@ -183,8 +183,8 @@ function QuestionItem ({ q, dispatch }) {
 
   /* ===== TOGGLE CORRECT ===== */
   const toggleCorrect = answerId => {
-    setAnswers(prev =>
-      prev.map(a => {
+    setAnswers(prev => {
+      const updated = prev.map(a => {
         if (type === 'SINGLE') {
           return { ...a, isCorrect: a.id === answerId }
         }
@@ -195,7 +195,24 @@ function QuestionItem ({ q, dispatch }) {
 
         return a
       })
-    )
+
+      // 🔥 СРАЗУ СИНХРОНИЗИРУЕМ С СЕРВЕРОМ
+      updated.forEach(a => {
+        const original = q.answers.find(x => x.id === a.id)
+        if (!original) return
+
+        if (original.isCorrect !== a.isCorrect) {
+          dispatch(
+            updateAnswer({
+              id: a.id,
+              data: { isCorrect: a.isCorrect }
+            })
+          )
+        }
+      })
+
+      return updated
+    })
   }
 
   /* ===== SAVE ANSWERS ===== */

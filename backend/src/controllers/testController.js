@@ -10,6 +10,15 @@ class TestController {
     }
   }
 
+  async createTest (req, res, next) {
+    try {
+      const test = await testService.createTest(req.params.lessonId, req.body)
+      res.status(201).json(test)
+    } catch (e) {
+      next(e)
+    }
+  }
+
   async updateTest (req, res, next) {
     try {
       const test = await testService.update(req.params.id, req.body)
@@ -79,6 +88,54 @@ class TestController {
     try {
       await testService.deleteAnswer(req.params.answerId)
       res.sendStatus(204)
+    } catch (e) {
+      next(e)
+    }
+  }
+
+  async getMyTestResult (req, res, next) {
+    try {
+      const userId = req.user.id
+      const { testId } = req.params
+
+      const result = await testService.getMyTestResult({
+        userId,
+        testId
+      })
+
+      res.json(result)
+    } catch (e) {
+      next(e)
+    }
+  }
+
+  // ===== PASS TEST =====
+  async startTest (req, res, next) {
+    try {
+      const testId = Number(req.params.id)
+      const userId = req.user.id
+
+      const result = await testService.startTest(testId, userId)
+
+      res.json(result)
+    } catch (e) {
+      next(e)
+    }
+  }
+
+  async submitTest (req, res, next) {
+    try {
+      const userId = req.user.id
+      const testResultId = Number(req.params.id)
+      const { answers } = req.body
+
+      const result = await testService.submitTest({
+        testResultId,
+        userId,
+        answers
+      })
+
+      res.json(result)
     } catch (e) {
       next(e)
     }

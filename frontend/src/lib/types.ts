@@ -152,3 +152,28 @@ export interface MyTestResult {
   finishedAt: string;
   details: MyTestResultDetail[];
 }
+
+export interface EnrollRequest {
+  id: number;
+  userId: number;
+  courseId: number;
+  status: EnrollmentStatus;
+  student: {
+    id: number;
+    email: string;
+    profile: {
+      firstName: string | null;
+      lastName: string | null;
+      avatarUrl: string | null;
+    } | null;
+  };
+}
+
+export interface StudentProgress {
+  userId: number;
+  name: string;
+  email: string;
+  lessons: { completed: number; total: number };
+  tests: { completed: number; total: number };
+  averageScore: number | null;
+}

@@ -10,6 +10,8 @@
 
 > **Tests out of scope** (per design spec). Verification uses build, server boot, `curl`, and `psql` checks.
 
+> **tsconfig gotcha (applies to all controllers in 2a/2b/2c):** the Nest 11 scaffold sets `isolatedModules: true` + `module: nodenext` + `emitDecoratorMetadata`. Therefore: (1) type-only imports used as decorated handler parameter types MUST use `import type` — e.g. `import type { Request, Response } from 'express'` and `import type { AuthUser } from '...'` (keep value imports like `CurrentUser` on a separate normal import line). (2) `@nestjs/jwt` `expiresIn` from config (a plain `string`) must be cast `as JwtSignOptions['expiresIn']`. The code below already reflects these fixes.
+
 > **Env note:** Node is not on default PATH. Prepend to every node/npm/npx command:
 > `export PATH="$HOME/.nvm/versions/node/v24.15.0/bin:$PATH"`
 > The PostgreSQL server must be running (see memory `magistrdiplom-local-postgres`). The DB is already migrated + seeded (teacher@example.com / student1@example.com / student2@example.com, all password `password123`).
@@ -406,6 +408,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import type { JwtSignOptions } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -435,14 +438,16 @@ export class AuthService {
   private signAccess(payload: JwtPayload): string {
     return this.jwt.sign(payload, {
       secret: this.config.get<string>('JWT_ACCESS_SECRET'),
-      expiresIn: this.config.get<string>('JWT_ACCESS_EXPIRES_IN') ?? '15m',
+      expiresIn: (this.config.get<string>('JWT_ACCESS_EXPIRES_IN') ??
+        '15m') as JwtSignOptions['expiresIn'],
     });
   }
 
   private signRefresh(payload: JwtPayload): string {
     return this.jwt.sign(payload, {
       secret: this.config.get<string>('JWT_REFRESH_SECRET'),
-      expiresIn: this.config.get<string>('JWT_REFRESH_EXPIRES_IN') ?? '30d',
+      expiresIn: (this.config.get<string>('JWT_REFRESH_EXPIRES_IN') ??
+        '30d') as JwtSignOptions['expiresIn'],
     });
   }
 
@@ -578,15 +583,13 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { JwtAuthGuard } from '../../common/auth/jwt-auth.guard';
-import {
-  AuthUser,
-  CurrentUser,
-} from '../../common/decorators/current-user.decorator';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import type { AuthUser } from '../../common/decorators/current-user.decorator';
 
 const REFRESH_COOKIE = 'refreshToken';
 const REFRESH_COOKIE_OPTS = {

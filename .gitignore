@@ -76,3 +76,9 @@ docker-data/
 *.key
 
 backend/src/public
+
+# Backend uploaded files (keep dirs via .gitkeep)
+backend/public/avatars/*
+backend/public/courses/*
+!backend/public/avatars/.gitkeep
+!backend/public/courses/.gitkeep

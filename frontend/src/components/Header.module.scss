@@ -1,0 +1,59 @@
+.header {
+  height: 64px;
+  background: #1e293b;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+}
+
+.nav {
+  display: flex;
+  gap: 24px;
+
+  a {
+    color: #fff;
+    font-size: 15px;
+
+    &:hover {
+      color: #cbd5e1;
+    }
+  }
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #3b82f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+.name {
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.logoutBtn {
+  background: transparent;
+  color: #fff;
+  border: 1px solid #fff;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+
+  &:hover {
+    background: #fff;
+    color: #1e293b;
+  }
+}

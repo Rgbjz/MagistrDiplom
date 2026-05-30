@@ -1,0 +1,28 @@
+.page {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 0;
+  min-height: calc(100vh - 64px - 48px - 48px);
+}
+
+.content {
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.header {
+  margin-bottom: 16px;
+
+  h1 {
+    font-size: 22px;
+  }
+
+  p {
+    color: #475569;
+    font-size: 14px;
+  }
+}
+
+.state {
+  padding: 24px;
+}

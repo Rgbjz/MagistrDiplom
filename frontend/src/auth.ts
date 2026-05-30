@@ -1,5 +1,6 @@
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
+import type { JWT } from 'next-auth/jwt';
 import type { Role } from './lib/types';
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000/api';
@@ -26,18 +27,11 @@ function parseRefreshCookie(setCookies: string[]): string | null {
   return null;
 }
 
-async function refreshAccessToken(token: {
-  accessToken: string;
-  refreshToken: string;
-  accessTokenExpires: number;
-  id: number;
-  email: string;
-  role: Role;
-}) {
+async function refreshAccessToken(token: JWT): Promise<JWT> {
   try {
     const res = await fetch(`${API}/auth/refresh`, {
       method: 'POST',
-      headers: { Cookie: `refreshToken=${token.refreshToken}` },
+      headers: { Cookie: `refreshToken=${token.refreshToken as string}` },
     });
     if (!res.ok) throw new Error('refresh failed');
     const data = (await res.json()) as { accessToken: string };
@@ -45,7 +39,8 @@ async function refreshAccessToken(token: {
       typeof res.headers.getSetCookie === 'function'
         ? res.headers.getSetCookie()
         : [];
-    const newRefresh = parseRefreshCookie(setCookies) ?? token.refreshToken;
+    const newRefresh =
+      parseRefreshCookie(setCookies) ?? (token.refreshToken as string);
     return {
       ...token,
       accessToken: data.accessToken,
@@ -99,23 +94,26 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = Number(user.id);
-        token.email = user.email;
-        token.role = user.role;
-        token.accessToken = user.accessToken;
-        token.refreshToken = user.refreshToken;
-        token.accessTokenExpires = user.accessTokenExpires;
+        const t = token as Record<string, unknown>;
+        t.id = Number(user.id);
+        t.email = user.email;
+        t.role = user.role;
+        t.accessToken = user.accessToken;
+        t.refreshToken = user.refreshToken;
+        t.accessTokenExpires = user.accessTokenExpires;
         return token;
       }
-      if (Date.now() < token.accessTokenExpires - 5000) {
+      if (Date.now() < (token.accessTokenExpires as number) - 5000) {
         return token;
       }
       return refreshAccessToken(token);
     },
     session({ session, token }) {
-      session.user = { id: token.id, email: token.email, role: token.role };
-      session.accessToken = token.accessToken;
-      session.error = token.error;
+      const u = session.user as { id: number; role: Role };
+      u.id = token.id as number;
+      u.role = token.role as Role;
+      session.accessToken = token.accessToken as string;
+      session.error = token.error as string | undefined;
       return session;
     },
   },

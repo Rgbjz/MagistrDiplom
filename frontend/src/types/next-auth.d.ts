@@ -1,3 +1,4 @@
+import type { DefaultSession } from 'next-auth';
 import type { Role } from '../lib/types';
 
 declare module 'next-auth' {
@@ -6,14 +7,12 @@ declare module 'next-auth' {
     error?: string;
     user: {
       id: number;
-      email: string;
       role: Role;
-    };
+    } & DefaultSession['user'];
   }
 
+  // Extend the default user (which already has id/email/name/image)
   interface User {
-    id: string;
-    email: string;
     role: Role;
     accessToken: string;
     refreshToken: string;
@@ -24,7 +23,6 @@ declare module 'next-auth' {
 declare module 'next-auth/jwt' {
   interface JWT {
     id: number;
-    email: string;
     role: Role;
     accessToken: string;
     refreshToken: string;

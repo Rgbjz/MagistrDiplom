@@ -1,0 +1,14 @@
+.builder {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  min-height: calc(100vh - 64px - 48px - 48px);
+}
+
+.right {
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.state {
+  padding: 24px;
+}

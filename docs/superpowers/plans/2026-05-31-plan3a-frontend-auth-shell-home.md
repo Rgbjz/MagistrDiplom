@@ -864,7 +864,10 @@ export function Header() {
       <div className={styles.user}>
         <span className={styles.avatar}>{initial}</span>
         <span className={styles.name}>{email}</span>
-        <button onClick={() => signOut({ callbackUrl: '/login' })}>
+        <button
+          className={styles.logoutBtn}
+          onClick={() => signOut({ callbackUrl: '/login' })}
+        >
           Logout
         </button>
       </div>
@@ -920,7 +923,9 @@ export function Header() {
   white-space: nowrap;
 }
 
-button {
+// NOTE: Turbopack CSS Modules require "pure" selectors — a bare `button {}`
+// fails the build. Use a local class.
+.logoutBtn {
   background: transparent;
   color: #fff;
   border: 1px solid #fff;

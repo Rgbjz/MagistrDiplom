@@ -1,0 +1,139 @@
+.editor {
+  padding: 8px;
+  max-width: 900px;
+}
+
+.loading {
+  color: #6b7280;
+}
+
+.meta {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  input {
+    padding: 8px 10px;
+    border: 1px solid #dcdde1;
+    border-radius: 6px;
+  }
+}
+
+.row {
+  display: flex;
+  gap: 16px;
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 13px;
+    color: #475569;
+  }
+
+  input {
+    width: 120px;
+  }
+}
+
+.deleteBtn {
+  align-self: flex-start;
+  background: #fee2e2;
+  color: #991b1b;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.questionsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+
+  button {
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    cursor: pointer;
+  }
+}
+
+.questionCard {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 14px;
+  background: #fff;
+}
+
+.questionTop {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+
+  input {
+    flex: 1;
+    padding: 8px 10px;
+    border: 1px solid #dcdde1;
+    border-radius: 6px;
+  }
+
+  select {
+    padding: 8px;
+    border: 1px solid #dcdde1;
+    border-radius: 6px;
+  }
+
+  button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+  }
+}
+
+.answers {
+  padding-left: 12px;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.answer {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+
+  input[type='text'],
+  input:not([type]) {
+    flex: 1;
+    padding: 6px 8px;
+    border: 1px solid #dcdde1;
+    border-radius: 6px;
+  }
+
+  button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+  }
+}
+
+.addAnswer {
+  align-self: flex-start;
+  background: transparent;
+  border: 1px dashed #3b82f6;
+  color: #3b82f6;
+  border-radius: 6px;
+  padding: 5px 10px;
+  cursor: pointer;
+}

@@ -7,6 +7,7 @@ import { CoursesModule } from './modules/courses/courses.module';
 import { SectionsModule } from './modules/sections/sections.module';
 import { LessonsModule } from './modules/lessons/lessons.module';
 import { ProgressModule } from './modules/progress/progress.module';
+import { TestsModule } from './modules/tests/tests.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ProgressModule } from './modules/progress/progress.module';
     SectionsModule,
     LessonsModule,
     ProgressModule,
+    TestsModule,
   ],
 })
 export class AppModule {}

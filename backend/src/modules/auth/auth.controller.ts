@@ -12,6 +12,7 @@ import type { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { ConfirmDto } from './dto/confirm.dto';
 import { JwtAuthGuard } from '../../common/auth/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import type { AuthUser } from '../../common/decorators/current-user.decorator';
@@ -30,13 +31,14 @@ export class AuthController {
 
   // POST defaults to 201 in Nest — matches legacy register status.
   @Post('register')
-  async register(
-    @Body() dto: RegisterDto,
-    @Res({ passthrough: true }) res: Response,
-  ) {
-    const { refreshToken, ...data } = await this.auth.register(dto);
-    res.cookie(REFRESH_COOKIE, refreshToken, REFRESH_COOKIE_OPTS);
-    return data;
+  register(@Body() dto: RegisterDto) {
+    return this.auth.register(dto);
+  }
+
+  @Post('confirm')
+  @HttpCode(200)
+  confirm(@Body() dto: ConfirmDto) {
+    return this.auth.confirm(dto.token);
   }
 
   @Post('login')

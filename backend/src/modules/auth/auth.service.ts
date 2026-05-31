@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -89,15 +90,35 @@ export class AuthService {
     if (exists) {
       throw new BadRequestException('User already exists');
     }
-    const user = await this.prisma.user.create({
+    const confirmToken = crypto.randomBytes(32).toString('hex');
+    await this.prisma.user.create({
       data: {
         email: dto.email,
         password: await bcrypt.hash(dto.password, 10),
         role: dto.role === 'TEACHER' ? 'TEACHER' : 'STUDENT',
+        emailVerified: false,
+        verificationToken: confirmToken,
         profile: { create: {} },
       },
     });
-    return this.createAuthResponse(user);
+    return { email: dto.email, confirmToken };
+  }
+
+  async confirm(token: string) {
+    if (!token) {
+      throw new BadRequestException('Invalid or used confirmation link');
+    }
+    const user = await this.prisma.user.findUnique({
+      where: { verificationToken: token },
+    });
+    if (!user) {
+      throw new BadRequestException('Invalid or used confirmation link');
+    }
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { emailVerified: true, verificationToken: null },
+    });
+    return { ok: true };
   }
 
   async login(dto: LoginDto) {
@@ -110,6 +131,9 @@ export class AuthService {
     const valid = await bcrypt.compare(dto.password, user.password);
     if (!valid) {
       throw new UnauthorizedException('Invalid email or password');
+    }
+    if (!user.emailVerified) {
+      throw new ForbiddenException('Email not confirmed');
     }
     return this.createAuthResponse(user);
   }

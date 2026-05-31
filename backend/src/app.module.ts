@@ -10,6 +10,7 @@ import { ProgressModule } from './modules/progress/progress.module';
 import { TestsModule } from './modules/tests/tests.module';
 import { ChatModule } from './modules/chat/chat.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { StoreModule } from './modules/store/store.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
     TestsModule,
     ChatModule,
     DashboardModule,
+    StoreModule,
   ],
 })
 export class AppModule {}

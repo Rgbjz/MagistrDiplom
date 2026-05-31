@@ -200,3 +200,33 @@ export interface Conversation {
   title: string;
   lastMessage: { content: string; createdAt: string } | null;
 }
+
+export interface DashboardStats {
+  enrolled: number;
+  completed: number;
+  lessonsCompleted: number;
+  testsPassed: number;
+  avgScore: number | null;
+}
+
+export interface ContinueCourse {
+  id: number;
+  title: string;
+  imageUrl: string | null;
+  percent: number;
+}
+
+export interface TeachingCourse {
+  id: number;
+  title: string;
+  imageUrl: string | null;
+}
+
+export interface DashboardData {
+  role: Role;
+  name: string | null;
+  stats?: DashboardStats;
+  continueLearning?: ContinueCourse[];
+  teachingCourses?: TeachingCourse[];
+  recentConversations: Conversation[];
+}

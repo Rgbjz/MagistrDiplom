@@ -8,6 +8,7 @@ import { SectionsModule } from './modules/sections/sections.module';
 import { LessonsModule } from './modules/lessons/lessons.module';
 import { ProgressModule } from './modules/progress/progress.module';
 import { TestsModule } from './modules/tests/tests.module';
+import { ChatModule } from './modules/chat/chat.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { TestsModule } from './modules/tests/tests.module';
     LessonsModule,
     ProgressModule,
     TestsModule,
+    ChatModule,
   ],
 })
 export class AppModule {}

@@ -6,3 +6,4 @@ export { Skeleton } from './Skeleton';
 export { EmptyState } from './EmptyState';
 export { Input, Textarea, Select } from './Input';
 export { ThemeToggle } from './ThemeToggle';
+export { ToastProvider, useToast } from './Toast';

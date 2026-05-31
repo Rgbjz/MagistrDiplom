@@ -5,7 +5,10 @@ export default auth((req) => {
   const { pathname } = req.nextUrl;
   const authPages =
     pathname.startsWith('/login') || pathname.startsWith('/register');
-  const publicPage = authPages || pathname.startsWith('/c/');
+  const publicPage =
+    authPages ||
+    pathname.startsWith('/c/') ||
+    pathname.startsWith('/confirm');
 
   if (!req.auth && !publicPage) {
     return NextResponse.redirect(new URL('/login', req.url));

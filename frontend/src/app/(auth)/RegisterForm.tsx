@@ -3,8 +3,6 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import Link from 'next/link';
 import styles from './auth-form.module.scss';
@@ -20,8 +18,8 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>;
 
 export function RegisterForm() {
-  const router = useRouter();
   const [serverError, setServerError] = useState<string | null>(null);
+  const [confirmLink, setConfirmLink] = useState<string | null>(null);
   const {
     register,
     handleSubmit,
@@ -42,18 +40,33 @@ export function RegisterForm() {
       setServerError('Registration failed (email may be taken)');
       return;
     }
-    const login = await signIn('credentials', {
-      email: values.email,
-      password: values.password,
-      redirect: false,
-    });
-    if (login?.error) {
-      setServerError('Registered, but auto sign-in failed. Try logging in.');
-      return;
-    }
-    router.push('/');
-    router.refresh();
+    const data = (await res.json()) as { email: string; confirmToken: string };
+    setConfirmLink(`/confirm?token=${data.confirmToken}`);
   });
+
+  if (confirmLink) {
+    return (
+      <div className={styles.wrapper}>
+        <div className={styles.form}>
+          <h1>Confirm your email</h1>
+          <p style={{ textAlign: 'center', fontSize: 14 }}>
+            We&apos;ve &quot;sent&quot; a confirmation link. In a real product it
+            would arrive by email — here it is:
+          </p>
+          <Link
+            href={confirmLink}
+            className={styles.button}
+            style={{ textAlign: 'center', textDecoration: 'none' }}
+          >
+            Confirm email
+          </Link>
+          <p className={styles.switch}>
+            Already confirmed? <Link href="/login">Sign in</Link>
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.wrapper}>

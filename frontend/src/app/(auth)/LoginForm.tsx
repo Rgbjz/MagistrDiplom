@@ -32,7 +32,7 @@ export function LoginForm() {
       redirect: false,
     });
     if (res?.error) {
-      setServerError('Invalid email or password');
+      setServerError('Invalid credentials — and make sure your email is confirmed');
       return;
     }
     router.push('/');

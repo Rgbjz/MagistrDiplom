@@ -47,16 +47,11 @@ export function CourseCard({
         ) : (
           <div className={styles.gradient}>{course.title.charAt(0)}</div>
         )}
-        {course.enrollmentStatus === 'ACTIVE' && (
-          <span className={styles.statusBadge}>
-            <Badge tone="success">Active</Badge>
-          </span>
-        )}
-        {course.enrollmentStatus === 'PENDING' && (
-          <span className={styles.statusBadge}>
-            <Badge tone="warning">Pending</Badge>
-          </span>
-        )}
+        <span className={styles.statusBadge}>
+          <Badge tone={course.price > 0 ? 'primary' : 'neutral'}>
+            {course.price > 0 ? `$${course.price}` : 'Free'}
+          </Badge>
+        </span>
       </div>
       <div className={styles.content}>
         <h3>{course.title}</h3>
@@ -80,6 +75,13 @@ export function CourseCard({
           <Button variant="ghost" disabled>
             Pending
           </Button>
+        );
+      }
+      if (course.price > 0) {
+        return (
+          <Link href={`/c/${course.id}`}>
+            <Button variant="primary">Buy ${course.price}</Button>
+          </Link>
         );
       }
       return (

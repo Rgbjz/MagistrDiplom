@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -90,6 +91,11 @@ export function ProfileForm() {
   return (
     <div className={styles.profile}>
       <h1>Profile</h1>
+      <Link href="/purchases">
+        <button type="button" className={styles.button} style={{ width: 'auto', marginBottom: 'var(--space-4)' }}>
+          My purchases
+        </button>
+      </Link>
       <form className={styles.form} onSubmit={onSubmit}>
         <div className={styles.avatarBlock}>
           <div className={styles.avatar}>

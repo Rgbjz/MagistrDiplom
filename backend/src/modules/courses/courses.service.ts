@@ -14,12 +14,14 @@ interface CreateCourseInput {
   title: string;
   description?: string;
   imageUrl?: string | null;
+  price?: number;
 }
 
 interface UpdateCourseInput {
   title?: string;
   description?: string;
   imageUrl?: string | null;
+  price?: number;
 }
 
 @Injectable()
@@ -38,6 +40,7 @@ export class CoursesService {
         title: data.title,
         description: data.description || '',
         imageUrl: data.imageUrl ?? null,
+        price: data.price ?? 0,
         teacherId: user.id,
       },
     });
@@ -96,6 +99,7 @@ export class CoursesService {
         description: true,
         imageUrl: true,
         teacherId: true,
+        price: true,
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -127,6 +131,7 @@ export class CoursesService {
         title: data.title ?? course.title,
         description: data.description ?? course.description,
         imageUrl: data.imageUrl ?? course.imageUrl,
+        price: data.price ?? course.price,
       },
     });
   }

@@ -12,6 +12,7 @@ export function CreateCourseForm() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [image, setImage] = useState<File | null>(null);
+  const [price, setPrice] = useState('0');
   const [preview, setPreview] = useState<string | null>(null);
 
   useEffect(() => {
@@ -33,6 +34,7 @@ export function CreateCourseForm() {
     const fd = new FormData();
     fd.append('title', title);
     fd.append('description', description);
+    fd.append('price', String(Number(price) || 0));
     if (image) fd.append('image', image);
     mutation.mutate(fd);
   }
@@ -51,6 +53,15 @@ export function CreateCourseForm() {
             rows={4}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
+          />
+        </div>
+        <div className={styles.field}>
+          <label>Price ($, 0 = free)</label>
+          <input
+            type="number"
+            min={0}
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
           />
         </div>
         <div className={styles.field}>

@@ -92,6 +92,15 @@ export function BuilderStructurePanel({
     mutationFn: () => clientApi(`/courses/${courseId}`, { method: 'DELETE' }),
     onSuccess: () => router.push('/'),
   });
+  const savePrice = useMutation({
+    mutationFn: (price: number) =>
+      clientApi(`/courses/${courseId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ price }),
+      }),
+    onSuccess: invalidate,
+  });
 
   function startEdit(type: 'SECTION' | 'LESSON' | 'TEST', id: number, title: string) {
     setEditing({ type, id });
@@ -133,6 +142,15 @@ export function BuilderStructurePanel({
         >
           ⚙ Manage
         </button>
+      </div>
+      <div className={styles.priceRow}>
+        <label>Price $</label>
+        <input
+          type="number"
+          min={0}
+          defaultValue={course.price}
+          onBlur={(e) => savePrice.mutate(Number(e.target.value) || 0)}
+        />
       </div>
       <button className={styles.addBtn} onClick={() => addSection.mutate()}>
         + Add section

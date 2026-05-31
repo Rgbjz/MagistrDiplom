@@ -55,6 +55,7 @@ model User {
   userAnswers      UserAnswer[]
   messages         Message[]
   participations   ConversationParticipant[]
+  payments         Payment[]
 }
 
 model UserProfile {
@@ -88,6 +89,7 @@ model Course {
   title       String
   description String?
   imageUrl    String?
+  price       Int      @default(0)
   teacherId   Int
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -96,6 +98,7 @@ model Course {
   sections      Section[]
   enrollments   Enrollment[]
   conversations Conversation[]
+  payments      Payment[]
 }
 
 model Section {
@@ -264,4 +267,16 @@ model Message {
 
   conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   sender       User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
+}
+
+model Payment {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  courseId  Int
+  amount    Int
+  status    String   @default("PAID")
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 }

@@ -8,6 +8,7 @@ import { clientApi } from '../../../../lib/api/client';
 import type { ActiveItem, CourseDetail, SessionUser } from '../../../../lib/types';
 import { StructurePanel } from '../../../../components/course/StructurePanel';
 import { ViewerPanel } from '../../../../components/course/ViewerPanel';
+import { CourseChatButton } from '../../../../components/course/CourseChatButton';
 import styles from './course.module.scss';
 
 export default function CoursePage() {
@@ -47,6 +48,7 @@ export default function CoursePage() {
         <div className={styles.header}>
           <h1>{course.title}</h1>
           <p>{course.description}</p>
+          <CourseChatButton courseId={course.id} />
         </div>
         <ViewerPanel active={active} course={course} user={user} />
       </div>

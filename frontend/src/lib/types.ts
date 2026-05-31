@@ -177,3 +177,26 @@ export interface StudentProgress {
   tests: { completed: number; total: number };
   averageScore: number | null;
 }
+
+export interface ChatSender {
+  id: number;
+  email: string;
+  profile: { firstName: string | null; lastName: string | null } | null;
+}
+
+export interface ChatMessage {
+  id: number;
+  conversationId: number;
+  senderId: number;
+  content: string;
+  createdAt: string;
+  sender: ChatSender;
+}
+
+export interface Conversation {
+  id: number;
+  type: 'COURSE' | 'DIRECT';
+  courseId: number | null;
+  title: string;
+  lastMessage: { content: string; createdAt: string } | null;
+}

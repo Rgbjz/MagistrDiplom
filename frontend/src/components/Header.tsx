@@ -20,6 +20,7 @@ export function Header() {
           <Link href="/teacher/courses/new">Create course</Link>
         )}
         <Link href="/profile">Profile</Link>
+        <Link href="/chat">Chat</Link>
       </nav>
       <div className={styles.user}>
         <span className={styles.avatar}>{initial}</span>

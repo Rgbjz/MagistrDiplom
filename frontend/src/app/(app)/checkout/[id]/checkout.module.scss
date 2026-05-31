@@ -1,0 +1,49 @@
+.page {
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--fs-md);
+}
+
+.total {
+  font-size: var(--fs-xl);
+  font-weight: 800;
+  color: var(--color-primary);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+
+  label {
+    font-size: var(--fs-xs);
+    color: var(--color-text-muted);
+  }
+}
+
+.split {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.note {
+  font-size: var(--fs-xs);
+  color: var(--color-text-muted);
+  text-align: center;
+}

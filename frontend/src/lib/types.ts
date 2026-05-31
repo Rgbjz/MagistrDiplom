@@ -14,6 +14,7 @@ export interface CourseListItem {
   imageUrl: string | null;
   teacherId: number;
   enrollmentStatus?: EnrollmentStatus | null;
+  price: number;
 }
 
 export type QuestionType = 'SINGLE' | 'MULTIPLE';
@@ -76,6 +77,7 @@ export interface CourseDetail {
   sections: Section[];
   enrollmentStatus: EnrollmentStatus | null;
   progress: CourseProgress | null;
+  price: number;
 }
 
 export type ActiveItem =
@@ -229,4 +231,36 @@ export interface DashboardData {
   continueLearning?: ContinueCourse[];
   teachingCourses?: TeachingCourse[];
   recentConversations: Conversation[];
+}
+
+export interface PublicCourseLesson {
+  title: string;
+  hasTest: boolean;
+}
+
+export interface PublicCourseSection {
+  title: string;
+  lessons: PublicCourseLesson[];
+}
+
+export interface PublicCourse {
+  id: number;
+  title: string;
+  description: string | null;
+  imageUrl: string | null;
+  price: number;
+  teacher: { name: string };
+  sections: PublicCourseSection[];
+}
+
+export interface MyStatus {
+  enrollmentStatus: EnrollmentStatus | null;
+}
+
+export interface Purchase {
+  id: number;
+  amount: number;
+  status: string;
+  createdAt: string;
+  course: { id: number; title: string; imageUrl: string | null };
 }

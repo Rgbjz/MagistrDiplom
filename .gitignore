@@ -81,4 +81,7 @@ backend/src/public
 backend/public/avatars/*
 backend/public/courses/*
 !backend/public/avatars/.gitkeep
-!backend/public/courses/.gitkeep.superpowers/
+!backend/public/courses/.gitkeep
+
+# Brainstorm visual-companion artifacts
+.superpowers/

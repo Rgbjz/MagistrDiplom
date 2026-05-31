@@ -1,59 +1,94 @@
 .header {
   height: 64px;
-  background: #1e293b;
-  color: #fff;
+  background: var(--color-header);
+  color: var(--color-header-text);
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 24px;
+  gap: var(--space-4);
+  padding: 0 var(--space-5);
 }
 
 .nav {
   display: flex;
-  gap: 24px;
+  gap: var(--space-2);
+}
 
-  a {
-    color: #fff;
-    font-size: 15px;
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-header-text);
+  font-size: var(--fs-sm);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  opacity: 0.85;
 
-    &:hover {
-      color: #cbd5e1;
-    }
+  &:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.08);
   }
 }
 
-.user {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+.active {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.14);
 }
 
-.avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: #3b82f6;
+.right {
+  margin-left: auto;
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-weight: 600;
+  gap: var(--space-3);
 }
 
-.name {
-  font-size: 14px;
+.email {
+  font-size: var(--fs-sm);
   white-space: nowrap;
 }
 
-.logoutBtn {
+.logout {
   background: transparent;
-  color: #fff;
-  border: 1px solid #fff;
-  border-radius: 6px;
-  padding: 6px 12px;
+  border: none;
+  color: var(--color-header-text);
   cursor: pointer;
+  display: inline-flex;
+  opacity: 0.85;
 
   &:hover {
-    background: #fff;
-    color: #1e293b;
+    opacity: 1;
+  }
+}
+
+.burger {
+  display: none;
+  background: transparent;
+  border: none;
+  color: var(--color-header-text);
+  cursor: pointer;
+}
+
+@media (max-width: 720px) {
+  .email {
+    display: none;
+  }
+
+  .burger {
+    display: inline-flex;
+  }
+
+  .nav {
+    display: none;
+    position: absolute;
+    top: 64px;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    background: var(--color-header);
+    padding: var(--space-3);
+    z-index: 50;
+  }
+
+  .navOpen {
+    display: flex;
   }
 }

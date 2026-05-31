@@ -75,8 +75,8 @@ export class CoursesController {
   }
 
   @Get()
-  list(@CurrentUser() user: AuthUser) {
-    return this.courses.getCoursesForUser(user);
+  list(@CurrentUser() user: AuthUser, @Query('search') search?: string) {
+    return this.courses.getCoursesForUser(user, search);
   }
 
   @Get(':id')

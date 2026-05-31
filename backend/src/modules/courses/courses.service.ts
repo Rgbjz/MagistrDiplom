@@ -77,8 +77,19 @@ export class CoursesService {
     return { ...course, enrollmentStatus, progress };
   }
 
-  async getCoursesForUser(user: AuthUser) {
+  async getCoursesForUser(user: AuthUser, search?: string) {
+    const where = search
+      ? {
+          OR: [
+            { title: { contains: search, mode: 'insensitive' as const } },
+            {
+              description: { contains: search, mode: 'insensitive' as const },
+            },
+          ],
+        }
+      : {};
     const courses = await this.prisma.course.findMany({
+      where,
       select: {
         id: true,
         title: true,

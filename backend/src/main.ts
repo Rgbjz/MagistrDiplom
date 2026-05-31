@@ -19,7 +19,10 @@ async function bootstrap() {
     new ValidationPipe({ whitelist: true, transform: true }),
   );
   app.useGlobalFilters(new AllExceptionsFilter());
-  app.useStaticAssets(join(__dirname, '..', 'public'), { prefix: '/public/' });
+  // Serve uploaded files. Anchor to cwd/public (where multer writes via
+  // './public/...'), NOT __dirname — the compiled entry lives at dist/src/main.js,
+  // so __dirname/../public would resolve to the nonexistent dist/public.
+  app.useStaticAssets(join(process.cwd(), 'public'), { prefix: '/public/' });
 
   const port = process.env.PORT ?? 5000;
   await app.listen(port);

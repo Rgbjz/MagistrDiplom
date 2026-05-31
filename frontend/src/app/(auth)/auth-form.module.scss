@@ -3,79 +3,83 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f5f6fa;
-  padding: 16px;
+  background: var(--color-bg);
+  padding: var(--space-4);
 }
 
 .form {
   width: 100%;
   max-width: 380px;
-  background: #fff;
-  padding: 32px;
-  border-radius: 12px;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+  background: var(--color-surface);
+  padding: var(--space-6);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: var(--space-3);
 
   h1 {
     text-align: center;
-    font-size: 22px;
-    margin-bottom: 4px;
+    font-size: var(--fs-xl);
+    margin-bottom: var(--space-1);
+    color: var(--color-text);
   }
 }
 
 .input,
 .select {
   width: 100%;
-  padding: 12px 14px;
-  border: 1px solid #dcdde1;
-  border-radius: 8px;
-  font-size: 14px;
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--fs-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
 
   &:focus {
     outline: none;
-    border-color: #4c6ef5;
+    border-color: var(--color-primary);
   }
 }
 
 .button {
   width: 100%;
-  padding: 12px;
-  background: #4c6ef5;
+  padding: var(--space-3);
+  background: var(--color-primary);
   color: #fff;
   border: none;
-  border-radius: 8px;
-  font-size: 15px;
+  border-radius: var(--radius-md);
+  font-size: var(--fs-md);
   cursor: pointer;
 
   &:hover {
-    background: #4263eb;
+    background: var(--color-primary-hover);
   }
 
   &:disabled {
-    background: #a5b4fc;
+    opacity: 0.6;
     cursor: not-allowed;
   }
 }
 
 .error {
-  color: #e03131;
+  color: var(--color-danger);
   text-align: center;
-  font-size: 14px;
+  font-size: var(--fs-sm);
 }
 
 .fieldError {
-  color: #e03131;
-  font-size: 12px;
-  margin-top: -8px;
+  color: var(--color-danger);
+  font-size: var(--fs-xs);
+  margin-top: -6px;
 }
 
 .switch {
   text-align: center;
-  font-size: 14px;
+  font-size: var(--fs-sm);
 
   a {
-    color: #4c6ef5;
+    color: var(--color-primary);
   }
 }

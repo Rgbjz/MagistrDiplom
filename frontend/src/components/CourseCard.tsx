@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { clientApi } from '../lib/api/client';
 import type { CourseListItem, SessionUser } from '../lib/types';
+import { Button, Badge } from './ui';
 import styles from './CourseCard.module.scss';
 
 const ASSET_BASE = (
@@ -44,7 +45,17 @@ export function CourseCard({
           // eslint-disable-next-line @next/next/no-img-element
           <img src={imageSrc} alt={course.title} />
         ) : (
-          <div className={styles.placeholder} />
+          <div className={styles.gradient}>{course.title.charAt(0)}</div>
+        )}
+        {course.enrollmentStatus === 'ACTIVE' && (
+          <span className={styles.statusBadge}>
+            <Badge tone="success">Active</Badge>
+          </span>
+        )}
+        {course.enrollmentStatus === 'PENDING' && (
+          <span className={styles.statusBadge}>
+            <Badge tone="warning">Pending</Badge>
+          </span>
         )}
       </div>
       <div className={styles.content}>
@@ -59,46 +70,33 @@ export function CourseCard({
     if (user.role === 'STUDENT') {
       if (course.enrollmentStatus === 'ACTIVE') {
         return (
-          <Link
-            className={`${styles.btn} ${styles.btnPrimary}`}
-            href={`/courses/${course.id}`}
-          >
-            Open
+          <Link href={`/courses/${course.id}`}>
+            <Button variant="primary">Open</Button>
           </Link>
         );
       }
       if (course.enrollmentStatus === 'PENDING') {
         return (
-          <button className={`${styles.btn} ${styles.btnDisabled}`} disabled>
+          <Button variant="ghost" disabled>
             Pending
-          </button>
+          </Button>
         );
       }
       return (
-        <button
-          className={`${styles.btn} ${styles.btnPrimary}`}
-          onClick={enroll}
-          disabled={busy}
-        >
-          {busy ? '…' : 'Enroll'}
-        </button>
+        <Button variant="primary" onClick={enroll} loading={busy}>
+          Enroll
+        </Button>
       );
     }
     const canEdit = user.role === 'ADMIN' || user.id === course.teacherId;
     return (
       <>
-        <Link
-          className={`${styles.btn} ${styles.btnOutline}`}
-          href={`/courses/${course.id}`}
-        >
-          View
+        <Link href={`/courses/${course.id}`}>
+          <Button variant="outline">View</Button>
         </Link>
         {canEdit && (
-          <Link
-            className={`${styles.btn} ${styles.btnOutline}`}
-            href={`/teacher/courses/${course.id}/builder`}
-          >
-            Edit
+          <Link href={`/teacher/courses/${course.id}/builder`}>
+            <Button variant="outline">Edit</Button>
           </Link>
         )}
       </>

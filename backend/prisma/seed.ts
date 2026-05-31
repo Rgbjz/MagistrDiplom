@@ -12,6 +12,7 @@ async function main() {
       email: 'teacher@example.com',
       password: passwordHash,
       role: 'TEACHER',
+      emailVerified: true,
       profile: { create: { firstName: 'Tessa', lastName: 'Teacher' } },
     },
   })
@@ -22,6 +23,7 @@ async function main() {
       email: 'student1@example.com',
       password: passwordHash,
       role: 'STUDENT',
+      emailVerified: true,
       profile: { create: { firstName: 'Sam', lastName: 'Student' } },
     },
   })
@@ -31,6 +33,7 @@ async function main() {
       email: 'student2@example.com',
       password: passwordHash,
       role: 'STUDENT',
+      emailVerified: true,
       profile: { create: { firstName: 'Sara', lastName: 'Scholar' } },
     },
   })

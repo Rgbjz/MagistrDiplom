@@ -1,0 +1,35 @@
+# Local development services: PostgreSQL + Redis.
+#   docker compose up -d
+#   backend/.env: DATABASE_URL=postgresql://lms:lms@localhost:5432/lms
+#                 REDIS_URL=redis://localhost:6379
+# (The local demo used during development runs its own temporary Postgres on
+#  port 5544 and Redis on 6390 instead; this file is the reproducible setup.)
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: lms
+      POSTGRES_PASSWORD: lms
+      POSTGRES_DB: lms
+    ports:
+      - "5432:5432"
+    volumes:
+      - lms-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lms"]
+      interval: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    # noeviction: BullMQ job keys must never be evicted.
+    command: ["redis-server", "--maxmemory-policy", "noeviction"]
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 10
+
+volumes:
+  lms-postgres:

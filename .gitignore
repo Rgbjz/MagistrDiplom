@@ -80,8 +80,17 @@ backend/src/public
 # Backend uploaded files (keep dirs via .gitkeep)
 backend/public/avatars/*
 backend/public/courses/*
+backend/public/lessons/*
+backend/public/videos/*
+backend/public/submissions/*
 !backend/public/avatars/.gitkeep
 !backend/public/courses/.gitkeep
+!backend/public/lessons/.gitkeep
+!backend/public/videos/.gitkeep
+!backend/public/submissions/.gitkeep
 
 # Brainstorm visual-companion artifacts
 .superpowers/
+
+# Lesson video sources, upload chunks and HLS outputs (local storage mode)
+backend/private/

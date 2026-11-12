@@ -1,0 +1,64 @@
+# Render Blueprint: Dashboard → New → Blueprint → select this repository.
+services:
+  - type: web
+    name: lms-backend
+    runtime: docker
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: frankfurt
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false # Neon direct connection string with sslmode=require
+      - key: JWT_ACCESS_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: JWT_ACCESS_EXPIRES_IN
+        value: 15m
+      - key: JWT_REFRESH_EXPIRES_IN
+        value: 30d
+      - key: FRONTEND_URL
+        sync: false # https://<project>.vercel.app (comma-separated list allowed)
+      - key: APP_URL
+        sync: false # https://<project>.vercel.app — used in email links
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: "465"
+      - key: SMTP_SECURE
+        value: "true"
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: MAIL_FROM
+        sync: false
+      - key: BLOB_READ_WRITE_TOKEN
+        sync: false
+      - key: API_PUBLIC_URL
+        sync: false # https://<service>.onrender.com/api — signed file links
+      - key: FILES_SIGNING_SECRET
+        generateValue: true
+      # Redis for Socket.IO rooms across instances, call state, rate limits
+      # and BullMQ jobs. Wired from the Key Value instance below; for the
+      # diploma one free web instance with the in-process worker is enough.
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: lms-redis
+          property: connectionString
+      - key: WORKER_ENABLED
+        value: "true"
+
+  # Redis-compatible store. Alternative: Upstash Redis (free tier) — delete
+  # this block and set REDIS_URL (rediss://…) on lms-backend manually.
+  - type: keyvalue
+    name: lms-redis
+    plan: free
+    region: frankfurt
+    maxmemoryPolicy: noeviction # BullMQ must not lose job keys
+    ipAllowList: [] # only services in this Render account can connect

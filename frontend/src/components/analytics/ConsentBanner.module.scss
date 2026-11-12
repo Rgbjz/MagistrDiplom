@@ -1,0 +1,42 @@
+.banner {
+  position: fixed;
+  left: var(--space-4);
+  right: var(--space-4);
+  bottom: var(--space-4);
+  z-index: 70;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: var(--space-4);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow-lg);
+}
+
+.text {
+  flex: 1 1 280px;
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+
+  a {
+    color: var(--color-primary);
+    font-weight: 600;
+  }
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+/* Sit above the mobile tab bar. */
+@media (max-width: 767px) {
+  .banner {
+    bottom: calc(76px + env(safe-area-inset-bottom));
+  }
+}

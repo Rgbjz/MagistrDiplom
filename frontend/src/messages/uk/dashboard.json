@@ -1,0 +1,102 @@
+{
+  "greeting": {
+    "night": "Доброї ночі",
+    "morning": "Доброго ранку",
+    "day": "Добрий день",
+    "evening": "Добрий вечір",
+    "title": "{greeting}, {name}"
+  },
+  "summary": {
+    "courses": "У вас {courses, plural, one {# незавершений курс} few {# незавершені курси} many {# незавершених курсів} other {# незавершеного курсу}}.",
+    "coursesAndTests": "У вас {courses, plural, one {# незавершений курс} few {# незавершені курси} many {# незавершених курсів} other {# незавершеного курсу}} і {tests, plural, one {# тест} few {# тести} many {# тестів} other {# тесту}} попереду.",
+    "empty": "Оберіть курс у каталозі, щоб почати навчання."
+  },
+  "findCourse": "Знайти курс",
+  "stats": {
+    "label": "Статистика",
+    "enrolled": "Активні курси",
+    "completed": "{count, plural, one {Курс завершено} few {Курси завершено} many {Курсів завершено} other {Курсу завершено}}",
+    "lessonsCompleted": "Уроків пройдено",
+    "avgScore": "Середній бал тестів"
+  },
+  "continue": {
+    "title": "Продовжити навчання",
+    "allCourses": "Усі мої курси",
+    "empty": "Немає курсів у процесі",
+    "toCatalog": "Перейти до каталогу",
+    "passed": "Пройдено {done}/{total, plural, one {# уроку} few {# уроків} many {# уроків} other {# уроку}}",
+    "next": "Далі: {title}",
+    "progressLabel": "Прогрес курсу",
+    "continue": "Продовжити",
+    "start": "Почати"
+  },
+  "upcoming": {
+    "title": "Найближче",
+    "empty": "Нових тестів, завдань і повідомлень немає.",
+    "testMeta": "{course} · {count, plural, one {# питання} few {# питання} many {# питань} other {# питання}} · {minutes} хв",
+    "assignment": "Завдання «{title}»",
+    "submitted": " · здано, чекає перевірки",
+    "returned": " · повернуто на доопрацювання",
+    "courseChat": "Чат курсу «{title}»",
+    "noMessages": "Повідомлень ще немає",
+    "calendarLink": "Календар"
+  },
+  "suggestions": {
+    "title": "Може зацікавити",
+    "allCatalog": "Увесь каталог"
+  },
+  "myCourses": {
+    "title": "Мої курси",
+    "subtitle": "Усі курси, на які ви записані або подали заявку.",
+    "sort": {
+      "label": "Сортувати",
+      "activity": "За останньою активністю",
+      "progress": "За прогресом",
+      "title": "За назвою"
+    },
+    "tabs": {
+      "label": "Статус курсів",
+      "active": "Активні",
+      "pending": "Очікують підтвердження",
+      "completed": "Завершені"
+    },
+    "loadError": "Не вдалося завантажити курси",
+    "loadErrorHint": "Перевірте зʼєднання та оновіть сторінку.",
+    "empty": {
+      "active": "У вас немає активних курсів",
+      "pending": "Немає заявок на розгляді",
+      "completed": "Ви ще не завершили жодного курсу"
+    },
+    "toCatalog": "Перейти до каталогу",
+    "lessonsMeta": "{teacher} · {done} з {total, plural, one {# уроку} few {# уроків} many {# уроків} other {# уроку}}",
+    "next": "Далі: <b>{title}</b>",
+    "firstLesson": "Перший урок: <b>{title}</b>",
+    "lastActivity": "Остання активність: {when}",
+    "enrolledAt": "Записано: {date}",
+    "continue": "Продовжити",
+    "start": "Почати навчання",
+    "myGrades": "Мої оцінки",
+    "requestedAt": "{teacher} · заявку подано {date}",
+    "rejected": "Заявку відхилено",
+    "pendingBadge": "Заявка на розгляді у викладача",
+    "rejectedHint": "Викладач відхилив заявку. Ви можете написати йому в чаті або обрати інший курс.",
+    "pendingHint": "Щойно викладач підтвердить заявку, курс зʼявиться в активних, а ви отримаєте сповіщення.",
+    "coursePage": "Сторінка курсу",
+    "certificateError": "Не вдалося отримати сертифікат",
+    "completedAt": "{teacher} · завершено {date}",
+    "completedBadge": "Завершено · 100%",
+    "avgScore": "Середній бал {score}%",
+    "certificate": "Сертифікат",
+    "getCertificate": "Отримати сертифікат",
+    "view": "Переглянути"
+  },
+  "assisting": {
+    "title": "Курси, де я асистент",
+    "open": "Керування курсом",
+    "role": {
+      "OWNER": "Власник",
+      "TEACHER": "Викладач",
+      "ASSISTANT": "Асистент"
+    }
+  }
+}

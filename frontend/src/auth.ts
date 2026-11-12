@@ -1,9 +1,24 @@
-import NextAuth from 'next-auth';
+import NextAuth, { CredentialsSignin } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import type { JWT } from 'next-auth/jwt';
 import type { Role } from './lib/types';
+import { API_URL } from './lib/env';
 
-const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000/api';
+const API = API_URL;
+
+// Login failures the UI needs to tell apart; `code` reaches signIn()'s result.
+class EmailNotConfirmed extends CredentialsSignin {
+  code = 'email_not_confirmed';
+}
+class AccountBlocked extends CredentialsSignin {
+  code = 'account_blocked';
+}
+class AccountLocked extends CredentialsSignin {
+  code = 'account_locked';
+}
+class RateLimited extends CredentialsSignin {
+  code = 'rate_limited';
+}
 
 // Decode a JWT's `exp` (seconds) into epoch milliseconds; fallback +15m.
 function accessTokenExpiry(jwt: string): number {
@@ -60,15 +75,30 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
     Credentials({
       credentials: { email: {}, password: {} },
-      async authorize(credentials) {
+      async authorize(credentials, request) {
+        // Login runs on the Next server, so forward the browser's identity
+        // for the "active sessions" list.
+        const userAgent = request?.headers?.get('user-agent');
+        const forwardedFor = request?.headers?.get('x-forwarded-for');
         const res = await fetch(`${API}/auth/login`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            ...(userAgent ? { 'x-client-user-agent': userAgent } : {}),
+            ...(forwardedFor ? { 'x-forwarded-for': forwardedFor } : {}),
+          },
           body: JSON.stringify({
             email: credentials?.email,
             password: credentials?.password,
           }),
         });
+        if (res.status === 423) throw new AccountLocked();
+        if (res.status === 429) throw new RateLimited();
+        if (res.status === 403) {
+          const body = await res.text();
+          if (/blocked/i.test(body)) throw new AccountBlocked();
+          throw new EmailNotConfirmed();
+        }
         if (!res.ok) return null;
         const data = (await res.json()) as {
           user: { id: number; email: string; role: Role };
@@ -115,6 +145,23 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       session.accessToken = token.accessToken as string;
       session.error = token.error as string | undefined;
       return session;
+    },
+  },
+  events: {
+    // signOut() only clears the NextAuth cookie; also revoke the backend
+    // session so the stored refresh token can't be used again.
+    async signOut(message) {
+      const token = 'token' in message ? message.token : null;
+      const refreshToken = token?.refreshToken as string | undefined;
+      if (!refreshToken) return;
+      try {
+        await fetch(`${API}/auth/logout`, {
+          method: 'POST',
+          headers: { Cookie: `refreshToken=${refreshToken}` },
+        });
+      } catch {
+        // The backend may be asleep; the session still expires on its own.
+      }
     },
   },
 });

@@ -1,8 +1,9 @@
 'use client';
 
 import { getSession } from 'next-auth/react';
+import { API_URL } from '../env';
 
-const BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000/api';
+const BASE = API_URL;
 
 export async function clientApi<T>(
   path: string,

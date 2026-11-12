@@ -1,14 +1,125 @@
+.saved {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-success-text);
+  padding-right: var(--space-2);
+}
+
+.tabsRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+
+  > div:first-child {
+    border-bottom: 0;
+  }
+}
+
+.tabLinks {
+  display: flex;
+  gap: var(--space-4);
+  padding-bottom: 12px;
+  font-size: var(--fs-sm);
+  font-weight: 500;
+
+  a {
+    color: var(--color-text-muted);
+    text-decoration: none;
+
+    &:hover {
+      color: var(--color-text);
+    }
+  }
+}
+
 .builder {
-  display: grid;
-  grid-template-columns: 320px 1fr;
-  min-height: calc(100vh - 64px - 48px - 48px);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-5);
+  align-items: flex-start;
 }
 
 .right {
-  padding: 24px;
-  overflow-y: auto;
+  flex: 999 1 560px;
+  min-width: 0;
 }
 
-.state {
-  padding: 24px;
+.settings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-5);
+  align-items: flex-start;
+}
+
+.settingsCard {
+  flex: 999 1 520px;
+  min-width: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.settingsTitle {
+  font-size: var(--fs-lg);
+  font-weight: 700;
+}
+
+.settingsFooter {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+
+.settingsPreview {
+  flex: 1 1 300px;
+  max-width: 400px;
+}
+
+.publishProblems {
+  margin-bottom: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-warning-text);
+  border-radius: var(--radius-lg, 12px);
+  background: var(--color-warning-soft);
+  color: var(--color-text);
+
+  ul {
+    margin: var(--space-2) 0 0;
+    padding-left: var(--space-5, 20px);
+  }
+
+  li + li {
+    margin-top: 4px;
+  }
+}
+
+.publishProblemsTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  font-weight: 600;
+  color: var(--color-warning-text);
+}
+
+.problemLink {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--color-primary);
+  text-decoration: underline;
+  cursor: pointer;
 }

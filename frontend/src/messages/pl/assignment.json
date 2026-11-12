@@ -1,0 +1,49 @@
+{
+  "status": {
+    "graded": "Sprawdzono {score}/{max}",
+    "returned": "Zwrócono do poprawy",
+    "submitted": "Oddano",
+    "late": "po terminie"
+  },
+  "viewer": {
+    "loadError": "Nie udało się wczytać zadania.",
+    "eyebrow": "Zadanie praktyczne · {lesson}",
+    "dueTerm": "Termin",
+    "dueAt": "Do {date}",
+    "noDue": "Bez terminu",
+    "maxScoreTerm": "Maksymalna liczba punktów",
+    "maxScore": "Maksymalnie {count, plural, one {# punkt} few {# punkty} many {# punktów} other {# punktu}}",
+    "filesTerm": "Pliki",
+    "maxFiles": "{count, plural, one {Do # pliku} few {Do # plików} many {Do # plików} other {Do # pliku}}",
+    "next": "Dalej"
+  },
+  "student": {
+    "title": "Moja praca",
+    "submittedAt": "Oddano {date}",
+    "teacherComment": "Komentarz prowadzącego",
+    "locked": "Praca została oceniona. Nie można jej oddać ponownie.",
+    "drop": "<strong>Przeciągnij pliki tutaj</strong> lub kliknij, aby wybrać",
+    "dropHint": "{count, plural, one {do # pliku} few {do # plików} many {do # plików} other {do # pliku}}, każdy do {size}",
+    "filesInput": "Pliki pracy",
+    "selected": "Wybrane pliki",
+    "remove": "Usuń {name}",
+    "comment": "Komentarz do pracy",
+    "optional": "Opcjonalnie",
+    "uploading": "Przesyłanie pracy",
+    "resubmit": "Oddaj ponownie",
+    "submit": "Oddaj pracę",
+    "replaceHint": "Nowe pliki zastąpią poprzednie, dopóki praca nie zostanie sprawdzona.",
+    "unsupported": "„{name}”: ten typ pliku nie jest obsługiwany",
+    "tooLarge": "„{name}” jest większy niż {size}",
+    "tooMany": "{count, plural, one {Można dodać najwyżej # plik} few {Można dodać najwyżej # pliki} many {Można dodać najwyżej # plików} other {Można dodać najwyżej # pliku}}",
+    "atLeastOne": "Dodaj co najmniej jeden plik",
+    "resubmitted": "Praca oddana ponownie",
+    "submittedToast": "Praca oddana",
+    "submitError": "Nie udało się oddać pracy"
+  },
+  "teacher": {
+    "label": "Oddane prace",
+    "summary": "Oddane prace: <strong>{total}</strong>, czekają na sprawdzenie: <strong>{pending}</strong>.",
+    "review": "Sprawdź prace"
+  }
+}

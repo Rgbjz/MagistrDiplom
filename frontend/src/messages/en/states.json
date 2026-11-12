@@ -1,0 +1,24 @@
+{
+  "forbidden": {
+    "title": "Access denied",
+    "text": "You don’t have permission to view this page."
+  },
+  "network": {
+    "title": "No connection",
+    "text": "Couldn’t load the data. Check your internet connection."
+  },
+  "noResults": {
+    "title": "Nothing found",
+    "query": "Nothing matches “{query}”. ",
+    "hint": "Try another word or reset the filters.",
+    "reset": "Reset filters"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "text": "The link may be outdated or the course was removed."
+  },
+  "error": {
+    "title": "Something went wrong",
+    "text": "We couldn’t show this page. Try again or go back home."
+  }
+}

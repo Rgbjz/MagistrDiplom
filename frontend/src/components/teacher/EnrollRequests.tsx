@@ -1,75 +1,103 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Inbox } from 'lucide-react';
 import { clientApi } from '../../lib/api/client';
+import { useTranslations } from 'next-intl';
+import { displayName, fileUrl } from '../../lib/format';
+import { useApiErrorMessage } from '../../i18n/format';
 import type { EnrollRequest } from '../../lib/types';
+import { Avatar, Button, EmptyState, Skeleton, useToast } from '../ui';
 import styles from './EnrollRequests.module.scss';
 
-export function EnrollRequests({ courseId }: { courseId: number }) {
+/** Pending enrollment requests of one course with approve / reject. */
+export function EnrollRequests({
+  courseId,
+  variant = 'list',
+}: {
+  courseId: number;
+  /** "strip" = compact highlighted block above the students table. */
+  variant?: 'list' | 'strip';
+}) {
   const queryClient = useQueryClient();
-  const { data: requests } = useQuery<EnrollRequest[]>({
+  const toast = useToast();
+  const t = useTranslations('manage.requests');
+  const errorText = useApiErrorMessage();
+  const { data: requests, isLoading } = useQuery<EnrollRequest[]>({
     queryKey: ['enrollRequests', courseId],
     queryFn: () =>
-      clientApi<EnrollRequest[]>(
-        `/courses/${courseId}/enrollments?status=PENDING`,
-      ),
+      clientApi<EnrollRequest[]>(`/courses/${courseId}/enrollments?status=PENDING`),
   });
 
   const invalidate = () => {
     queryClient.invalidateQueries({ queryKey: ['enrollRequests', courseId] });
     queryClient.invalidateQueries({ queryKey: ['studentsProgress', courseId] });
+    queryClient.invalidateQueries({ queryKey: ['dashboard'] });
   };
 
-  const approve = useMutation({
-    mutationFn: (userId: number) =>
-      clientApi(`/courses/${courseId}/enroll/${userId}/approve`, {
-        method: 'POST',
-      }),
-    onSuccess: invalidate,
-  });
-  const reject = useMutation({
-    mutationFn: (userId: number) =>
-      clientApi(`/courses/${courseId}/enroll/${userId}/reject`, {
-        method: 'POST',
-      }),
-    onSuccess: invalidate,
+  const decide = useMutation({
+    mutationFn: ({ userId, action }: { userId: number; action: 'approve' | 'reject'; name: string }) =>
+      clientApi(`/courses/${courseId}/enroll/${userId}/${action}`, { method: 'POST' }),
+    onSuccess: (_d, { action, name }) => {
+      toast(action === 'approve' ? t('approved', { name }) : t('rejected', { name }));
+      invalidate();
+    },
+    onError: (e) => toast(errorText(e), 'error'),
   });
 
-  if (!requests) return <p className={styles.muted}>Loading…</p>;
-  if (requests.length === 0)
-    return <p className={styles.muted}>No pending requests.</p>;
+  if (isLoading) return <Skeleton height={variant === 'strip' ? 72 : 160} radius="var(--radius-lg)" />;
+  const list = requests ?? [];
+  if (list.length === 0) {
+    return variant === 'strip' ? null : (
+      <EmptyState icon={<Inbox size={40} />} title={t('emptyTitle')}>
+        <p className={styles.muted}>{t('emptyHint')}</p>
+      </EmptyState>
+    );
+  }
 
   return (
-    <div className={styles.list}>
-      {requests.map((r) => {
-        const p = r.student.profile;
-        const name =
-          p && (p.firstName || p.lastName)
-            ? `${p.firstName ?? ''} ${p.lastName ?? ''}`.trim()
-            : r.student.email;
-        return (
-          <div key={r.id} className={styles.card}>
-            <div>
-              <div className={styles.name}>{name}</div>
-              <div className={styles.email}>{r.student.email}</div>
-            </div>
-            <div className={styles.actions}>
-              <button
-                className={styles.approve}
-                onClick={() => approve.mutate(r.userId)}
-              >
-                Approve
-              </button>
-              <button
-                className={styles.reject}
-                onClick={() => reject.mutate(r.userId)}
-              >
-                Reject
-              </button>
-            </div>
-          </div>
-        );
-      })}
-    </div>
+    <section
+      className={`${styles.wrap} ${variant === 'strip' ? styles.strip : ''}`}
+      aria-label={t('ariaLabel')}
+    >
+      {variant === 'strip' && (
+        <h2 className={styles.stripTitle}>{t('waiting', { count: list.length })}</h2>
+      )}
+      <ul className={styles.list}>
+        {list.map((r) => {
+          const name = displayName(r.student.profile, r.student.email);
+          return (
+            <li key={r.id} className={styles.item}>
+              <div className={styles.person}>
+                <Avatar src={fileUrl(r.student.profile?.avatarUrl)} name={name} size={40} />
+                <div className={styles.text}>
+                  <span className={styles.name}>{name}</span>
+                  <span className={styles.email}>{r.student.email}</span>
+                </div>
+              </div>
+              <div className={styles.actions}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  disabled={decide.isPending}
+                  aria-label={t('rejectAria', { name })}
+                  onClick={() => decide.mutate({ userId: r.userId, action: 'reject', name })}
+                >
+                  {t('reject')}
+                </Button>
+                <Button
+                  size="sm"
+                  disabled={decide.isPending}
+                  aria-label={t('approveAria', { name })}
+                  onClick={() => decide.mutate({ userId: r.userId, action: 'approve', name })}
+                >
+                  {t('approve')}
+                </Button>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
   );
 }

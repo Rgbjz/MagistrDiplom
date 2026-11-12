@@ -1,0 +1,24 @@
+{
+  "forbidden": {
+    "title": "Brak dostępu",
+    "text": "Nie masz uprawnień do przeglądania tej strony."
+  },
+  "network": {
+    "title": "Brak połączenia",
+    "text": "Nie udało się załadować danych. Sprawdź połączenie z internetem."
+  },
+  "noResults": {
+    "title": "Nic nie znaleziono",
+    "query": "Brak wyników dla „{query}”. ",
+    "hint": "Spróbuj innego słowa lub wyczyść filtry.",
+    "reset": "Wyczyść filtry"
+  },
+  "notFound": {
+    "title": "Nie znaleziono strony",
+    "text": "Link mógł wygasnąć albo kurs został usunięty."
+  },
+  "error": {
+    "title": "Coś poszło nie tak",
+    "text": "Nie udało się wyświetlić strony. Spróbuj ponownie albo wróć na stronę główną."
+  }
+}

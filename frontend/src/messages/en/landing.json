@@ -1,0 +1,52 @@
+{
+  "metaFallback": "Course",
+  "levelBadge": "{level} level",
+  "free": "Free",
+  "teacherRole": "Course teacher",
+  "facts": {
+    "sections": "Sections",
+    "lessons": "Lessons",
+    "tests": "Tests",
+    "access": "Access",
+    "forever": "Lifetime"
+  },
+  "priceAria": "Course price",
+  "oneTime": "one-time payment",
+  "includes": {
+    "lessons": "{count, plural, one {# lesson} other {# lessons}} with materials",
+    "tests": "{count, plural, one {# test} other {# tests}} with instant results",
+    "chat": "Chat with the teacher and the group",
+    "certificate": "Certificate on completion",
+    "mobile": "Works on your phone"
+  },
+  "programTitle": "Syllabus",
+  "programEmpty": "The teacher is still filling in the syllabus.",
+  "sectionLessons": "{count, plural, one {# lesson} other {# lessons}}",
+  "sectionTests": "{count, plural, one {# test} other {# tests}}",
+  "testTag": "test",
+  "aboutTeacher": "About the teacher",
+  "backToCatalog": "← Back to the catalogue",
+  "cta": {
+    "buy": "Buy the course",
+    "enroll": "Enrol in the course",
+    "hasAccount": "Already have an account?",
+    "login": "Sign in",
+    "notStudent": "Only students can enrol in courses. You’re viewing this page as {role}.",
+    "roleAdmin": "an administrator",
+    "roleTeacher": "a teacher",
+    "goToCourse": "Go to the course",
+    "alreadyOwned": "The course is already in your dashboard.",
+    "requestSent": "Request sent",
+    "requestPending": "The teacher will review your request soon.",
+    "buyFor": "Buy for {price}",
+    "afterPayment": "The course appears in your dashboard right after payment",
+    "startLearning": "Start learning",
+    "sendRequest": "Send a request",
+    "rejectedNote": "Your previous request was declined — you can send another one.",
+    "instantAccess": "Access opens immediately.",
+    "approvalAccess": "Access opens once the teacher approves you.",
+    "enrolledToast": "You’re enrolled in the course",
+    "requestToast": "Request sent to the teacher",
+    "enrollFailed": "Couldn’t enrol in the course"
+  }
+}

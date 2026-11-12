@@ -1,0 +1,70 @@
+{
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "close": "Close",
+    "retry": "Try again",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "edit": "Edit",
+    "search": "Search",
+    "open": "Open",
+    "download": "Download",
+    "send": "Send",
+    "apply": "Apply",
+    "reset": "Reset",
+    "continue": "Continue",
+    "toHome": "Go home",
+    "toCatalog": "Browse courses"
+  },
+  "loading": "Loading…",
+  "price": {
+    "free": "Free",
+    "amount": "₴{amount}"
+  },
+  "role": {
+    "STUDENT": "Student",
+    "TEACHER": "Teacher",
+    "ADMIN": "Administrator"
+  },
+  "level": {
+    "BEGINNER": "Beginner",
+    "INTERMEDIATE": "Intermediate",
+    "ADVANCED": "Advanced"
+  },
+  "enrollment": {
+    "PENDING": "Pending",
+    "ACTIVE": "Active",
+    "REJECTED": "Rejected",
+    "COMPLETED": "Completed"
+  },
+  "time": {
+    "justNow": "just now",
+    "minutesAgo": "{count} min ago",
+    "hoursAgo": "{count} h ago",
+    "yesterday": "yesterday",
+    "daysAgo": "{count} days ago"
+  },
+  "count": {
+    "lessons": "{count, plural, one {# lesson} other {# lessons}}",
+    "students": "{count, plural, one {# student} other {# students}}",
+    "questions": "{count, plural, one {# question} other {# questions}}"
+  },
+  "deadline": {
+    "overdue": "Deadline passed",
+    "hoursLeft": "{count, plural, one {# hour} other {# hours}} left",
+    "daysLeft": "{count, plural, one {# day} other {# days}} left"
+  },
+  "test": {
+    "label": "Test “{title}”",
+    "short": "Test: {title}"
+  },
+  "progress": "Progress",
+  "a11y": {
+    "scrollTable": "Table, scrollable",
+    "messages": "Messages"
+  }
+}

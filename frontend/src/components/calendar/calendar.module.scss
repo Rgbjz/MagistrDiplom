@@ -1,0 +1,360 @@
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.monthNav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.monthTitle {
+  min-width: 170px;
+  text-align: center;
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.filter {
+  margin-left: auto;
+  min-width: 220px;
+}
+
+/* ---- month grid */
+.grid {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--color-surface);
+}
+
+.weekRow {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.weekRow + .weekRow {
+  border-top: 1px solid var(--color-border);
+}
+
+.weekday {
+  padding: 10px 8px;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+  background: var(--color-surface-2);
+}
+
+.cellWrap {
+  display: flex;
+  min-width: 0;
+
+  & + & {
+    border-left: 1px solid var(--color-border);
+  }
+}
+
+.cell {
+  flex: 1;
+  min-width: 0;
+  min-height: 112px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  border: 0;
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--color-surface-2);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: -2px;
+  }
+}
+
+.outside {
+  color: var(--color-text-muted);
+  background: color-mix(in srgb, var(--color-surface-2) 45%, transparent);
+}
+
+.selected {
+  box-shadow: inset 0 0 0 2px var(--color-primary);
+}
+
+.dayNum {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+.today .dayNum {
+  background: var(--color-primary-fill);
+  color: #ffffff;
+}
+
+.chips {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.chip {
+  display: block;
+  padding: 2px 6px;
+  border-radius: 6px;
+  border-left: 3px solid currentColor;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chipDone {
+  /* Strike-through + neutral colours instead of opacity, which dropped the
+     text below WCAG contrast. */
+  text-decoration: line-through;
+  color: var(--color-text-muted) !important;
+  background: var(--color-surface-2) !important;
+}
+
+.more {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  padding-left: 6px;
+}
+
+/* kind colours: text + tinted background (labels are always shown elsewhere) */
+.kindASSIGNMENT {
+  color: var(--color-warning-text);
+  background: var(--color-warning-soft);
+}
+
+.kindLECTURE {
+  color: var(--color-on-soft);
+  background: var(--color-primary-soft);
+}
+
+.kindONLINE_LESSON {
+  color: var(--color-success-text);
+  background: var(--color-success-soft);
+}
+
+.kindDEADLINE {
+  color: var(--color-danger-text);
+  background: var(--color-danger-soft);
+}
+
+.kindOTHER {
+  color: var(--color-text-muted);
+  background: var(--color-surface-2);
+}
+
+.legend {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  font-size: var(--fs-xs);
+  color: var(--color-text-muted);
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+}
+
+.swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  border-left: 3px solid currentColor;
+}
+
+/* ---- day panel & agenda */
+.dayPanel,
+.agendaDay {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.dayTitle,
+.agendaDate {
+  font-size: var(--fs-md);
+  font-weight: 700;
+  text-transform: capitalize;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.agendaToday {
+  color: var(--color-primary);
+}
+
+.todayTag {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  text-transform: none;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--color-primary-soft);
+  color: var(--color-on-soft);
+}
+
+.agenda {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.item {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  padding: 12px 14px;
+  border: 1px solid var(--color-border);
+  border-left-width: 4px;
+  border-left-color: currentColor;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.itemTime {
+  flex: 0 0 auto;
+  min-width: 48px;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.itemBody {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--color-text);
+}
+
+.itemHead {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.itemTitle {
+  font-weight: 600;
+  color: var(--color-text);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--color-primary);
+    text-decoration: underline;
+  }
+}
+
+.itemCourse,
+.muted,
+.hint {
+  font-size: var(--fs-sm);
+  color: var(--color-text-muted);
+}
+
+.hint {
+  font-size: var(--fs-xs);
+}
+
+.itemDesc {
+  font-size: var(--fs-sm);
+  color: var(--color-text);
+  white-space: pre-line;
+}
+
+.itemActions {
+  display: flex;
+  gap: 4px;
+  color: var(--color-text-muted);
+}
+
+/* ---- forms */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-3);
+}
+
+.copyRow {
+  display: flex;
+  gap: var(--space-2);
+
+  input {
+    flex: 1;
+    min-width: 0;
+    font-family: ui-monospace, Menlo, monospace;
+    font-size: var(--fs-xs);
+  }
+}
+
+@media (max-width: 767px) {
+  .filter {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .cell {
+    min-height: 64px;
+    padding: 4px;
+  }
+
+  .chip {
+    font-size: 0;
+    height: 6px;
+    padding: 0;
+    border-left-width: 0;
+    border-radius: 999px;
+    background: currentColor;
+  }
+
+  .more {
+    display: none;
+  }
+}

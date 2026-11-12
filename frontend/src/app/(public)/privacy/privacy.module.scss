@@ -1,0 +1,22 @@
+.article {
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  line-height: 1.7;
+
+  h1 {
+    font-size: var(--fs-2xl);
+    letter-spacing: -0.02em;
+    margin-bottom: var(--space-2);
+  }
+
+  h2 {
+    font-size: var(--fs-lg);
+    margin-top: var(--space-4);
+  }
+
+  p {
+    color: var(--color-text-muted);
+  }
+}

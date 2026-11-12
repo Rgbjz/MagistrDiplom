@@ -1,49 +1,146 @@
 .lesson {
-  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
 }
 
-.title {
-  font-size: 24px;
-  margin-bottom: 16px;
-}
-
-.videoWrapper {
+.video {
   position: relative;
-  padding-bottom: 56.25%;
-  height: 0;
-  margin-bottom: 16px;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: #0f172a;
 
   iframe,
-  :global(#yt-player) {
+  video {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
     border: 0;
-    border-radius: 8px;
   }
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.eyebrow {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.title {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 .content {
-  font-size: 15px;
-  line-height: 1.6;
+  max-width: 760px;
+  font-size: 16px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+
+  :global(p),
+  :global(ul),
+  :global(ol),
+  :global(pre),
+  :global(blockquote) {
+    margin-bottom: 14px;
+  }
+
+  :global(ul),
+  :global(ol) {
+    padding-left: 22px;
+  }
+
+  :global(h1),
+  :global(h2),
+  :global(h3) {
+    margin: 18px 0 8px;
+    font-size: 19px;
+    font-weight: 700;
+  }
+
+  :global(code) {
+    font-size: 14px;
+    padding: 2px 6px;
+    border-radius: 6px;
+    background: var(--color-surface-2);
+  }
+
+  :global(pre) {
+    padding: 14px;
+    border-radius: var(--radius-md);
+    background: var(--color-surface-2);
+    overflow-x: auto;
+  }
+
+  :global(pre) :global(code) {
+    padding: 0;
+    background: none;
+  }
+
+  :global(img) {
+    max-width: 100%;
+    border-radius: var(--radius-md);
+  }
+
+  :global(a) {
+    color: var(--color-primary);
+  }
 }
 
-.completeBtn {
-  margin-top: 20px;
-  background: #22c55e;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 10px 18px;
-  font-size: 14px;
-  cursor: pointer;
+.muted {
+  color: var(--color-text-muted);
+}
 
-  &:hover {
-    background: #16a34a;
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-border);
+}
+
+.navLabel {
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 767px) {
+  .video {
+    border-radius: 0;
+    margin: 0 calc(-1 * var(--space-4));
+    width: calc(100% + 2 * var(--space-4));
   }
 
-  &:disabled {
-    background: #86efac;
+  .title {
+    font-size: 22px;
   }
+
+  .navLabel {
+    display: none;
+  }
+}
+
+.files {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-width: 760px;
+}
+
+.filesTitle {
+  font-size: var(--fs-lg);
+  font-weight: 700;
 }

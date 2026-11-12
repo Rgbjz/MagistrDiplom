@@ -1,105 +1,220 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useMutation } from '@tanstack/react-query';
-import { clientApi } from '../../../../../lib/api/client';
-import type { CourseListItem } from '../../../../../lib/types';
-import styles from './create-course.module.scss';
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Check } from "lucide-react";
+import { clientApi } from "../../../../../lib/api/client";
+import { useTranslations } from "next-intl";
+import { displayName } from "../../../../../lib/format";
+import {
+  useApiErrorMessage,
+  useFormat,
+  useLabels,
+} from "../../../../../i18n/format";
+import type { CourseListItem, Me } from "../../../../../lib/types";
+import { Button, PageHeader, useToast } from "../../../../../components/ui";
+import {
+  BasicFields,
+  CardPreview,
+  CoverPriceFields,
+  useCategoryLabel,
+} from "../../../../../components/teacher/course-form/CourseFields";
+import {
+  EMPTY_COURSE_FORM,
+  priceOf,
+  toFormData,
+  validateCourse,
+  type CourseFormState,
+} from "../../../../../components/teacher/course-form/courseForm";
+import styles from "./create-course.module.scss";
+
+const STEPS = ["basic", "cover", "publish"] as const;
 
 export function CreateCourseForm() {
   const router = useRouter();
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [image, setImage] = useState<File | null>(null);
-  const [price, setPrice] = useState('0');
-  const [preview, setPreview] = useState<string | null>(null);
+  const toast = useToast();
+  const t = useTranslations("teacher.create");
+  const tf = useTranslations("teacher.courseForm");
+  const errorText = useApiErrorMessage();
+  const f = useFormat();
+  const labels = useLabels();
+  const categoryLabel = useCategoryLabel();
+  const queryClient = useQueryClient();
+  const { data: session } = useSession();
+  const { data: me } = useQuery({
+    queryKey: ["me"],
+    queryFn: () => clientApi<Me>("/users/me"),
+  });
+  const [step, setStep] = useState(0);
+  const [form, setForm] = useState<CourseFormState>(EMPTY_COURSE_FORM);
+  const [showErrors, setShowErrors] = useState(false);
 
-  useEffect(() => {
-    return () => {
-      if (preview) URL.revokeObjectURL(preview);
-    };
-  }, [preview]);
+  // Release the object URL of a picked cover when leaving the page.
+  useEffect(
+    () => () => {
+      if (form.image && form.imagePreview)
+        URL.revokeObjectURL(form.imagePreview);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
 
-  const mutation = useMutation({
-    mutationFn: (fd: FormData) =>
-      clientApi<CourseListItem>('/courses', { method: 'POST', body: fd }),
-    onSuccess: (course) => {
+  const teacherName = displayName(me?.profile, session?.user?.email ?? "");
+  const stepErrors = validateCourse(
+    form,
+    step === 0 ? "basic" : step === 1 ? "pricing" : "all",
+  );
+
+  const create = useMutation({
+    mutationFn: (publish: boolean) =>
+      clientApi<CourseListItem>("/courses", {
+        method: "POST",
+        body: toFormData(form, { published: String(publish) }),
+      }),
+    onSuccess: (course, publish) => {
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      toast(publish ? t("published") : t("draftCreated"));
       router.push(`/teacher/courses/${course.id}/builder`);
     },
+    onError: (e) => toast(errorText(e, t("failed")), "error"),
   });
 
-  function submit() {
-    if (!title.trim()) return;
-    const fd = new FormData();
-    fd.append('title', title);
-    fd.append('description', description);
-    fd.append('price', String(Number(price) || 0));
-    if (image) fd.append('image', image);
-    mutation.mutate(fd);
+  function next() {
+    if (Object.keys(stepErrors).length) {
+      setShowErrors(true);
+      return;
+    }
+    setShowErrors(false);
+    setStep((s) => Math.min(STEPS.length - 1, s + 1));
   }
 
   return (
-    <div className={styles.wrapper}>
-      <div className={styles.card}>
-        <h1>Create course</h1>
-        <div className={styles.field}>
-          <label>Title</label>
-          <input value={title} onChange={(e) => setTitle(e.target.value)} />
-        </div>
-        <div className={styles.field}>
-          <label>Description</label>
-          <textarea
-            rows={4}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </div>
-        <div className={styles.field}>
-          <label>Price ($, 0 = free)</label>
-          <input
-            type="number"
-            min={0}
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-          />
-        </div>
-        <div className={styles.field}>
-          <label>Image</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => {
-              const file = e.target.files?.[0] ?? null;
-              setImage(file);
-              if (preview) URL.revokeObjectURL(preview);
-              setPreview(file ? URL.createObjectURL(file) : null);
-            }}
-          />
-        </div>
-        <button
-          className={styles.button}
-          onClick={submit}
-          disabled={mutation.isPending || !title.trim()}
-        >
-          {mutation.isPending ? 'Creating…' : 'Create'}
-        </button>
-      </div>
+    <div className="container">
+      <PageHeader
+        eyebrow={
+          <span>
+            <Link href="/">{t("breadcrumbCourses")}</Link> /{" "}
+            {t("breadcrumbNew")}
+          </span>
+        }
+        title={t("title")}
+      />
 
-      <div className={styles.card}>
-        <h3>Preview</h3>
-        <div className={styles.previewImage}>
-          {preview ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={preview} alt="preview" />
-          ) : (
-            'No image'
+      <ol className={styles.stepper} aria-label={t("stepsAria")}>
+        {STEPS.map((label, i) => (
+          <li
+            key={label}
+            className={`${styles.step} ${i === step ? styles.stepActive : ""} ${i < step ? styles.stepDone : ""}`}
+            aria-current={i === step ? "step" : undefined}
+          >
+            <span className={styles.stepNum}>
+              {i < step ? <Check size={16} aria-hidden="true" /> : i + 1}
+            </span>
+            {t(`steps.${label}`)}
+          </li>
+        ))}
+      </ol>
+
+      <div className={styles.layout}>
+        <section className={styles.formCard} aria-labelledby="step-title">
+          <h2 id="step-title" className={styles.stepTitle}>
+            {step + 1}. {t(`steps.${STEPS[step]}`)}
+          </h2>
+
+          {step === 0 && (
+            <BasicFields
+              form={form}
+              setForm={setForm}
+              errors={showErrors ? stepErrors : {}}
+            />
           )}
-        </div>
-        <div className={styles.previewContent}>
-          <h3>{title || 'Course title'}</h3>
-          <p>{description || 'Course description'}</p>
-        </div>
+          {step === 1 && (
+            <CoverPriceFields
+              form={form}
+              setForm={setForm}
+              errors={showErrors ? stepErrors : {}}
+            />
+          )}
+          {step === 2 && (
+            <>
+              <dl className={styles.summary}>
+                <div>
+                  <dt>{t("summary.title")}</dt>
+                  <dd>{form.title}</dd>
+                </div>
+                <div>
+                  <dt>{t("summary.categoryLevel")}</dt>
+                  <dd>
+                    {[
+                      form.category && categoryLabel(form.category),
+                      form.level && labels.level(form.level),
+                    ]
+                      .filter(Boolean)
+                      .join(" · ") || t("summary.notSpecified")}
+                  </dd>
+                </div>
+                <div>
+                  <dt>{t("summary.price")}</dt>
+                  <dd>{f.price(priceOf(form))}</dd>
+                </div>
+                <div>
+                  <dt>{t("summary.enrollment")}</dt>
+                  <dd>
+                    {form.paid
+                      ? t("summary.afterPayment")
+                      : form.autoApprove
+                        ? tf("autoApprove")
+                        : tf("manualApprove")}
+                  </dd>
+                </div>
+              </dl>
+              <p className={styles.summaryNote}>{t("summary.note")}</p>
+            </>
+          )}
+
+          <div className={styles.footer}>
+            <Button
+              variant="outline"
+              onClick={() =>
+                step === 0 ? router.push("/") : setStep(step - 1)
+              }
+            >
+              {step === 0 ? t("cancel") : t("back")}
+            </Button>
+            <span className={styles.stepInfo}>
+              {t("stepInfo", { current: step + 1, total: STEPS.length })}
+            </span>
+            {step < STEPS.length - 1 ? (
+              <Button onClick={next}>{t("next")}</Button>
+            ) : (
+              <div className={styles.finalActions}>
+                <Button
+                  variant="outline"
+                  loading={create.isPending && create.variables === false}
+                  disabled={create.isPending}
+                  onClick={() => create.mutate(false)}
+                >
+                  {t("saveDraft")}
+                </Button>
+                <Button
+                  loading={create.isPending && create.variables === true}
+                  disabled={create.isPending}
+                  onClick={() => create.mutate(true)}
+                >
+                  {t("createPublish")}
+                </Button>
+              </div>
+            )}
+          </div>
+        </section>
+
+        <aside className={styles.previewCol}>
+          <CardPreview form={form} teacherName={teacherName} />
+          <p className={styles.previewNote}>{t("previewNote")}</p>
+        </aside>
       </div>
     </div>
   );

@@ -1,0 +1,31 @@
+{
+  "title": "Czat",
+  "empty": "Brak rozmów",
+  "emptyText": "Czat kursu pojawi się, gdy tylko zostaniesz zapisany na kurs.",
+  "selectConversation": "Wybierz rozmowę",
+  "list": {
+    "label": "Rozmowy",
+    "title": "Wiadomości",
+    "searchLabel": "Szukaj rozmów",
+    "searchPlaceholder": "Szukaj",
+    "nothingFound": "Nic nie znaleziono.",
+    "courseChats": "Czaty kursów",
+    "direct": "Prywatne",
+    "noMessages": "Brak wiadomości"
+  },
+  "thread": {
+    "label": "Rozmowa: {title}",
+    "back": "Wróć do listy rozmów",
+    "courseChat": "Czat kursu",
+    "directChat": "Wiadomości prywatne",
+    "videoCall": "Rozmowa wideo",
+    "toCourse": "Do kursu",
+    "empty": "Napisz pierwszą wiadomość.",
+    "teacherBadge": "prowadzący",
+    "today": "Dzisiaj",
+    "yesterday": "Wczoraj",
+    "messageLabel": "Wiadomość",
+    "placeholder": "Napisz wiadomość…",
+    "send": "Wyślij"
+  }
+}

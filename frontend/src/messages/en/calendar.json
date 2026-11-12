@@ -1,0 +1,93 @@
+{
+  "meta": {
+    "title": "Calendar"
+  },
+  "title": "Calendar",
+  "subtitle": "Assignment deadlines and events from your courses",
+  "view": {
+    "label": "Calendar view",
+    "month": "Month",
+    "agenda": "List"
+  },
+  "nav": {
+    "prev": "Previous month",
+    "next": "Next month",
+    "today": "Today"
+  },
+  "filter": {
+    "label": "Course",
+    "all": "All courses"
+  },
+  "kind": {
+    "ASSIGNMENT": "Assignment due",
+    "LECTURE": "Lecture",
+    "ONLINE_LESSON": "Online lesson",
+    "DEADLINE": "Deadline",
+    "OTHER": "Event"
+  },
+  "weekdays": "Mon,Tue,Wed,Thu,Fri,Sat,Sun",
+  "day": {
+    "label": "{date}, {count, plural, one {# item} other {# items}}",
+    "today": "today",
+    "empty": "Nothing scheduled for this day.",
+    "selected": "Events on {date}"
+  },
+  "more": "{count} more",
+  "status": {
+    "done": "Submitted",
+    "pending": "Not submitted"
+  },
+  "agenda": {
+    "empty": "Nothing scheduled in the coming weeks.",
+    "emptyHint": "Assignment deadlines and events from your courses will appear here.",
+    "allDay": "due"
+  },
+  "actions": {
+    "add": "Add event",
+    "edit": "Edit",
+    "delete": "Delete",
+    "open": "Open",
+    "subscribe": "Subscribe in Google Calendar"
+  },
+  "form": {
+    "createTitle": "New event",
+    "editTitle": "Edit event",
+    "course": "Course",
+    "title": "Title",
+    "titlePlaceholder": "e.g. Lecture: REST API",
+    "kind": "Type",
+    "startsAt": "Starts",
+    "endsAt": "Ends (optional)",
+    "description": "Description",
+    "save": "Save",
+    "create": "Add",
+    "errorTitle": "Enter a title",
+    "errorStart": "Enter the start date and time",
+    "errorEnd": "The end must be after the start",
+    "draftCourse": "{title} (draft)"
+  },
+  "toast": {
+    "created": "Event added",
+    "updated": "Event updated",
+    "deleted": "Event deleted",
+    "copied": "Link copied",
+    "reset": "A new link was created — the old one no longer works"
+  },
+  "confirmDelete": {
+    "title": "Delete this event?",
+    "text": "“{title}” will disappear from the calendar of everyone in the course.",
+    "confirm": "Delete"
+  },
+  "subscribe": {
+    "title": "Calendar subscription",
+    "text": "Add this link to Google Calendar, Apple Calendar or Outlook — deadlines and events will stay up to date automatically.",
+    "urlLabel": "Calendar link (iCal)",
+    "copy": "Copy",
+    "steps": "Google Calendar: “Other calendars” → “+” → “From URL” → paste the link.",
+    "privacy": "This link is personal: don’t share it. If someone else got it, create a new one.",
+    "reset": "Create a new link",
+    "resetConfirm": "The old link will stop working in every calendar where you added it.",
+    "loading": "Preparing the link…"
+  },
+  "error": "Couldn’t load the calendar"
+}

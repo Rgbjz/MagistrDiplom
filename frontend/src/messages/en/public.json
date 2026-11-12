@@ -1,0 +1,109 @@
+{
+  "welcome": {
+    "metaTitle": "LMS — courses, tests and chat with your teacher",
+    "eyebrow": "Learning management system",
+    "title": "Courses, tests and talking to your teacher — all in one place",
+    "lead": "Learn on any device, track your progress and ask your teacher questions in the course chat. Teachers build courses from lessons and tests without any technical skills.",
+    "startLearning": "Start learning",
+    "browseCatalog": "Browse the catalogue",
+    "previewContinue": "Continue learning",
+    "previewTest": "Test after each section · timer and instant results",
+    "popularTitle": "Popular courses",
+    "allCatalog": "Full catalogue",
+    "howTitle": "How it works",
+    "steps": {
+      "choose": {
+        "title": "Choose a course",
+        "text": "Find a course in the catalogue by topic, price or level and look through its syllabus."
+      },
+      "enroll": {
+        "title": "Enrol or buy",
+        "text": "Free courses open once the teacher approves you; paid courses open right after payment."
+      },
+      "learn": {
+        "title": "Learn and take tests",
+        "text": "Work through lessons at your own pace, pass the tests and get a certificate."
+      }
+    },
+    "students": {
+      "title": "For students",
+      "item1": "a personal dashboard with your progress and a “Continue” block;",
+      "item2": "videos, notes and a test after every section;",
+      "item3": "chat with the teacher and the course group.",
+      "cta": "Sign up as a student"
+    },
+    "teachers": {
+      "title": "For teachers",
+      "item1": "a course builder: sections, lessons, tests;",
+      "item2": "student requests and their progress in one table;",
+      "item3": "your own course price and a public landing page.",
+      "cta": "Become a teacher"
+    },
+    "featuresTitle": "Features",
+    "features": {
+      "timer": {
+        "title": "Timed tests",
+        "text": "Several attempts and instant results."
+      },
+      "chat": {
+        "title": "Real-time chat",
+        "text": "Course chat and direct messages."
+      },
+      "progress": {
+        "title": "Progress",
+        "text": "Completion percentage for every course."
+      },
+      "dark": {
+        "title": "Dark theme",
+        "text": "Light, dark or follow the system."
+      },
+      "mobile": {
+        "title": "Mobile-friendly",
+        "text": "The interface adapts to your phone."
+      }
+    },
+    "faqTitle": "FAQ",
+    "faq": {
+      "free": {
+        "q": "Can I study for free?",
+        "a": "Yes. Some courses are free — just send a request and the teacher will approve it."
+      },
+      "attempts": {
+        "q": "How many times can I take a test?",
+        "a": "There’s no limit on attempts; the latest one counts."
+      },
+      "teacher": {
+        "q": "How do I become a teacher?",
+        "a": "Choose the “Teacher” role when signing up — the course builder opens once you confirm your email."
+      },
+      "mobile": {
+        "q": "Does the platform work on a phone?",
+        "a": "Yes, every page is adapted for mobile devices."
+      }
+    },
+    "finalTitle": "Ready to start?",
+    "finalText": "Create an account in a minute — confirm your email and start learning.",
+    "createAccount": "Create an account",
+    "login": "Sign in"
+  },
+  "privacy": {
+    "metaTitle": "Privacy",
+    "title": "Privacy and cookies",
+    "intro": "This page explains what data the platform collects and why. We don’t sell data and don’t use advertising cookies.",
+    "accountTitle": "Account data",
+    "accountText": "Your email, first and last name are needed to sign in, for confirmation emails and certificates. Learning progress, test results and chat messages are stored so you can continue learning on any device.",
+    "emailsTitle": "Emails",
+    "emailsText": "We send emails to confirm your address, to recover your password and — unless you turn it off in your profile — notifications about requests, new lessons and test results.",
+    "analyticsTitle": "Google Analytics",
+    "analyticsText": "Only with your consent do we enable Google Analytics 4 to see which pages and features are used. IP addresses are anonymised; emails and names are never sent to analytics. You can opt out at any time — clear the site data in your browser and the banner will appear again.",
+    "cookiesTitle": "Technical cookies",
+    "cookiesText": "Session cookies are needed to sign in. Your theme, language and analytics consent choices are kept in the browser’s local storage or in cookies."
+  },
+  "consent": {
+    "aria": "Analytics consent",
+    "text": "We use Google Analytics to understand how to improve the platform. There are no advertising cookies.",
+    "more": "Learn more",
+    "decline": "Decline",
+    "accept": "Accept"
+  }
+}

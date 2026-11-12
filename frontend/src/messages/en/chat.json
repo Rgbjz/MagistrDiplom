@@ -1,0 +1,31 @@
+{
+  "title": "Chat",
+  "empty": "No conversations yet",
+  "emptyText": "The course chat appears as soon as you’re enrolled in a course.",
+  "selectConversation": "Select a conversation",
+  "list": {
+    "label": "Conversations",
+    "title": "Messages",
+    "searchLabel": "Search conversations",
+    "searchPlaceholder": "Search",
+    "nothingFound": "Nothing found.",
+    "courseChats": "Course chats",
+    "direct": "Direct",
+    "noMessages": "No messages yet"
+  },
+  "thread": {
+    "label": "Conversation: {title}",
+    "back": "Back to conversations",
+    "courseChat": "Course chat",
+    "directChat": "Direct messages",
+    "videoCall": "Video call",
+    "toCourse": "To course",
+    "empty": "Write the first message.",
+    "teacherBadge": "teacher",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "messageLabel": "Message",
+    "placeholder": "Write a message…",
+    "send": "Send"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "title": "Purchase history",
+  "subtitle": "All paid courses and receipts in one place.",
+  "empty": "No purchases yet",
+  "toCatalog": "Go to the catalog",
+  "summary": "Summary",
+  "count": "Total purchases",
+  "totalPaid": "Total paid",
+  "listCaption": "Purchases",
+  "col": {
+    "date": "Date",
+    "course": "Course",
+    "amount": "Amount",
+    "status": "Status",
+    "actions": "Actions"
+  },
+  "status": {
+    "PAID": "Paid"
+  },
+  "openCourse": "Open course",
+  "receipt": "Receipt",
+  "close": "Close",
+  "print": "Print",
+  "receiptFields": {
+    "number": "Number",
+    "date": "Date",
+    "buyer": "Buyer",
+    "course": "Course",
+    "status": "Status",
+    "amount": "Amount"
+  },
+  "receiptNote": "Test payment — no real money was charged."
+}

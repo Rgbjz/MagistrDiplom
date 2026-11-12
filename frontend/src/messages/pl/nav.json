@@ -1,0 +1,49 @@
+{
+  "mainLabel": "Nawigacja główna",
+  "mobileLabel": "Menu dolne",
+  "items": {
+    "home": "Strona główna",
+    "myCourses": "Moje kursy",
+    "catalog": "Katalog",
+    "chat": "Czat",
+    "purchases": "Zakupy",
+    "admin": "Panel administratora",
+    "adminShort": "Admin",
+    "createCourse": "Utwórz kurs",
+    "createShort": "Utwórz",
+    "coursesShort": "Kursy",
+    "profile": "Profil",
+    "calendar": "Kalendarz"
+  },
+  "guest": {
+    "login": "Zaloguj się",
+    "register": "Rejestracja"
+  },
+  "userMenu": {
+    "label": "Menu użytkownika",
+    "profile": "Profil i ustawienia",
+    "purchases": "Zakupy",
+    "certificates": "Certyfikaty",
+    "logout": "Wyloguj się",
+    "calendar": "Kalendarz"
+  },
+  "notifications": {
+    "label": "Powiadomienia",
+    "labelNew": "Powiadomienia, nowe: {count}"
+  },
+  "footer": {
+    "copyright": "© {year} LMS — system zarządzania nauczaniem",
+    "label": "Nawigacja w stopce",
+    "catalog": "Katalog",
+    "faq": "Pytania i odpowiedzi",
+    "privacy": "Prywatność"
+  },
+  "theme": {
+    "toLight": "Włącz jasny motyw",
+    "toDark": "Włącz ciemny motyw"
+  },
+  "language": {
+    "label": "Język interfejsu",
+    "saved": "Zmieniono język"
+  }
+}

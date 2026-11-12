@@ -1,0 +1,31 @@
+{
+  "title": "Notifications",
+  "unread": "{count, plural, one {# unread} other {# unread}}",
+  "allRead": "All caught up",
+  "markAll": "Mark all as read",
+  "allMarked": "All notifications marked as read",
+  "filterLabel": "Notification filter",
+  "filter": {
+    "all": "All",
+    "unread": "Unread",
+    "courses": "Courses",
+    "tests": "Tests & assignments",
+    "messages": "Messages"
+  },
+  "listLabel": "Notifications list",
+  "group": {
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "earlier": "Earlier"
+  },
+  "empty": "No notifications",
+  "emptyText": "Enrollment requests, new lessons, test results and messages will appear here.",
+  "unreadDot": "Unread",
+  "aside": {
+    "title": "Notification settings",
+    "text": "In-app notifications always arrive: course requests, new lessons, test results, direct messages and payments.",
+    "email": "Also send by email",
+    "allSettings": "All profile settings",
+    "saved": "Settings saved"
+  }
+}

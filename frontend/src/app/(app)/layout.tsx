@@ -1,5 +1,6 @@
 import { Header } from '../../components/Header';
 import { Footer } from '../../components/Footer';
+import { MobileTabBar } from '../../components/layout/MobileTabBar';
 
 export default function AppLayout({
   children,
@@ -7,12 +8,13 @@ export default function AppLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div
-      style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}
-    >
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Header />
-      <main style={{ flex: 1, padding: 24 }}>{children}</main>
+      <main id="main" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+        {children}
+      </main>
       <Footer />
+      <MobileTabBar />
     </div>
   );
 }

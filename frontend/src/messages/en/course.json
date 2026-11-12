@@ -1,0 +1,49 @@
+{
+  "page": {
+    "notEnrolled": "You aren't enrolled in this course yet",
+    "loadError": "Couldn't load the course",
+    "notEnrolledHint": "Enroll in or buy the course to access its lessons.",
+    "loadErrorHint": "Check your connection and try again.",
+    "coursePage": "Course page",
+    "toMyCourses": "Back to my courses",
+    "noLessons": "This course has no lessons yet",
+    "noLessonsHint": "As soon as the teacher adds materials, they'll appear here.",
+    "nextItem": "Next: {title}",
+    "closeContents": "Close contents"
+  },
+  "structure": {
+    "title": "Course contents",
+    "empty": "The teacher hasn't added any materials yet.",
+    "assignment": "Assignment: {title}",
+    "done": "(completed)"
+  },
+  "topBar": {
+    "toMyCoursesLabel": "Back to my courses",
+    "toHome": "Home",
+    "myCourses": "My courses",
+    "progress": "Course progress",
+    "myGrades": "My grades",
+    "manage": "Manage"
+  },
+  "chat": {
+    "open": "Course chat",
+    "error": "Couldn't open the course chat"
+  },
+  "files": {
+    "delete": "Delete file {name}",
+    "download": "Download {name}"
+  },
+  "lesson": {
+    "saveError": "Couldn't save your progress",
+    "allDone": "You've completed all course materials",
+    "video": "Video: {title}",
+    "downloadVideo": "Download the video",
+    "position": "Section {section} · Lesson {lesson} of {total}",
+    "empty": "This lesson has no materials yet.",
+    "materials": "Lesson materials",
+    "completeNext": "Complete and continue",
+    "complete": "Complete lesson",
+    "next": "Next",
+    "prevAria": "Previous: {title}"
+  }
+}

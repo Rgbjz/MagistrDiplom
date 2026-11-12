@@ -1,9 +1,40 @@
-import { Lock, GraduationCap } from 'lucide-react';
+import type { Metadata } from 'next';
 import Link from 'next/link';
-import { serverApi } from '../../../lib/api/server';
-import type { PublicCourse } from '../../../lib/types';
-import { LandingCTA } from '../../../components/store/LandingCTA';
+import { notFound } from 'next/navigation';
+import { Check, ClipboardCheck, PlayCircle } from 'lucide-react';
+import { getLocale, getTranslations } from 'next-intl/server';
+import type { PublicCourse } from '../../../../lib/types';
+import { fileUrl, formatPrice, initials } from '../../../../lib/format';
+import { Avatar, CourseCover } from '../../../../components/ui';
+import { LandingCTA } from '../../../../components/store/LandingCTA';
+import {
+  fetchPublicCourse,
+  PublicApiError,
+} from '../../../../components/catalog/publicApi';
 import styles from './landing.module.scss';
+import { categoryKey } from '../../../../i18n/categories';
+
+async function load(id: number): Promise<PublicCourse | null> {
+  if (!Number.isInteger(id) || id <= 0) return null;
+  try {
+    return await fetchPublicCourse(id);
+  } catch (err) {
+    if (err instanceof PublicApiError && err.status === 404) return null;
+    throw err;
+  }
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const course = await load(Number(id)).catch(() => null);
+  if (course) return { title: course.title };
+  const t = await getTranslations('landing');
+  return { title: t('metaFallback') };
+}
 
 export default async function CourseLandingPage({
   params,
@@ -11,73 +42,160 @@ export default async function CourseLandingPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const courseId = Number(id);
-  let course: PublicCourse;
-  try {
-    course = await serverApi<PublicCourse>(`/public/courses/${courseId}`);
-  } catch {
-    return (
-      <div className={styles.container}>
-        <p>Course not found.</p>
-      </div>
-    );
-  }
+  const course = await load(Number(id));
+  if (!course) notFound();
+
+  const t = await getTranslations('landing');
+  const tc = await getTranslations('common');
+  const tf = await getTranslations('teacher.courseForm');
+  const locale = await getLocale();
+  const free = course.price <= 0;
+  const facts = [
+    { label: t('facts.sections'), value: course.sectionsCount },
+    { label: t('facts.lessons'), value: course.lessonsCount },
+    { label: t('facts.tests'), value: course.testsCount },
+    { label: t('facts.access'), value: t('facts.forever') },
+  ];
+  const includes = [
+    t('includes.lessons', { count: course.lessonsCount }),
+    course.testsCount > 0 ? t('includes.tests', { count: course.testsCount }) : null,
+    t('includes.chat'),
+    t('includes.certificate'),
+    t('includes.mobile'),
+  ].filter(Boolean) as string[];
 
   return (
     <div className={styles.page}>
-      <div className={styles.topbar}>
-        <span>Learning Platform</span>
-        <Link href="/login" style={{ color: 'inherit', fontSize: 14 }}>
-          Log in
-        </Link>
-      </div>
-      <div className={styles.container}>
-        <div className={styles.hero}>
-          <div>
-            <span className={styles.category}>Course</span>
-            <h1 className={styles.title}>{course.title}</h1>
-            <p className={styles.lead}>{course.description}</p>
-            <div className={styles.teacher}>
-              <GraduationCap size={16} /> Instructor: <b>{course.teacher.name}</b>
-            </div>
+      <section className={styles.hero}>
+        <div className={styles.heroText}>
+          <div className={styles.badges}>
+            {course.category && (
+              <span className={styles.badgePrimary}>
+                {categoryKey(course.category)
+                  ? tf(`categories.${categoryKey(course.category)}` as never)
+                  : course.category}
+              </span>
+            )}
+            {course.level && (
+              <span className={styles.badge}>
+                {t('levelBadge', { level: tc(`level.${course.level}`) })}
+              </span>
+            )}
+            {free && <span className={styles.badgeSuccess}>{t('free')}</span>}
           </div>
-          <div className={styles.priceCard}>
-            <div className={styles.cover} />
-            <div className={styles.priceBody}>
-              <div className={styles.price}>
-                {course.price > 0 ? `$ ${course.price}` : 'Free'}
-              </div>
-              <div className={styles.priceNote}>
-                {course.price > 0 ? 'one-time · full access' : 'request to enroll'}
-              </div>
-              <LandingCTA courseId={course.id} price={course.price} />
-            </div>
+          <h1 className={styles.title}>{course.title}</h1>
+          {course.description && <p className={styles.lead}>{course.description}</p>}
+          <div className={styles.teacher}>
+            <Avatar
+              src={fileUrl(course.teacher.avatarUrl)}
+              name={initials(course.teacher.name)}
+              size={44}
+            />
+            <span className={styles.teacherText}>
+              <span className={styles.teacherName}>{course.teacher.name}</span>
+              <span className={styles.muted}>{t('teacherRole')}</span>
+            </span>
           </div>
+          <dl className={styles.facts}>
+            {facts.map((f) => (
+              <div key={f.label} className={styles.fact}>
+                <dt>{f.label}</dt>
+                <dd>{f.value}</dd>
+              </div>
+            ))}
+          </dl>
         </div>
 
-        <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>About</h2>
-          <p className={styles.lead}>{course.description}</p>
-        </div>
-
-        <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>Program</h2>
-          {course.sections.map((s, i) => (
-            <div key={i} className={styles.program} style={{ marginBottom: 12 }}>
-              <div className={styles.progHead}>
-                <span>{s.title}</span>
-                <span style={{ opacity: 0.6 }}>{s.lessons.length} lessons</span>
-              </div>
-              {s.lessons.map((l, j) => (
-                <div key={j} className={styles.progItem}>
-                  <Lock size={14} /> {l.title}
-                  {l.hasTest && ' · 📝 test'}
-                </div>
+        <aside className={styles.priceCard} aria-label={t('priceAria')}>
+          <CourseCover
+            id={course.id}
+            imageUrl={fileUrl(course.imageUrl)}
+            title={course.title}
+            height={180}
+          />
+          <div className={styles.priceBody}>
+            <div className={styles.priceRow}>
+              <span className={styles.price}>{formatPrice(course.price, locale)}</span>
+              {!free && <span className={styles.muted}>{t('oneTime')}</span>}
+            </div>
+            <LandingCTA
+              courseId={course.id}
+              title={course.title}
+              price={course.price}
+              autoApprove={course.autoApprove}
+            />
+            <ul className={styles.includes}>
+              {includes.map((text) => (
+                <li key={text}>
+                  <Check size={18} aria-hidden="true" />
+                  {text}
+                </li>
               ))}
+            </ul>
+          </div>
+        </aside>
+      </section>
+
+      <section className={styles.section}>
+        <h2 className={styles.h2}>{t('programTitle')}</h2>
+        {course.sections.length === 0 ? (
+          <p className={styles.muted}>{t('programEmpty')}</p>
+        ) : (
+          <div className={styles.program}>
+            {course.sections.map((s, i) => {
+              const tests = s.lessons.filter((l) => l.hasTest).length;
+              return (
+                <details key={i} open={i === 0} className={styles.programItem}>
+                  <summary>
+                    <span>
+                      {i + 1}. {s.title}
+                    </span>
+                    <span className={styles.programMeta}>
+                      {t('sectionLessons', { count: s.lessons.length })}
+                      {tests > 0 && ` · ${t('sectionTests', { count: tests })}`}
+                    </span>
+                  </summary>
+                  <ol className={styles.lessons}>
+                    {s.lessons.map((l, j) => (
+                      <li key={j}>
+                        <PlayCircle size={16} aria-hidden="true" />
+                        <span>{l.title}</span>
+                        {l.hasTest && (
+                          <span className={styles.testTag}>
+                            <ClipboardCheck size={14} aria-hidden="true" />
+                            {t('testTag')}
+                          </span>
+                        )}
+                      </li>
+                    ))}
+                  </ol>
+                </details>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
+      {course.teacher.bio && (
+        <section className={styles.section}>
+          <h2 className={styles.h2}>{t('aboutTeacher')}</h2>
+          <div className={styles.about}>
+            <Avatar
+              src={fileUrl(course.teacher.avatarUrl)}
+              name={initials(course.teacher.name)}
+              size={64}
+            />
+            <div className={styles.aboutText}>
+              <span className={styles.teacherName}>{course.teacher.name}</span>
+              <p>{course.teacher.bio}</p>
             </div>
-          ))}
-        </div>
-      </div>
+          </div>
+        </section>
+      )}
+
+      <p className={styles.back}>
+        <Link href="/catalog">{t('backToCatalog')}</Link>
+      </p>
     </div>
   );
 }

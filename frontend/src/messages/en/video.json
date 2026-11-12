@@ -1,0 +1,40 @@
+{
+  "uploader": {
+    "region": "Lesson video upload",
+    "drop": "Drop a video here or click to choose",
+    "formats": "MP4, WebM or MOV, up to {gb} GB. After upload the video is transcoded for streaming (720p and 360p).",
+    "uploading": "Uploading… {percent}%",
+    "paused": "Upload paused — {percent}%",
+    "progressLabel": "Video upload",
+    "processing": "Processing video… {percent}%",
+    "processingLabel": "Video processing",
+    "processingHint": "You can close this page — the video is processed on the server.",
+    "ready": "The video is ready to watch",
+    "readyMeta": "{duration} · quality: {qualities}",
+    "progressiveOnly": "The video is available as MP4; the streaming version is still being prepared.",
+    "failed": "The video could not be processed",
+    "failedUpload": "The video could not be uploaded",
+    "pause": "Pause",
+    "resume": "Resume",
+    "cancel": "Cancel",
+    "retry": "Try again",
+    "replace": "Replace video",
+    "delete": "Delete video",
+    "deleted": "Video deleted",
+    "deleteFailed": "Could not delete the video",
+    "confirmDeleteTitle": "Delete the video?",
+    "confirmDeleteText": "The video will disappear from the lesson for all students.",
+    "unsupported": "Only MP4, WebM or MOV videos are supported",
+    "tooLarge": "The file is larger than {gb} GB",
+    "uploaded": "Video uploaded, processing starts",
+    "fileInputLabel": "Choose a video file"
+  },
+  "player": {
+    "label": "Lesson video “{title}”",
+    "quality": "Quality",
+    "auto": "Auto",
+    "processing": "The video is still being processed. Try again in a few minutes.",
+    "failed": "The video is temporarily unavailable.",
+    "fallback": "Streaming playback failed — showing the regular version."
+  }
+}

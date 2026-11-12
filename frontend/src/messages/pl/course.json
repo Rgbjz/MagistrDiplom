@@ -1,0 +1,49 @@
+{
+  "page": {
+    "notEnrolled": "Nie jesteś jeszcze zapisany na ten kurs",
+    "loadError": "Nie udało się wczytać kursu",
+    "notEnrolledHint": "Zapisz się lub kup kurs, aby uzyskać dostęp do lekcji.",
+    "loadErrorHint": "Sprawdź połączenie i spróbuj ponownie.",
+    "coursePage": "Strona kursu",
+    "toMyCourses": "Do moich kursów",
+    "noLessons": "Kurs nie ma jeszcze lekcji",
+    "noLessonsHint": "Gdy prowadzący doda materiały, pojawią się tutaj.",
+    "nextItem": "Następny: {title}",
+    "closeContents": "Zamknij spis treści"
+  },
+  "structure": {
+    "title": "Spis treści kursu",
+    "empty": "Prowadzący nie dodał jeszcze materiałów.",
+    "assignment": "Zadanie: {title}",
+    "done": "(ukończono)"
+  },
+  "topBar": {
+    "toMyCoursesLabel": "Do moich kursów",
+    "toHome": "Strona główna",
+    "myCourses": "Moje kursy",
+    "progress": "Postęp kursu",
+    "myGrades": "Moje oceny",
+    "manage": "Zarządzaj"
+  },
+  "chat": {
+    "open": "Czat kursu",
+    "error": "Nie udało się otworzyć czatu kursu"
+  },
+  "files": {
+    "delete": "Usuń plik {name}",
+    "download": "Pobierz {name}"
+  },
+  "lesson": {
+    "saveError": "Nie udało się zapisać postępu",
+    "allDone": "Ukończyłeś wszystkie materiały kursu",
+    "video": "Wideo: {title}",
+    "downloadVideo": "Pobierz wideo",
+    "position": "Rozdział {section} · Lekcja {lesson} z {total}",
+    "empty": "Ta lekcja nie ma jeszcze materiałów.",
+    "materials": "Materiały do lekcji",
+    "completeNext": "Zakończ i dalej",
+    "complete": "Zakończ lekcję",
+    "next": "Dalej",
+    "prevAria": "Poprzedni: {title}"
+  }
+}

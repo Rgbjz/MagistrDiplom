@@ -1,0 +1,49 @@
+{
+  "mainLabel": "Головна навігація",
+  "mobileLabel": "Нижнє меню",
+  "items": {
+    "home": "Головна",
+    "myCourses": "Мої курси",
+    "catalog": "Каталог",
+    "chat": "Чат",
+    "purchases": "Покупки",
+    "admin": "Адмін-панель",
+    "adminShort": "Адмін",
+    "createCourse": "Створити курс",
+    "createShort": "Створити",
+    "coursesShort": "Курси",
+    "profile": "Профіль",
+    "calendar": "Календар"
+  },
+  "guest": {
+    "login": "Увійти",
+    "register": "Реєстрація"
+  },
+  "userMenu": {
+    "label": "Меню користувача",
+    "profile": "Профіль і налаштування",
+    "purchases": "Покупки",
+    "certificates": "Сертифікати",
+    "logout": "Вийти",
+    "calendar": "Календар"
+  },
+  "notifications": {
+    "label": "Сповіщення",
+    "labelNew": "Сповіщення, {count} нових"
+  },
+  "footer": {
+    "copyright": "© {year} LMS — система управління навчанням",
+    "label": "Нижня навігація",
+    "catalog": "Каталог",
+    "faq": "Питання і відповіді",
+    "privacy": "Конфіденційність"
+  },
+  "theme": {
+    "toLight": "Увімкнути світлу тему",
+    "toDark": "Увімкнути темну тему"
+  },
+  "language": {
+    "label": "Мова інтерфейсу",
+    "saved": "Мову змінено"
+  }
+}

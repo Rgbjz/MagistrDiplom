@@ -1,13 +1,11 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import type {
-  ActiveItem,
-  CourseDetail,
-  SessionUser,
-} from '../../lib/types';
-import { ProgressBar } from './ProgressBar';
-import { ProgressIcon } from './ProgressIcon';
+import { useTranslations } from 'next-intl';
+import { useTestLabels } from '../../i18n/format';
+import { useEffect, useState } from 'react';
+import { Check, ChevronDown, ChevronUp, ClipboardCheck, FileUp, Play } from 'lucide-react';
+import type { ActiveItem, CourseDetail, SessionUser } from '../../lib/types';
+import { isDone, sameItem, type CourseItemType } from './courseItems';
 import styles from './StructurePanel.module.scss';
 
 export function StructurePanel({
@@ -21,86 +19,149 @@ export function StructurePanel({
   active: ActiveItem;
   onSelect: (item: ActiveItem) => void;
 }) {
-  const router = useRouter();
+  const t = useTranslations('course.structure');
+  const tests = useTestLabels();
   const isStudent = user.role === 'STUDENT';
-  const isOwner = user.id === course.teacherId || user.role === 'ADMIN';
-  const progress = course.progress;
-  const lessonDone = (id: number) => !!progress?.lessons.includes(id);
-  const testDone = (id: number) => !!progress?.tests.includes(id);
+  const activeSection = course.sections.find((s) =>
+    s.lessons.some(
+      (l) =>
+        sameItem(active, { type: 'LESSON', id: l.id }) ||
+        (l.test && sameItem(active, { type: 'TEST', id: l.test.id })) ||
+        (l.assignment && sameItem(active, { type: 'ASSIGNMENT', id: l.assignment.id })),
+    ),
+  )?.id;
+  const [open, setOpen] = useState<Set<number>>(
+    () => new Set(activeSection ? [activeSection] : course.sections.slice(0, 1).map((s) => s.id)),
+  );
 
-  const isActive = (type: string, id: number) =>
-    active?.type === type && active.id === id;
+  // Keep the section of the current item expanded when navigating.
+  useEffect(() => {
+    if (activeSection) setOpen((prev) => (prev.has(activeSection) ? prev : new Set(prev).add(activeSection)));
+  }, [activeSection]);
+
+  const totalItems = course.progress?.total ?? 0;
+  const doneItems = course.progress?.completed ?? 0;
+
+  function toggle(id: number) {
+    setOpen((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
 
   return (
-    <aside className={styles.left}>
-      <div className={styles.courseHeader}>
-        <h3 className={styles.courseTitle}>{course.title}</h3>
-        {isOwner && (
-          <button
-            className={styles.manageBtn}
-            onClick={() => router.push(`/courses/${course.id}/manage`)}
-          >
-            ⚙ Manage
-          </button>
+    <nav aria-label={t('title')} className={styles.panel}>
+      <div className={styles.head}>
+        <span className={styles.headTitle}>{t('title')}</span>
+        {isStudent && course.progress && (
+          <span className={styles.headCount}>
+            {doneItems} / {totalItems}
+          </span>
         )}
       </div>
 
-      {isStudent && progress && <ProgressBar value={progress.percent} />}
+      {course.sections.length === 0 && (
+        <p className={styles.empty}>{t('empty')}</p>
+      )}
 
-      <ul className={styles.tree}>
-        {course.sections.map((section) => (
-          <li key={section.id} className={styles.section}>
-            <div className={styles.row}>
-              <span
-                className={`${styles.item} ${
-                  isActive('SECTION', section.id) ? styles.active : ''
-                }`}
-                onClick={() => onSelect({ type: 'SECTION', id: section.id })}
-              >
-                {section.title}
+      {course.sections.map((section, si) => {
+        const expanded = open.has(section.id);
+        const lessonsDone = section.lessons.filter((l) => isDone(course, { type: 'LESSON', id: l.id })).length;
+        const complete = section.lessons.length > 0 && lessonsDone === section.lessons.length;
+        return (
+          <div key={section.id} className={styles.section}>
+            <button
+              type="button"
+              className={styles.sectionBtn}
+              aria-expanded={expanded}
+              onClick={() => toggle(section.id)}
+            >
+              <span>
+                {si + 1}. {section.title}
               </span>
-            </div>
-            <ul className={styles.sublist}>
-              {section.lessons.map((lesson) => (
-                <li key={lesson.id}>
-                  <div className={styles.row}>
-                    <span
-                      className={`${styles.item} ${
-                        isActive('LESSON', lesson.id) ? styles.active : ''
-                      }`}
-                      onClick={() =>
-                        onSelect({ type: 'LESSON', id: lesson.id })
-                      }
-                    >
-                      {isStudent && (
-                        <ProgressIcon completed={lessonDone(lesson.id)} />
-                      )}
-                      {lesson.title}
-                    </span>
-                  </div>
-                  {lesson.test && (
-                    <div className={`${styles.row} ${styles.sublist}`}>
-                      <span
-                        className={`${styles.item} ${styles.test} ${
-                          isActive('TEST', lesson.test.id) ? styles.active : ''
-                        }`}
-                        onClick={() =>
-                          onSelect({ type: 'TEST', id: lesson.test!.id })
-                        }
-                      >
-                        {isStudent && (
-                          <ProgressIcon completed={testDone(lesson.test.id)} />
-                        )}
-                        📝 {lesson.test.title}
-                      </span>
-                    </div>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </li>
-        ))}
-      </ul>
-    </aside>
+              <span className={`${styles.sectionMeta} ${complete ? styles.sectionDone : ''}`}>
+                {isStudent && `${lessonsDone}/${section.lessons.length}`}
+                {expanded ? (
+                  <ChevronUp size={18} aria-hidden="true" />
+                ) : (
+                  <ChevronDown size={18} aria-hidden="true" />
+                )}
+              </span>
+            </button>
+            {expanded && (
+              <ol className={styles.list}>
+                {section.lessons.map((lesson) => {
+                  const items: { type: CourseItemType; id: number; title: string }[] = [
+                    { type: 'LESSON', id: lesson.id, title: lesson.title },
+                  ];
+                  if (lesson.test) items.push({ type: 'TEST', id: lesson.test.id, title: lesson.test.title });
+                  if (lesson.assignment) {
+                    items.push({ type: 'ASSIGNMENT', id: lesson.assignment.id, title: lesson.assignment.title });
+                  }
+                  return items.map((item) => {
+                    const current = sameItem(active, item);
+                    const done = isStudent && isDone(course, item);
+                    return (
+                      <li key={`${item.type}-${item.id}`}>
+                        <button
+                          type="button"
+                          aria-current={current ? 'page' : undefined}
+                          className={`${styles.item} ${current ? styles.current : ''} ${done && !current ? styles.done : ''}`}
+                          onClick={() => onSelect({ type: item.type, id: item.id })}
+                        >
+                          <StatusIcon type={item.type} done={done} current={current} />
+                          <span className={styles.itemTitle}>
+                            {item.type === 'TEST'
+                              ? tests.short(item.title)
+                              : item.type === 'ASSIGNMENT'
+                                ? t('assignment', { title: item.title })
+                                : item.title}
+                          </span>
+                          {done && <span className="sr-only">{t('done')}</span>}
+                        </button>
+                      </li>
+                    );
+                  });
+                })}
+              </ol>
+            )}
+          </div>
+        );
+      })}
+    </nav>
   );
+}
+
+function StatusIcon({ type, done, current }: { type: CourseItemType; done: boolean; current: boolean }) {
+  if (done) {
+    return (
+      <span className={`${styles.icon} ${styles.iconDone}`}>
+        <Check size={14} strokeWidth={3} aria-hidden="true" />
+      </span>
+    );
+  }
+  if (type === 'TEST') {
+    return (
+      <span className={`${styles.icon} ${styles.iconTest}`}>
+        <ClipboardCheck size={13} aria-hidden="true" />
+      </span>
+    );
+  }
+  if (type === 'ASSIGNMENT') {
+    return (
+      <span className={`${styles.icon} ${styles.iconTest}`}>
+        <FileUp size={13} aria-hidden="true" />
+      </span>
+    );
+  }
+  if (current) {
+    return (
+      <span className={`${styles.icon} ${styles.iconCurrent}`}>
+        <Play size={10} fill="currentColor" aria-hidden="true" />
+      </span>
+    );
+  }
+  return <span className={`${styles.icon} ${styles.iconTodo}`} />;
 }

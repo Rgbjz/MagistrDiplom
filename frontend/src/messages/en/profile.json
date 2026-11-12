@@ -1,0 +1,74 @@
+{
+  "title": "Profile and settings",
+  "subtitle": "Personal details, account security and how the platform looks.",
+  "sidebar": {
+    "photoUpdated": "Photo updated",
+    "photoUploadFailed": "Couldn’t upload the photo",
+    "chooseImage": "Choose a JPG or PNG image",
+    "tooLarge": "The file is larger than 2 MB",
+    "uploading": "Uploading…",
+    "changePhoto": "Change photo",
+    "photoHint": "JPG or PNG, up to 2 MB",
+    "emailNotVerified": "Email not confirmed",
+    "emailVerified": "Email confirmed",
+    "stats": {
+      "courses": "Courses",
+      "lessons": "Lessons",
+      "certificates": "Certif."
+    }
+  },
+  "personal": {
+    "title": "Personal details",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "bio": "About me",
+    "save": "Save changes",
+    "saved": "Changes saved",
+    "max50": "No more than 50 characters",
+    "max500": "No more than 500 characters"
+  },
+  "security": {
+    "title": "Security",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "repeatPassword": "Repeat password",
+    "changePassword": "Change password",
+    "passwordChanged": "Password changed",
+    "enterCurrent": "Enter your current password",
+    "min6": "At least 6 characters",
+    "mismatch": "Passwords don’t match",
+    "sessionsTitle": "Active sessions",
+    "noSessions": "No active sessions.",
+    "activity": "active {time}",
+    "thisDevice": "This device",
+    "end": "Sign out",
+    "sessionEnded": "Session ended",
+    "unknownDevice": "Unknown device",
+    "app": "App",
+    "browser": "Browser",
+    "endOthers": "Sign out all other sessions",
+    "othersEnded": "Other sessions signed out",
+    "reloginForOthers": "Sign in again to sign out other sessions"
+  },
+  "settings": {
+    "title": "Settings",
+    "theme": "Theme",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeSystem": "System",
+    "emailTitle": "Email notifications",
+    "emailToggle": "Also send notifications by email (requests, test results, messages)",
+    "saved": "Settings saved",
+    "remindersTitle": "Deadline reminders",
+    "remindersToggle": "Remind me 24 hours and 1 hour before assignment deadlines and course events"
+  },
+  "danger": {
+    "title": "Danger zone",
+    "text": "Deleting your account removes your progress, test results and messages. This can’t be undone.",
+    "delete": "Delete account",
+    "confirmTitle": "Delete account?",
+    "confirmText": "To confirm, enter your password. Your data can’t be recovered after deletion.",
+    "password": "Password",
+    "deleteForever": "Delete permanently"
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "actions": {
+    "save": "Зберегти",
+    "cancel": "Скасувати",
+    "confirm": "Підтвердити",
+    "delete": "Видалити",
+    "close": "Закрити",
+    "retry": "Спробувати ще раз",
+    "back": "Назад",
+    "next": "Далі",
+    "previous": "Назад",
+    "edit": "Редагувати",
+    "search": "Пошук",
+    "open": "Відкрити",
+    "download": "Завантажити",
+    "send": "Надіслати",
+    "apply": "Застосувати",
+    "reset": "Скинути",
+    "continue": "Продовжити",
+    "toHome": "На головну",
+    "toCatalog": "До каталогу"
+  },
+  "loading": "Завантаження…",
+  "price": {
+    "free": "Безкоштовно",
+    "amount": "{amount} ₴"
+  },
+  "role": {
+    "STUDENT": "Студент",
+    "TEACHER": "Викладач",
+    "ADMIN": "Адміністратор"
+  },
+  "level": {
+    "BEGINNER": "Початковий",
+    "INTERMEDIATE": "Середній",
+    "ADVANCED": "Просунутий"
+  },
+  "enrollment": {
+    "PENDING": "Очікує",
+    "ACTIVE": "Активний",
+    "REJECTED": "Відхилено",
+    "COMPLETED": "Завершив"
+  },
+  "time": {
+    "justNow": "щойно",
+    "minutesAgo": "{count} хв тому",
+    "hoursAgo": "{count} год тому",
+    "yesterday": "вчора",
+    "daysAgo": "{count} дн тому"
+  },
+  "count": {
+    "lessons": "{count, plural, one {# урок} few {# уроки} many {# уроків} other {# уроку}}",
+    "students": "{count, plural, one {# студент} few {# студенти} many {# студентів} other {# студента}}",
+    "questions": "{count, plural, one {# питання} few {# питання} many {# питань} other {# питання}}"
+  },
+  "deadline": {
+    "overdue": "Термін минув",
+    "hoursLeft": "Залишилось {count, plural, one {# година} few {# години} many {# годин} other {# години}}",
+    "daysLeft": "Залишилось {count, plural, one {# день} few {# дні} many {# днів} other {# дня}}"
+  },
+  "test": {
+    "label": "Тест «{title}»",
+    "short": "Тест: {title}"
+  },
+  "progress": "Прогрес",
+  "a11y": {
+    "scrollTable": "Таблиця, можна прокручувати",
+    "messages": "Повідомлення"
+  }
+}

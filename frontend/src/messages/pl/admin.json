@@ -1,0 +1,81 @@
+{
+  "meta": {
+    "title": "Panel administratora"
+  },
+  "forbidden": "Panel administratora jest dostępny tylko dla administratorów.",
+  "title": "Panel administratora",
+  "subtitle": "Użytkownicy, kursy i płatności platformy",
+  "statsAria": "Statystyki platformy",
+  "stats": {
+    "users": "Użytkownicy · {students} stud., {admins} adm.",
+    "teachers": "Nauczyciele",
+    "courses": "Kursy · {count, plural, one {# szkic} few {# szkice} many {# szkiców} other {# szkicu}}",
+    "payments": "Płatności w tym miesiącu · {count, plural, one {# płatność} few {# płatności} many {# płatności} other {# płatności}}"
+  },
+  "tabsAria": "Sekcje panelu administratora",
+  "tabs": {
+    "users": "Użytkownicy",
+    "courses": "Kursy",
+    "payments": "Płatności"
+  },
+  "users": {
+    "roleChanged": "Rolę zmieniono na „{role}”",
+    "blocked": "Użytkownik zablokowany",
+    "unblocked": "Użytkownik odblokowany",
+    "aria": "Użytkownicy",
+    "search": "Szukaj użytkownika",
+    "searchPlaceholder": "Szukaj po e-mailu lub imieniu",
+    "role": "Rola",
+    "all": "Wszyscy",
+    "table": {
+      "user": "Użytkownik",
+      "role": "Rola",
+      "email": "E-mail",
+      "registered": "Rejestracja",
+      "actions": "Działania"
+    },
+    "you": " (ty)",
+    "roleOf": "Rola: {name}",
+    "verified": "Potwierdzony",
+    "notVerified": "Niepotwierdzony",
+    "blockedBadge": "Zablokowany",
+    "unblock": "Odblokuj",
+    "block": "Zablokuj",
+    "pagesAria": "Strony użytkowników",
+    "prev": "Wstecz",
+    "next": "Dalej",
+    "pageInfo": "Strona {page} z {pages} · {count, plural, one {# użytkownik} few {# użytkowników} many {# użytkowników} other {# użytkownika}}",
+    "confirmTitle": "Zablokować użytkownika?",
+    "confirmText": "{name} nie będzie mógł się zalogować, dopóki nie odblokujesz konta.",
+    "confirmBlock": "Zablokuj"
+  },
+  "payments": {
+    "aria": "Ostatnie płatności",
+    "recent": "Ostatnie płatności",
+    "title": "Płatności",
+    "all": "Wszystkie",
+    "empty": "Brak płatności",
+    "table": {
+      "date": "Data",
+      "course": "Kurs",
+      "buyer": "Kupujący",
+      "amount": "Kwota"
+    }
+  },
+  "courses": {
+    "empty": "Brak kursów",
+    "aria": "Kursy",
+    "table": {
+      "course": "Kurs",
+      "teacher": "Nauczyciel",
+      "price": "Cena",
+      "students": "Studenci",
+      "status": "Status",
+      "created": "Utworzono",
+      "actions": "Działania"
+    },
+    "published": "Opublikowany",
+    "draft": "Szkic",
+    "manage": "Zarządzaj"
+  }
+}

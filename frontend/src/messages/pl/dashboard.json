@@ -1,0 +1,102 @@
+{
+  "greeting": {
+    "night": "Dobranoc",
+    "morning": "Dzień dobry",
+    "day": "Dzień dobry",
+    "evening": "Dobry wieczór",
+    "title": "{greeting}, {name}"
+  },
+  "summary": {
+    "courses": "Masz {courses, plural, one {# niedokończony kurs} few {# niedokończone kursy} many {# niedokończonych kursów} other {# niedokończonego kursu}}.",
+    "coursesAndTests": "Masz {courses, plural, one {# niedokończony kurs} few {# niedokończone kursy} many {# niedokończonych kursów} other {# niedokończonego kursu}} i {tests, plural, one {# test} few {# testy} many {# testów} other {# testu}} przed sobą.",
+    "empty": "Wybierz kurs w katalogu, aby rozpocząć naukę."
+  },
+  "findCourse": "Znajdź kurs",
+  "stats": {
+    "label": "Statystyki",
+    "enrolled": "Aktywne kursy",
+    "completed": "{count, plural, one {Kurs ukończony} few {Kursy ukończone} many {Kursów ukończonych} other {Kursu ukończonego}}",
+    "lessonsCompleted": "Ukończone lekcje",
+    "avgScore": "Średni wynik testów"
+  },
+  "continue": {
+    "title": "Kontynuuj naukę",
+    "allCourses": "Wszystkie moje kursy",
+    "empty": "Brak kursów w trakcie",
+    "toCatalog": "Przejdź do katalogu",
+    "passed": "Ukończono {done}/{total, plural, one {# lekcji} few {# lekcji} many {# lekcji} other {# lekcji}}",
+    "next": "Dalej: {title}",
+    "progressLabel": "Postęp kursu",
+    "continue": "Kontynuuj",
+    "start": "Rozpocznij"
+  },
+  "upcoming": {
+    "title": "Najbliżej",
+    "empty": "Brak nowych testów, zadań i wiadomości.",
+    "testMeta": "{course} · {count, plural, one {# pytanie} few {# pytania} many {# pytań} other {# pytania}} · {minutes} min",
+    "assignment": "Zadanie „{title}”",
+    "submitted": " · oddane, czeka na sprawdzenie",
+    "returned": " · zwrócone do poprawy",
+    "courseChat": "Czat kursu „{title}”",
+    "noMessages": "Brak wiadomości",
+    "calendarLink": "Kalendarz"
+  },
+  "suggestions": {
+    "title": "Może Cię zainteresować",
+    "allCatalog": "Cały katalog"
+  },
+  "myCourses": {
+    "title": "Moje kursy",
+    "subtitle": "Wszystkie kursy, na które jesteś zapisany lub złożyłeś wniosek.",
+    "sort": {
+      "label": "Sortuj",
+      "activity": "Według ostatniej aktywności",
+      "progress": "Według postępu",
+      "title": "Według nazwy"
+    },
+    "tabs": {
+      "label": "Status kursów",
+      "active": "Aktywne",
+      "pending": "Oczekują na zatwierdzenie",
+      "completed": "Ukończone"
+    },
+    "loadError": "Nie udało się wczytać kursów",
+    "loadErrorHint": "Sprawdź połączenie i odśwież stronę.",
+    "empty": {
+      "active": "Nie masz aktywnych kursów",
+      "pending": "Brak wniosków do rozpatrzenia",
+      "completed": "Nie ukończyłeś jeszcze żadnego kursu"
+    },
+    "toCatalog": "Przejdź do katalogu",
+    "lessonsMeta": "{teacher} · {done} z {total, plural, one {# lekcji} few {# lekcji} many {# lekcji} other {# lekcji}}",
+    "next": "Dalej: <b>{title}</b>",
+    "firstLesson": "Pierwsza lekcja: <b>{title}</b>",
+    "lastActivity": "Ostatnia aktywność: {when}",
+    "enrolledAt": "Zapisano: {date}",
+    "continue": "Kontynuuj",
+    "start": "Rozpocznij naukę",
+    "myGrades": "Moje oceny",
+    "requestedAt": "{teacher} · wniosek złożony {date}",
+    "rejected": "Wniosek odrzucony",
+    "pendingBadge": "Wniosek czeka na decyzję prowadzącego",
+    "rejectedHint": "Prowadzący odrzucił wniosek. Możesz napisać do niego na czacie lub wybrać inny kurs.",
+    "pendingHint": "Gdy prowadzący zatwierdzi wniosek, kurs pojawi się w aktywnych, a Ty otrzymasz powiadomienie.",
+    "coursePage": "Strona kursu",
+    "certificateError": "Nie udało się pobrać certyfikatu",
+    "completedAt": "{teacher} · ukończono {date}",
+    "completedBadge": "Ukończono · 100%",
+    "avgScore": "Średni wynik {score}%",
+    "certificate": "Certyfikat",
+    "getCertificate": "Odbierz certyfikat",
+    "view": "Zobacz"
+  },
+  "assisting": {
+    "title": "Kursy, w których jestem asystentem",
+    "open": "Zarządzanie kursem",
+    "role": {
+      "OWNER": "Właściciel",
+      "TEACHER": "Prowadzący",
+      "ASSISTANT": "Asystent"
+    }
+  }
+}

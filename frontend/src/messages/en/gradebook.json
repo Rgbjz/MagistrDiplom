@@ -1,0 +1,88 @@
+{
+  "state": {
+    "graded": "Graded",
+    "submitted": "Handed in, not reviewed",
+    "returned": "Under revision",
+    "missing": "Missing",
+    "late": "Overdue"
+  },
+  "cell": {
+    "submitted": "handed in",
+    "returned": "revision",
+    "late": "overdue",
+    "lateSuffix": ", late"
+  },
+  "column": {
+    "test": "Test",
+    "assignment": "Assignment",
+    "outOf": "of {max}"
+  },
+  "exportFailed": "Could not export the gradebook",
+  "emptyTitle": "Nothing to grade yet",
+  "emptyHint": "Add tests or assignments to lessons — they will appear in the gradebook.",
+  "title": "Gradebook",
+  "weights": "Tests {tests}% · assignments {assignments}% · pass threshold {threshold}%.",
+  "change": "Change",
+  "exportExcel": "Export Excel",
+  "exportCsv": "Export CSV",
+  "stats": {
+    "students": "Students",
+    "avgFinal": "Average final",
+    "passed": "Passed"
+  },
+  "search": "Search for a student",
+  "searchPlaceholder": "Search by name or email",
+  "failedOnly": "Only those who failed",
+  "noStudents": "The course has no active students yet",
+  "tableAria": "Gradebook, scrolls horizontally",
+  "head": {
+    "student": "Student",
+    "tests": "Tests",
+    "assignments": "Assignments",
+    "final": "Final",
+    "scale": "Grade"
+  },
+  "passed": "Passed",
+  "failed": "Failed",
+  "average": "Average",
+  "handedIn": "{count} handed in",
+  "legend": "Legend",
+  "scale": {
+    "fiveLabel": "{code} · {word}",
+    "five": {
+      "5": "excellent",
+      "4": "good",
+      "3": "satisfactory",
+      "2": "unsatisfactory"
+    },
+    "fail": "Fail",
+    "pass": "Pass"
+  },
+  "override": {
+    "open": "Change grade: {name}, {item}",
+    "title": "Change grade",
+    "final": "Final grade",
+    "computed": "Automatic",
+    "current": "Now",
+    "newValue": "New grade",
+    "valueHint": "From 0 to {max}",
+    "reason": "Reason for the change",
+    "reasonHint": "The student will see it. At least 5 characters.",
+    "save": "Save",
+    "reset": "Reset to automatic",
+    "saved": "Grade changed",
+    "resetDone": "Grade reset to automatic",
+    "failed": "Could not change the grade",
+    "history": "Change history",
+    "noHistory": "No changes yet",
+    "change": "{old} → {new}",
+    "meta": "{by} · {at}",
+    "mark": "Changed manually: {reason}",
+    "markSr": "changed manually",
+    "openWork": "Open student submissions",
+    "valueRange": "Enter a number from 0 to {max}",
+    "reasonShort": "Give a reason (at least 5 characters)",
+    "resetReason": "Reset to automatic"
+  },
+  "legendOverridden": "Changed manually"
+}

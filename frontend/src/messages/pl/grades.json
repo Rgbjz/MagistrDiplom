@@ -1,0 +1,36 @@
+{
+  "forbidden": "Oceny są dostępne tylko dla studentów kursu",
+  "back": "Do kursu",
+  "title": "Moje oceny",
+  "subtitle": "Testy {tests}% · zadania {assignments}% · próg zaliczenia {threshold}%",
+  "empty": "Brak ocen",
+  "summary": "Podsumowanie",
+  "final": "Ocena końcowa",
+  "passed": "Kurs zaliczony",
+  "notPassed": "Jeszcze niezaliczony",
+  "tests": "Testy",
+  "assignments": "Zadania",
+  "progress": "Postęp kursu",
+  "noItems": "Kurs nie ma testów ani zadań",
+  "kindTest": "Test",
+  "kindAssignment": "Zadanie",
+  "due": "do {date}",
+  "state": {
+    "graded": "Ocenione",
+    "submitted": "Oddane, niesprawdzone",
+    "returned": "Do poprawy",
+    "missing": "Brak",
+    "late": "Po terminie"
+  },
+  "cell": {
+    "submitted": "oddane",
+    "returned": "do poprawy",
+    "late": "po terminie"
+  },
+  "lateSuffix": ", po terminie",
+  "note": "Nieoddane testy i zadania liczą się w ocenie końcowej jako 0.",
+  "scaleGrade": "Ocena w skali kursu",
+  "overridden": "Zmienione przez prowadzącego",
+  "overriddenReason": "Ocena zmieniona ręcznie. Powód: {reason}",
+  "wasValue": "Automatycznie było: {value}"
+}

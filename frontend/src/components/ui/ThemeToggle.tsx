@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { Moon, Sun } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { getTheme, setTheme, type Theme } from '../../lib/theme';
 
 export function ThemeToggle() {
   const [theme, setThemeState] = useState<Theme>('light');
+  const t = useTranslations('nav.theme');
 
   useEffect(() => {
     setThemeState(getTheme());
@@ -20,14 +22,14 @@ export function ThemeToggle() {
   return (
     <button
       onClick={toggle}
-      aria-label="Toggle theme"
+      aria-label={theme === 'dark' ? t('toLight') : t('toDark')}
       style={{
         background: 'transparent',
-        border: '1px solid var(--color-header-text)',
-        color: 'var(--color-header-text)',
-        borderRadius: 'var(--radius-sm)',
-        width: 34,
-        height: 34,
+        border: 0,
+        color: 'var(--color-header-muted)',
+        borderRadius: 10,
+        width: 44,
+        height: 44,
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',

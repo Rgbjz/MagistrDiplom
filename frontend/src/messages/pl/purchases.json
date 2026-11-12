@@ -1,0 +1,33 @@
+{
+  "title": "Historia zakupów",
+  "subtitle": "Wszystkie opłacone kursy i potwierdzenia w jednym miejscu.",
+  "empty": "Nie masz jeszcze zakupów",
+  "toCatalog": "Przejdź do katalogu",
+  "summary": "Podsumowanie",
+  "count": "Liczba zakupów",
+  "totalPaid": "Zapłacono łącznie",
+  "listCaption": "Lista zakupów",
+  "col": {
+    "date": "Data",
+    "course": "Kurs",
+    "amount": "Kwota",
+    "status": "Status",
+    "actions": "Akcje"
+  },
+  "status": {
+    "PAID": "Opłacono"
+  },
+  "openCourse": "Otwórz kurs",
+  "receipt": "Potwierdzenie",
+  "close": "Zamknij",
+  "print": "Drukuj",
+  "receiptFields": {
+    "number": "Numer",
+    "date": "Data",
+    "buyer": "Kupujący",
+    "course": "Kurs",
+    "status": "Status",
+    "amount": "Kwota"
+  },
+  "receiptNote": "Płatność testowa — prawdziwe środki nie zostały pobrane."
+}

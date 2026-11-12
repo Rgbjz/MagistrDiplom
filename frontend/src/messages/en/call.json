@@ -1,0 +1,69 @@
+{
+  "banner": {
+    "ongoing": "Video call in progress · {count, plural, one {# participant} other {# participants}}",
+    "join": "Join the call"
+  },
+  "incoming": {
+    "onlineLesson": "Online lesson",
+    "incomingCall": "Incoming video call",
+    "groupInvite": "invites you to the “{title}” course call",
+    "directCalling": "is calling you",
+    "decline": "Decline",
+    "accept": "Accept",
+    "videoCall": "Video call"
+  },
+  "onlineLesson": {
+    "label": "Online lesson",
+    "startFailed": "Couldn’t start the online lesson"
+  },
+  "window": {
+    "label": "Video call: {title}",
+    "yourVideo": "Your video",
+    "peerVideo": "Video: {name}",
+    "micOff": "Microphone off",
+    "cameraOff": "Camera off",
+    "duration": "Call duration",
+    "participants": "{count} of 6 participants",
+    "waitingParticipants": "Waiting for participants…",
+    "waitingAnswer": "Calling… waiting for an answer",
+    "offline": "No connection",
+    "connecting": "Connecting…",
+    "controls": "Call controls",
+    "muteMic": "Mute microphone",
+    "unmuteMic": "Unmute microphone",
+    "muteCamera": "Turn off camera",
+    "unmuteCamera": "Turn on camera",
+    "screenShare": "Screen sharing",
+    "stopScreenShare": "Stop sharing",
+    "startScreenShare": "Share screen",
+    "hangUp": "End call",
+    "me": "You",
+    "participant": "Participant",
+    "videoCall": "Video call",
+    "onlineLesson": "Online lesson",
+    "joinedCount": "Joined: {count}",
+    "cancel": "Cancel",
+    "moveSelfView": "Drag or click to move",
+    "endedWith": "Call ended · {duration}"
+  },
+  "media": {
+    "notSupported": "Your browser doesn’t support camera and microphone access",
+    "audioOnly": "Camera unavailable — you’re in the call with audio only",
+    "denied": "No permission for the camera and microphone — you can only see and hear others",
+    "unavailable": "Camera and microphone unavailable — you can only see and hear others"
+  },
+  "errors": {
+    "full": "The call already has the maximum number of participants (6)",
+    "ended": "The call has already ended",
+    "forbidden": "You don’t have access to this conversation",
+    "notFound": "Conversation not found",
+    "generic": "Couldn’t connect to the call",
+    "noServer": "No connection to the server",
+    "alreadyInCall": "You’re already in a call",
+    "screenNeedsCamera": "Screen sharing requires the camera to be on"
+  },
+  "toast": {
+    "ended": "Call ended",
+    "declined": "The other person declined the call"
+  }
+}

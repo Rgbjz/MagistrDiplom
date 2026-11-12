@@ -1,0 +1,49 @@
+{
+  "status": {
+    "graded": "Перевірено {score}/{max}",
+    "returned": "Повернуто на доопрацювання",
+    "submitted": "Здано",
+    "late": "із запізненням"
+  },
+  "viewer": {
+    "loadError": "Не вдалося завантажити завдання.",
+    "eyebrow": "Практичне завдання · {lesson}",
+    "dueTerm": "Термін",
+    "dueAt": "До {date}",
+    "noDue": "Без терміну",
+    "maxScoreTerm": "Максимальний бал",
+    "maxScore": "Максимум {count, plural, one {# бал} few {# бали} many {# балів} other {# бала}}",
+    "filesTerm": "Файли",
+    "maxFiles": "{count, plural, one {До # файлу} few {До # файлів} many {До # файлів} other {До # файлу}}",
+    "next": "Далі"
+  },
+  "student": {
+    "title": "Моя робота",
+    "submittedAt": "Здано {date}",
+    "teacherComment": "Коментар викладача",
+    "locked": "Роботу оцінено. Повторно здати її не можна.",
+    "drop": "<strong>Перетягніть файли сюди</strong> або натисніть, щоб вибрати",
+    "dropHint": "{count, plural, one {до # файлу} few {до # файлів} many {до # файлів} other {до # файлу}}, кожен до {size}",
+    "filesInput": "Файли роботи",
+    "selected": "Вибрані файли",
+    "remove": "Прибрати {name}",
+    "comment": "Коментар до роботи",
+    "optional": "Необовʼязково",
+    "uploading": "Завантаження роботи",
+    "resubmit": "Здати повторно",
+    "submit": "Здати роботу",
+    "replaceHint": "Нові файли замінять попередні, доки роботу не перевірено.",
+    "unsupported": "«{name}»: такий тип файлу не підтримується",
+    "tooLarge": "«{name}» більший за {size}",
+    "tooMany": "{count, plural, one {Можна додати не більше # файлу} few {Можна додати не більше # файлів} many {Можна додати не більше # файлів} other {Можна додати не більше # файлу}}",
+    "atLeastOne": "Додайте хоча б один файл",
+    "resubmitted": "Роботу здано повторно",
+    "submittedToast": "Роботу здано",
+    "submitError": "Не вдалося здати роботу"
+  },
+  "teacher": {
+    "label": "Здані роботи",
+    "summary": "Здано робіт: <strong>{total}</strong>, очікують перевірки: <strong>{pending}</strong>.",
+    "review": "Перевірити роботи"
+  }
+}

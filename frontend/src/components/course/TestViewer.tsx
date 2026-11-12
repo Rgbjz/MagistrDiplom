@@ -1,30 +1,39 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import Link from 'next/link';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { ClipboardCheck, Clock, ListChecks, Target } from 'lucide-react';
 import { clientApi } from '../../lib/api/client';
+import { useTranslations } from 'next-intl';
+import { useApiErrorMessage, useFormat } from '../../i18n/format';
 import type {
   MyTestResult,
   SessionUser,
-  SubmitResult,
   TestFull,
   TestStartResponse,
 } from '../../lib/types';
+import { Badge, Button, Skeleton, useToast, ScrollArea } from '../ui';
 import styles from './TestViewer.module.scss';
 
+/** Test intro inside the course page: rules, last result, start button. */
 export function TestViewer({
   testId,
   courseId,
   user,
+  onStarted,
 }: {
   testId: number;
   courseId: number;
   user: SessionUser;
+  onStarted: (session: TestStartResponse, test: TestFull) => void;
 }) {
-  const queryClient = useQueryClient();
+  const toast = useToast();
+  const t = useTranslations('test');
+  const errorText = useApiErrorMessage();
+  const f = useFormat();
   const isStudent = user.role === 'STUDENT';
 
-  const { data: test } = useQuery<TestFull>({
+  const { data: test, isLoading } = useQuery<TestFull>({
     queryKey: ['test', testId],
     queryFn: () => clientApi<TestFull>(`/tests/${testId}`),
   });
@@ -35,239 +44,171 @@ export function TestViewer({
     enabled: isStudent,
   });
 
-  const [session, setSession] = useState<TestStartResponse | null>(null);
-  const [answers, setAnswers] = useState<Record<number, number[]>>({});
-  const [timeLeft, setTimeLeft] = useState<number | null>(null);
-  const [submitted, setSubmitted] = useState<SubmitResult | null>(null);
-  const submittingRef = useRef(false);
-
   const startMutation = useMutation({
     mutationFn: () =>
       clientApi<TestStartResponse>(`/tests/${testId}/start`, { method: 'POST' }),
-    onSuccess: (data) => {
-      setSession(data);
-      setAnswers({});
-      setSubmitted(null);
-      setTimeLeft(data.timeLimit * 60);
-    },
+    onSuccess: (data) => test && onStarted(data, test),
+    onError: (e) => toast(errorText(e, t('viewer.startError')), 'error'),
   });
 
-  const submitMutation = useMutation({
-    mutationFn: (resultId: number) =>
-      clientApi<SubmitResult>(`/tests/${resultId}/submit`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ answers }),
-      }),
-    onSuccess: (data) => {
-      setSubmitted(data);
-      setSession(null);
-      setTimeLeft(null);
-      queryClient.invalidateQueries({ queryKey: ['myTestResult', testId] });
-      queryClient.invalidateQueries({ queryKey: ['course', courseId] });
-    },
-  });
-
-  function doSubmit() {
-    if (!session || submittingRef.current) return;
-    submittingRef.current = true;
-    submitMutation.mutate(session.testResultId);
+  if (isLoading || !test) {
+    return <Skeleton height={260} radius="var(--radius-lg)" />;
   }
 
-  // Countdown.
-  useEffect(() => {
-    if (!session || timeLeft === null) return;
-    if (timeLeft <= 0) {
-      doSubmit();
-      return;
-    }
-    const t = setTimeout(() => setTimeLeft((v) => (v ?? 0) - 1), 1000);
-    return () => clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [timeLeft, session]);
+  if (!isStudent) return <TeacherResults testId={testId} test={test} />;
 
-  if (!test) return <p>Loading…</p>;
+  const count = test.questionCount;
+  const noAttempts = test.attemptsLeft === 0;
 
-  // ===== Teacher: results table =====
-  if (!isStudent) {
-    return <TeacherResults testId={testId} />;
-  }
-
-  // ===== In progress =====
-  if (session) {
-    const mins = Math.floor((timeLeft ?? 0) / 60);
-    const secs = ((timeLeft ?? 0) % 60).toString().padStart(2, '0');
-
-    function toggle(qId: number, aId: number, type: string) {
-      setAnswers((prev) => {
-        const cur = prev[qId] ?? [];
-        const next =
-          type === 'SINGLE'
-            ? [aId]
-            : cur.includes(aId)
-              ? cur.filter((x) => x !== aId)
-              : [...cur, aId];
-        return { ...prev, [qId]: next };
-      });
-    }
-
-    return (
-      <div className={styles.card}>
-        <div className={styles.timer}>
-          ⏱ {mins}:{secs}
-        </div>
-        {session.questions.map((q) => (
-          <div key={q.id} className={styles.detailQuestion}>
-            <p>
-              <strong>{q.text}</strong>
-            </p>
-            {q.answers.map((a) => (
-              <label key={a.id} className={styles.answerRow}>
-                <input
-                  type={q.type === 'SINGLE' ? 'radio' : 'checkbox'}
-                  name={`q-${q.id}`}
-                  checked={(answers[q.id] ?? []).includes(a.id)}
-                  onChange={() => toggle(q.id, a.id, q.type)}
-                />
-                {a.text}
-              </label>
-            ))}
-          </div>
-        ))}
-        <button
-          className={styles.submitBtn}
-          onClick={doSubmit}
-          disabled={submitMutation.isPending}
-        >
-          Submit
-        </button>
-      </div>
-    );
-  }
-
-  // ===== Result =====
-  const finalResult = submitted
-    ? { score: submitted.score, passed: submitted.passed }
-    : myResult
-      ? { score: myResult.score, passed: myResult.passed }
-      : null;
-
-  if (finalResult) {
-    const isPerfect = finalResult.score === 100;
-    return (
-      <div className={styles.resultCard}>
-        <div className={styles.resultLayout}>
-          <aside className={styles.resultSide}>
-            <div className={styles.score}>{finalResult.score}%</div>
-            <p className={finalResult.passed ? styles.passed : styles.failed}>
-              {finalResult.passed ? 'Passed' : 'Failed'}
-            </p>
-            <p>Passing score: {test.passingScore}%</p>
-            {!isPerfect && (
-              <button
-                className={styles.startBtn}
-                onClick={() => startMutation.mutate()}
-              >
-                Retry
-              </button>
-            )}
-          </aside>
-          <div className={styles.resultMain}>
-            <div className={styles.details}>
-              {test.questions.map((q) => {
-                const d = myResult?.details.find((x) => x.questionId === q.id);
-                return (
-                  <div key={q.id} className={styles.detailQuestion}>
-                    <p>
-                      <strong>{q.text}</strong>
-                    </p>
-                    {q.answers.map((a) => {
-                      const picked = d?.userAnswerIds.includes(a.id);
-                      const correct = d?.correctAnswerIds.includes(a.id);
-                      return (
-                        <div
-                          key={a.id}
-                          className={`${styles.answerRow} ${
-                            correct ? styles.correct : ''
-                          } ${picked && !correct ? styles.wrong : ''}`}
-                        >
-                          {correct ? '✔' : picked ? '✖' : ''} {a.text}
-                        </div>
-                      );
-                    })}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // ===== Preview / start =====
   return (
-    <div className={styles.card}>
-      <h2>{test.title}</h2>
-      <div className={styles.meta}>
-        <span className={styles.metaBox}>⏱ {test.timeLimit} min</span>
-        <span className={styles.metaBox}>Pass: {test.passingScore}%</span>
-        <span className={styles.metaBox}>
-          {test.questions.length} questions
-        </span>
+    <section className={styles.intro} aria-labelledby="test-title">
+      <span className={styles.introIcon}>
+        <ClipboardCheck size={28} aria-hidden="true" />
+      </span>
+      <div className={styles.introText}>
+        <span className={styles.eyebrow}>{t('viewer.eyebrow')}</span>
+        <h1 id="test-title" className={styles.introTitle}>
+          {test.title}
+        </h1>
       </div>
-      <button
-        className={styles.startBtn}
-        onClick={() => startMutation.mutate()}
-        disabled={startMutation.isPending}
-      >
-        Start test
-      </button>
-    </div>
+
+      <dl className={styles.meta}>
+        <div className={styles.metaBox}>
+          <ListChecks size={18} aria-hidden="true" />
+          <dt className="sr-only">{t('viewer.questionsTerm')}</dt>
+          <dd>{t('viewer.questions', { count })}</dd>
+        </div>
+        <div className={styles.metaBox}>
+          <Clock size={18} aria-hidden="true" />
+          <dt className="sr-only">{t('viewer.timeLimitTerm')}</dt>
+          <dd>{t('viewer.minutes', { count: test.timeLimit })}</dd>
+        </div>
+        <div className={styles.metaBox}>
+          <Target size={18} aria-hidden="true" />
+          <dt className="sr-only">{t('viewer.passingTerm')}</dt>
+          <dd>{t('viewer.passing', { score: test.passingScore })}</dd>
+        </div>
+        {test.maxAttempts !== null && (
+          <div className={styles.metaBox}>
+            <ClipboardCheck size={18} aria-hidden="true" />
+            <dt className="sr-only">{t('viewer.attemptsTerm')}</dt>
+            <dd>{t('viewer.attemptsLeft', { left: test.attemptsLeft ?? 0, max: test.maxAttempts })}</dd>
+          </div>
+        )}
+      </dl>
+
+      {myResult && (
+        <div className={styles.lastResult}>
+          <div>
+            <span className={styles.lastLabel}>{t('viewer.lastAttempt')}</span>
+            <span className={styles.lastScore}>
+              {myResult.score}%{' '}
+              <StatusBadge passed={myResult.passed} pending={myResult.pendingReview} />
+            </span>
+            <span className={styles.lastDate}>{f.dateTime(myResult.finishedAt)}</span>
+          </div>
+          <Link href={`/courses/${courseId}/tests/${testId}/result`} className={styles.link}>
+            {t('viewer.review')}
+          </Link>
+        </div>
+      )}
+
+      <p className={styles.rules}>
+        {t('viewer.rules')}
+      </p>
+
+      <div>
+        <Button
+          size="lg"
+          loading={startMutation.isPending}
+          disabled={count === 0 || noAttempts}
+          onClick={() => startMutation.mutate()}
+        >
+          {myResult ? t('viewer.retry') : t('viewer.start')}
+        </Button>
+        {count === 0 && <p className={styles.rules}>{t('viewer.noQuestions')}</p>}
+        {noAttempts && <p className={styles.rules}>{t('viewer.noAttempts')}</p>}
+      </div>
+    </section>
   );
 }
 
-function TeacherResults({ testId }: { testId: number }) {
-  const { data: rows } = useQuery<
-    {
-      userId: number;
-      userName: string;
-      email: string;
-      attempt: number;
-      score: number | null;
-      passed: boolean | null;
-      finishedAt: string | null;
-    }[]
-  >({
+/** Passed / failed, or «На перевірці» while an essay waits for grading. */
+export function StatusBadge({ passed, pending }: { passed: boolean | null; pending?: boolean }) {
+  const t = useTranslations('test');
+  if (pending) return <Badge tone="warning">{t('status.pending')}</Badge>;
+  return (
+    <Badge tone={passed ? 'success' : 'danger'}>
+      {passed ? t('status.passed') : t('status.failed')}
+    </Badge>
+  );
+}
+
+interface TeacherResultRow {
+  userId: number;
+  userName: string;
+  email: string;
+  attempt: number;
+  score: number | null;
+  passed: boolean | null;
+  pendingReview?: boolean;
+  finishedAt: string | null;
+}
+
+function TeacherResults({ testId, test }: { testId: number; test: TestFull }) {
+  const t = useTranslations('test');
+  const { data: rows, isLoading } = useQuery<TeacherResultRow[]>({
     queryKey: ['testResults', testId],
-    queryFn: () => clientApi(`/tests/${testId}/results`),
+    queryFn: () => clientApi<TeacherResultRow[]>(`/tests/${testId}/results`),
   });
 
-  if (!rows) return <p>Loading…</p>;
   return (
-    <table className={styles.resultsTable}>
-      <thead>
-        <tr>
-          <th>Student</th>
-          <th>Email</th>
-          <th>Attempt</th>
-          <th>Score</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        {rows.map((r) => (
-          <tr key={r.userId}>
-            <td>{r.userName}</td>
-            <td>{r.email}</td>
-            <td>{r.attempt}</td>
-            <td>{r.score}%</td>
-            <td className={r.passed ? styles.passed : styles.failed}>
-              {r.passed ? 'Passed' : 'Failed'}
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <section className={styles.intro} aria-labelledby="test-title">
+      <div className={styles.introText}>
+        <span className={styles.eyebrow}>
+          {t('teacher.summary', {
+            count: test.questionCount,
+            minutes: test.timeLimit,
+            score: test.passingScore,
+          })}
+        </span>
+        <h1 id="test-title" className={styles.introTitle}>
+          {test.title}
+        </h1>
+      </div>
+      <h2 className={styles.subTitle}>{t('teacher.results')}</h2>
+      {isLoading ? (
+        <Skeleton height={120} />
+      ) : !rows || rows.length === 0 ? (
+        <p className={styles.rules}>{t('teacher.empty')}</p>
+      ) : (
+        <ScrollArea className={styles.tableWrap}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th scope="col">{t('teacher.student')}</th>
+                <th scope="col">Email</th>
+                <th scope="col">{t('teacher.attempt')}</th>
+                <th scope="col">{t('teacher.score')}</th>
+                <th scope="col">{t('teacher.status')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r) => (
+                <tr key={r.userId}>
+                  <td>{r.userName || r.email}</td>
+                  <td>{r.email}</td>
+                  <td>{r.attempt}</td>
+                  <td>{r.score ?? '—'}%</td>
+                  <td>
+                    <StatusBadge passed={r.passed} pending={r.pendingReview} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </ScrollArea>
+      )}
+    </section>
   );
 }

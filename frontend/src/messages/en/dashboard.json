@@ -1,0 +1,102 @@
+{
+  "greeting": {
+    "night": "Good night",
+    "morning": "Good morning",
+    "day": "Good afternoon",
+    "evening": "Good evening",
+    "title": "{greeting}, {name}"
+  },
+  "summary": {
+    "courses": "You have {courses, plural, one {# course} other {# courses}} in progress.",
+    "coursesAndTests": "You have {courses, plural, one {# course} other {# courses}} in progress and {tests, plural, one {# test} other {# tests}} ahead.",
+    "empty": "Pick a course in the catalog to start learning."
+  },
+  "findCourse": "Find a course",
+  "stats": {
+    "label": "Statistics",
+    "enrolled": "Active courses",
+    "completed": "{count, plural, one {Course completed} other {Courses completed}}",
+    "lessonsCompleted": "Lessons completed",
+    "avgScore": "Average test score"
+  },
+  "continue": {
+    "title": "Continue learning",
+    "allCourses": "All my courses",
+    "empty": "No courses in progress",
+    "toCatalog": "Go to the catalog",
+    "passed": "Completed {done}/{total, plural, one {# lesson} other {# lessons}}",
+    "next": "Next: {title}",
+    "progressLabel": "Course progress",
+    "continue": "Continue",
+    "start": "Start"
+  },
+  "upcoming": {
+    "title": "Coming up",
+    "empty": "No new tests, assignments or messages.",
+    "testMeta": "{course} · {count, plural, one {# question} other {# questions}} · {minutes} min",
+    "assignment": "Assignment “{title}”",
+    "submitted": " · submitted, awaiting review",
+    "returned": " · returned for revision",
+    "courseChat": "Course chat “{title}”",
+    "noMessages": "No messages yet",
+    "calendarLink": "Calendar"
+  },
+  "suggestions": {
+    "title": "You might like",
+    "allCatalog": "Full catalog"
+  },
+  "myCourses": {
+    "title": "My courses",
+    "subtitle": "All courses you are enrolled in or have applied to.",
+    "sort": {
+      "label": "Sort",
+      "activity": "By last activity",
+      "progress": "By progress",
+      "title": "By title"
+    },
+    "tabs": {
+      "label": "Course status",
+      "active": "Active",
+      "pending": "Awaiting approval",
+      "completed": "Completed"
+    },
+    "loadError": "Couldn't load your courses",
+    "loadErrorHint": "Check your connection and refresh the page.",
+    "empty": {
+      "active": "You have no active courses",
+      "pending": "No pending requests",
+      "completed": "You haven't completed any course yet"
+    },
+    "toCatalog": "Go to the catalog",
+    "lessonsMeta": "{teacher} · {done} of {total, plural, one {# lesson} other {# lessons}}",
+    "next": "Next: <b>{title}</b>",
+    "firstLesson": "First lesson: <b>{title}</b>",
+    "lastActivity": "Last activity: {when}",
+    "enrolledAt": "Enrolled: {date}",
+    "continue": "Continue",
+    "start": "Start learning",
+    "myGrades": "My grades",
+    "requestedAt": "{teacher} · requested on {date}",
+    "rejected": "Request rejected",
+    "pendingBadge": "Waiting for the teacher's approval",
+    "rejectedHint": "The teacher rejected your request. You can message them in the chat or choose another course.",
+    "pendingHint": "As soon as the teacher approves your request, the course will appear under Active and you'll get a notification.",
+    "coursePage": "Course page",
+    "certificateError": "Couldn't get the certificate",
+    "completedAt": "{teacher} · completed on {date}",
+    "completedBadge": "Completed · 100%",
+    "avgScore": "Average score {score}%",
+    "certificate": "Certificate",
+    "getCertificate": "Get certificate",
+    "view": "View"
+  },
+  "assisting": {
+    "title": "Courses I assist on",
+    "open": "Manage course",
+    "role": {
+      "OWNER": "Owner",
+      "TEACHER": "Teacher",
+      "ASSISTANT": "Assistant"
+    }
+  }
+}

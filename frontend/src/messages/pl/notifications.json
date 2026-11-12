@@ -1,0 +1,31 @@
+{
+  "title": "Powiadomienia",
+  "unread": "{count, plural, one {# nieprzeczytane} few {# nieprzeczytane} many {# nieprzeczytanych} other {# nieprzeczytanego}}",
+  "allRead": "Wszystko przeczytane",
+  "markAll": "Oznacz wszystkie jako przeczytane",
+  "allMarked": "Wszystkie powiadomienia oznaczono jako przeczytane",
+  "filterLabel": "Filtr powiadomień",
+  "filter": {
+    "all": "Wszystkie",
+    "unread": "Nieprzeczytane",
+    "courses": "Kursy",
+    "tests": "Testy i zadania",
+    "messages": "Wiadomości"
+  },
+  "listLabel": "Lista powiadomień",
+  "group": {
+    "today": "Dzisiaj",
+    "yesterday": "Wczoraj",
+    "earlier": "Wcześniej"
+  },
+  "empty": "Brak powiadomień",
+  "emptyText": "Tutaj pojawią się zgłoszenia, nowe lekcje, wyniki testów i wiadomości.",
+  "unreadDot": "Nieprzeczytane",
+  "aside": {
+    "title": "Ustawienia powiadomień",
+    "text": "Powiadomienia w aplikacji przychodzą zawsze: zgłoszenia na kursy, nowe lekcje, wyniki testów, wiadomości prywatne i płatności.",
+    "email": "Wysyłaj także e-mailem",
+    "allSettings": "Wszystkie ustawienia profilu",
+    "saved": "Ustawienia zapisane"
+  }
+}

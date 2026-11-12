@@ -1,0 +1,70 @@
+{
+  "actions": {
+    "save": "Zapisz",
+    "cancel": "Anuluj",
+    "confirm": "Potwierdź",
+    "delete": "Usuń",
+    "close": "Zamknij",
+    "retry": "Spróbuj ponownie",
+    "back": "Wstecz",
+    "next": "Dalej",
+    "previous": "Wstecz",
+    "edit": "Edytuj",
+    "search": "Szukaj",
+    "open": "Otwórz",
+    "download": "Pobierz",
+    "send": "Wyślij",
+    "apply": "Zastosuj",
+    "reset": "Wyczyść",
+    "continue": "Kontynuuj",
+    "toHome": "Strona główna",
+    "toCatalog": "Do katalogu"
+  },
+  "loading": "Ładowanie…",
+  "price": {
+    "free": "Bezpłatnie",
+    "amount": "{amount} ₴"
+  },
+  "role": {
+    "STUDENT": "Student",
+    "TEACHER": "Wykładowca",
+    "ADMIN": "Administrator"
+  },
+  "level": {
+    "BEGINNER": "Początkujący",
+    "INTERMEDIATE": "Średniozaawansowany",
+    "ADVANCED": "Zaawansowany"
+  },
+  "enrollment": {
+    "PENDING": "Oczekuje",
+    "ACTIVE": "Aktywny",
+    "REJECTED": "Odrzucono",
+    "COMPLETED": "Ukończył"
+  },
+  "time": {
+    "justNow": "przed chwilą",
+    "minutesAgo": "{count} min temu",
+    "hoursAgo": "{count} godz. temu",
+    "yesterday": "wczoraj",
+    "daysAgo": "{count} dni temu"
+  },
+  "count": {
+    "lessons": "{count, plural, one {# lekcja} few {# lekcje} many {# lekcji} other {# lekcji}}",
+    "students": "{count, plural, one {# student} few {# studentów} many {# studentów} other {# studenta}}",
+    "questions": "{count, plural, one {# pytanie} few {# pytania} many {# pytań} other {# pytania}}"
+  },
+  "deadline": {
+    "overdue": "Termin minął",
+    "hoursLeft": "Zostało {count, plural, one {# godzina} few {# godziny} many {# godzin} other {# godziny}}",
+    "daysLeft": "Zostało {count, plural, one {# dzień} few {# dni} many {# dni} other {# dnia}}"
+  },
+  "test": {
+    "label": "Test „{title}”",
+    "short": "Test: {title}"
+  },
+  "progress": "Postęp",
+  "a11y": {
+    "scrollTable": "Tabela, można przewijać",
+    "messages": "Wiadomości"
+  }
+}

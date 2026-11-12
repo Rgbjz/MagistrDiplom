@@ -1,0 +1,38 @@
+{
+  "paymentFailed": "The payment didn’t go through",
+  "notFound": "Course not found",
+  "toCatalog": "Go to the catalog",
+  "success": {
+    "paidTitle": "Payment successful — the course is in your dashboard",
+    "ownedTitle": "You already have access to this course",
+    "receiptSaved": "The receipt is saved in your purchase history.",
+    "receiptSavedFor": "The receipt is saved in your purchase history ({email}).",
+    "alreadyOwned": "“{title}” is already in your courses.",
+    "toLearning": "Start learning",
+    "purchases": "Purchase history"
+  },
+  "free": {
+    "title": "This course is free",
+    "enroll": "Enroll on the course page"
+  },
+  "backToCourse": "Back to the course page",
+  "title": "Checkout",
+  "testNote": "Test payment — no real money is charged",
+  "order": {
+    "title": "Your order",
+    "sections": "{count, plural, one {# section} other {# sections}}",
+    "lessons": "{count, plural, one {# lesson} other {# lessons}}",
+    "price": "Course price",
+    "total": "Total due"
+  },
+  "form": {
+    "title": "Pay by card",
+    "cardNumber": "Card number",
+    "expiry": "Expiry date (MM/YY)",
+    "cvc": "CVC",
+    "holder": "Cardholder name",
+    "agree": "I agree to the platform’s terms of use",
+    "pay": "Pay {amount}",
+    "secure": "Card details are not stored on the platform"
+  }
+}

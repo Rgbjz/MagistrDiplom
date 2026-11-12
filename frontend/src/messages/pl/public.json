@@ -1,0 +1,109 @@
+{
+  "welcome": {
+    "metaTitle": "LMS — kursy, testy i czat z prowadzącym",
+    "eyebrow": "System zarządzania nauczaniem",
+    "title": "Kursy, testy i kontakt z prowadzącym — w jednym miejscu",
+    "lead": "Ucz się na dowolnym urządzeniu, śledź swoje postępy i zadawaj pytania prowadzącemu na czacie kursu. Prowadzący tworzą kursy z lekcji i testów bez wiedzy technicznej.",
+    "startLearning": "Zacznij naukę",
+    "browseCatalog": "Przeglądaj katalog",
+    "previewContinue": "Kontynuuj naukę",
+    "previewTest": "Test po każdym dziale · licznik czasu i natychmiastowy wynik",
+    "popularTitle": "Popularne kursy",
+    "allCatalog": "Cały katalog",
+    "howTitle": "Jak to działa",
+    "steps": {
+      "choose": {
+        "title": "Wybierz kurs",
+        "text": "Znajdź kurs w katalogu według tematu, ceny lub poziomu i przejrzyj jego program."
+      },
+      "enroll": {
+        "title": "Zapisz się lub kup",
+        "text": "Bezpłatny kurs — po akceptacji prowadzącego, płatny — od razu po opłaceniu."
+      },
+      "learn": {
+        "title": "Ucz się i rozwiązuj testy",
+        "text": "Przerabiaj lekcje we własnym tempie, zaliczaj testy i zdobądź certyfikat."
+      }
+    },
+    "students": {
+      "title": "Dla studentów",
+      "item1": "konto z postępami i blokiem „Kontynuuj”;",
+      "item2": "wideo, notatki i testy po każdym dziale;",
+      "item3": "czat z prowadzącym i grupą kursu.",
+      "cta": "Zarejestruj się jako student"
+    },
+    "teachers": {
+      "title": "Dla prowadzących",
+      "item1": "kreator kursu: działy, lekcje, testy;",
+      "item2": "zgłoszenia studentów i ich postępy w jednej tabeli;",
+      "item3": "własna cena kursu i publiczna strona kursu.",
+      "cta": "Zostań prowadzącym"
+    },
+    "featuresTitle": "Możliwości",
+    "features": {
+      "timer": {
+        "title": "Testy z limitem czasu",
+        "text": "Kilka podejść i natychmiastowy wynik."
+      },
+      "chat": {
+        "title": "Czat w czasie rzeczywistym",
+        "text": "Czat kursu i wiadomości prywatne."
+      },
+      "progress": {
+        "title": "Postęp",
+        "text": "Procent ukończenia każdego kursu."
+      },
+      "dark": {
+        "title": "Ciemny motyw",
+        "text": "Jasny, ciemny lub zgodny z systemem."
+      },
+      "mobile": {
+        "title": "Wersja mobilna",
+        "text": "Interfejs dopasowuje się do telefonu."
+      }
+    },
+    "faqTitle": "Najczęstsze pytania",
+    "faq": {
+      "free": {
+        "q": "Czy mogę uczyć się za darmo?",
+        "a": "Tak. Część kursów jest bezpłatna — wystarczy wysłać zgłoszenie, a prowadzący je zaakceptuje."
+      },
+      "attempts": {
+        "q": "Ile razy mogę podchodzić do testu?",
+        "a": "Liczba podejść jest nieograniczona, liczy się ostatnie."
+      },
+      "teacher": {
+        "q": "Jak zostać prowadzącym?",
+        "a": "Podczas rejestracji wybierz rolę „Prowadzący” — po potwierdzeniu adresu e-mail otworzy się kreator kursów."
+      },
+      "mobile": {
+        "q": "Czy platforma działa na telefonie?",
+        "a": "Tak, wszystkie strony są dostosowane do urządzeń mobilnych."
+      }
+    },
+    "finalTitle": "Gotowy, by zacząć?",
+    "finalText": "Załóż konto w minutę — potwierdź adres e-mail i możesz się uczyć.",
+    "createAccount": "Załóż konto",
+    "login": "Zaloguj się"
+  },
+  "privacy": {
+    "metaTitle": "Prywatność",
+    "title": "Prywatność i pliki cookie",
+    "intro": "Ta strona wyjaśnia, jakie dane zbiera platforma i w jakim celu. Nie sprzedajemy danych i nie używamy reklamowych plików cookie.",
+    "accountTitle": "Dane konta",
+    "accountText": "Adres e-mail, imię i nazwisko są potrzebne do logowania, wiadomości potwierdzających i certyfikatów. Postęp nauki, wyniki testów i wiadomości na czacie są przechowywane, abyś mógł kontynuować naukę na dowolnym urządzeniu.",
+    "emailsTitle": "Wiadomości e-mail",
+    "emailsText": "Wysyłamy wiadomości z potwierdzeniem adresu e-mail, odzyskiwaniem hasła oraz — jeśli nie wyłączysz tego w profilu — powiadomienia o zgłoszeniach, nowych lekcjach i wynikach testów.",
+    "analyticsTitle": "Google Analytics",
+    "analyticsText": "Google Analytics 4 włączamy wyłącznie za Twoją zgodą, aby widzieć, z których stron i funkcji korzystają użytkownicy. Adresy IP są anonimizowane, a adresy e-mail i imiona nie trafiają do analityki. Zgodę możesz wycofać w każdej chwili — wyczyść dane witryny w przeglądarce, a baner pojawi się ponownie.",
+    "cookiesTitle": "Techniczne pliki cookie",
+    "cookiesText": "Pliki cookie sesji są potrzebne do logowania. Wybrany motyw, język i zgoda na analitykę są zapisywane w pamięci lokalnej przeglądarki lub w plikach cookie."
+  },
+  "consent": {
+    "aria": "Zgoda na analitykę",
+    "text": "Używamy Google Analytics, aby zrozumieć, jak ulepszać platformę. Nie używamy reklamowych plików cookie.",
+    "more": "Więcej informacji",
+    "decline": "Odrzuć",
+    "accept": "Akceptuję"
+  }
+}

@@ -1,123 +1,287 @@
 .page {
-  min-height: 100vh;
-  background: var(--color-bg);
-  color: var(--color-text);
-}
-
-.topbar {
-  height: 56px;
-  background: var(--color-header);
-  color: var(--color-header-text);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 var(--space-5);
-  font-weight: 700;
-}
-
-.container {
-  max-width: 1000px;
+  width: 100%;
+  max-width: 1180px;
   margin: 0 auto;
-  padding: var(--space-6) var(--space-5);
+  padding: 48px var(--space-5) 72px;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
 }
 
 .hero {
-  display: grid;
-  grid-template-columns: 1.4fr 1fr;
-  gap: var(--space-6);
-  align-items: start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  align-items: flex-start;
 }
 
-.category {
-  display: inline-block;
-  background: var(--color-primary-soft);
-  color: var(--color-primary);
-  font-size: var(--fs-xs);
-  font-weight: 700;
-  padding: 3px 10px;
+.heroText {
+  flex: 999 1 520px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+%badge {
+  padding: 5px 12px;
   border-radius: 999px;
-  margin-bottom: var(--space-3);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.badge {
+  @extend %badge;
+  background: var(--color-surface-2);
+  color: var(--color-text-muted);
+}
+
+.badgePrimary {
+  @extend %badge;
+  background: var(--color-primary-soft);
+  color: var(--color-on-soft);
+}
+
+.badgeSuccess {
+  @extend %badge;
+  background: var(--color-success-soft);
+  color: var(--color-success-text);
 }
 
 .title {
-  font-size: var(--fs-2xl);
+  font-size: clamp(32px, 5vw, 48px);
+  line-height: 1.1;
   font-weight: 800;
+  letter-spacing: -0.03em;
 }
 
 .lead {
-  color: var(--color-text-muted);
-  margin-top: var(--space-3);
+  font-size: 18px;
   line-height: 1.6;
+  color: var(--color-text-muted);
+  max-width: 640px;
+  white-space: pre-line;
 }
 
 .teacher {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  margin-top: var(--space-4);
-  font-size: var(--fs-sm);
+  gap: 12px;
+}
+
+.teacherText {
+  display: flex;
+  flex-direction: column;
+}
+
+.teacherName {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.muted {
+  font-size: 13px;
   color: var(--color-text-muted);
+}
+
+.facts {
+  margin-top: 8px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+}
+
+.fact {
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+
+  dt {
+    font-size: 13px;
+    color: var(--color-text-muted);
+  }
+
+  dd {
+    margin: 4px 0 0;
+    font-size: 22px;
+    font-weight: 700;
+  }
 }
 
 .priceCard {
+  flex: 1 1 340px;
+  max-width: 400px;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
+  border-radius: 18px;
+  box-shadow: var(--shadow-lg);
   overflow: hidden;
-}
-
-.cover {
-  height: 120px;
-  background: linear-gradient(135deg, var(--color-primary), #7c3aed);
+  position: sticky;
+  top: 88px;
 }
 
 .priceBody {
-  padding: var(--space-4);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.priceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
 }
 
 .price {
-  font-size: var(--fs-2xl);
+  font-size: 34px;
   font-weight: 800;
+  letter-spacing: -0.02em;
 }
 
-.priceNote {
-  font-size: var(--fs-xs);
-  color: var(--color-text-muted);
-  margin-bottom: var(--space-3);
+.includes {
+  list-style: none;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 14px;
+
+  li {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  svg {
+    flex: 0 0 auto;
+    color: var(--color-success-text);
+  }
 }
 
 .section {
-  margin-top: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.sectionTitle {
-  font-size: var(--fs-lg);
+.h2 {
+  font-size: 26px;
   font-weight: 700;
-  margin-bottom: var(--space-3);
 }
 
 .program {
+  max-width: 760px;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   overflow: hidden;
 }
 
-.progHead {
-  padding: var(--space-3) var(--space-4);
-  font-weight: 600;
-  background: var(--color-surface-2);
-  display: flex;
-  justify-content: space-between;
+.programItem {
+  border-bottom: 1px solid var(--color-border);
+
+  &:last-child {
+    border-bottom: 0;
+  }
+
+  summary {
+    min-height: 56px;
+    padding: 12px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+  }
 }
 
-.progItem {
-  padding: var(--space-2) var(--space-5);
-  border-top: 1px solid var(--color-border);
+.programMeta {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.lessons {
+  list-style: none;
+  padding: 0 20px 16px;
   display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 36px;
+    font-size: 14px;
+    color: var(--color-text-muted);
+  }
+}
+
+.testTag {
+  display: inline-flex;
   align-items: center;
-  gap: var(--space-2);
-  color: var(--color-text);
-  font-size: var(--fs-sm);
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--color-warning-soft);
+  color: var(--color-warning-text);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.about {
+  max-width: 760px;
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  padding: 20px;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+
+.aboutText {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  p {
+    color: var(--color-text-muted);
+    line-height: 1.6;
+    white-space: pre-line;
+  }
+}
+
+.back {
+  font-size: 14px;
+
+  a {
+    font-weight: 600;
+    text-decoration: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .page {
+    padding: 28px var(--space-4) 96px;
+    gap: 36px;
+  }
+
+  .priceCard {
+    position: static;
+    max-width: none;
+  }
 }

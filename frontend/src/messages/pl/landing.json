@@ -1,0 +1,52 @@
+{
+  "metaFallback": "Kurs",
+  "levelBadge": "Poziom: {level}",
+  "free": "Bezpłatnie",
+  "teacherRole": "Prowadzący kurs",
+  "facts": {
+    "sections": "Działy",
+    "lessons": "Lekcje",
+    "tests": "Testy",
+    "access": "Dostęp",
+    "forever": "Bezterminowy"
+  },
+  "priceAria": "Cena kursu",
+  "oneTime": "płatność jednorazowa",
+  "includes": {
+    "lessons": "{count, plural, one {# lekcja} few {# lekcje} many {# lekcji} other {# lekcji}} z materiałami",
+    "tests": "{count, plural, one {# test} few {# testy} many {# testów} other {# testu}} z natychmiastowym wynikiem",
+    "chat": "Czat z prowadzącym i grupą",
+    "certificate": "Certyfikat po ukończeniu",
+    "mobile": "Działa na telefonie"
+  },
+  "programTitle": "Program kursu",
+  "programEmpty": "Prowadzący wciąż uzupełnia program kursu.",
+  "sectionLessons": "{count, plural, one {# lekcja} few {# lekcje} many {# lekcji} other {# lekcji}}",
+  "sectionTests": "{count, plural, one {# test} few {# testy} many {# testów} other {# testu}}",
+  "testTag": "test",
+  "aboutTeacher": "O prowadzącym",
+  "backToCatalog": "← Wróć do katalogu",
+  "cta": {
+    "buy": "Kup kurs",
+    "enroll": "Zapisz się na kurs",
+    "hasAccount": "Masz już konto?",
+    "login": "Zaloguj się",
+    "notStudent": "Na kursy mogą zapisywać się tylko studenci. Przeglądasz tę stronę jako {role}.",
+    "roleAdmin": "administrator",
+    "roleTeacher": "prowadzący",
+    "goToCourse": "Przejdź do kursu",
+    "alreadyOwned": "Kurs jest już na Twoim koncie.",
+    "requestSent": "Zgłoszenie wysłane",
+    "requestPending": "Prowadzący wkrótce rozpatrzy zgłoszenie.",
+    "buyFor": "Kup za {price}",
+    "afterPayment": "Po opłaceniu kurs od razu pojawi się na Twoim koncie",
+    "startLearning": "Zacznij naukę",
+    "sendRequest": "Wyślij zgłoszenie",
+    "rejectedNote": "Poprzednie zgłoszenie zostało odrzucone — możesz wysłać kolejne.",
+    "instantAccess": "Dostęp otwiera się od razu.",
+    "approvalAccess": "Dostęp otworzy się po akceptacji prowadzącego.",
+    "enrolledToast": "Zapisano Cię na kurs",
+    "requestToast": "Zgłoszenie wysłane do prowadzącego",
+    "enrollFailed": "Nie udało się zapisać na kurs"
+  }
+}

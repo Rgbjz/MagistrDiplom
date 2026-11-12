@@ -1,0 +1,81 @@
+{
+  "meta": {
+    "title": "Admin panel"
+  },
+  "forbidden": "The admin panel is available to administrators only.",
+  "title": "Admin panel",
+  "subtitle": "Platform users, courses and payments",
+  "statsAria": "Platform statistics",
+  "stats": {
+    "users": "Users · {students} students, {admins} admins",
+    "teachers": "Teachers",
+    "courses": "Courses · {count, plural, one {# draft} other {# drafts}}",
+    "payments": "Payments this month · {count, plural, one {# payment} other {# payments}}"
+  },
+  "tabsAria": "Admin panel sections",
+  "tabs": {
+    "users": "Users",
+    "courses": "Courses",
+    "payments": "Payments"
+  },
+  "users": {
+    "roleChanged": "Role changed to “{role}”",
+    "blocked": "User blocked",
+    "unblocked": "User unblocked",
+    "aria": "Users",
+    "search": "Search for a user",
+    "searchPlaceholder": "Search by email or name",
+    "role": "Role",
+    "all": "All",
+    "table": {
+      "user": "User",
+      "role": "Role",
+      "email": "Email",
+      "registered": "Registered",
+      "actions": "Actions"
+    },
+    "you": " (you)",
+    "roleOf": "Role of {name}",
+    "verified": "Verified",
+    "notVerified": "Not verified",
+    "blockedBadge": "Blocked",
+    "unblock": "Unblock",
+    "block": "Block",
+    "pagesAria": "User pages",
+    "prev": "Previous",
+    "next": "Next",
+    "pageInfo": "Page {page} of {pages} · {count, plural, one {# user} other {# users}}",
+    "confirmTitle": "Block the user?",
+    "confirmText": "{name} will not be able to sign in until you unblock the account.",
+    "confirmBlock": "Block"
+  },
+  "payments": {
+    "aria": "Recent payments",
+    "recent": "Recent payments",
+    "title": "Payments",
+    "all": "All",
+    "empty": "No payments yet",
+    "table": {
+      "date": "Date",
+      "course": "Course",
+      "buyer": "Buyer",
+      "amount": "Amount"
+    }
+  },
+  "courses": {
+    "empty": "No courses yet",
+    "aria": "Courses",
+    "table": {
+      "course": "Course",
+      "teacher": "Teacher",
+      "price": "Price",
+      "students": "Students",
+      "status": "Status",
+      "created": "Created",
+      "actions": "Actions"
+    },
+    "published": "Published",
+    "draft": "Draft",
+    "manage": "Manage"
+  }
+}

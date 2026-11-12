@@ -1,0 +1,69 @@
+{
+  "banner": {
+    "ongoing": "Trwa rozmowa wideo · {count, plural, one {# uczestnik} few {# uczestników} many {# uczestników} other {# uczestnika}}",
+    "join": "Dołącz do rozmowy"
+  },
+  "incoming": {
+    "onlineLesson": "Zajęcia online",
+    "incomingCall": "Przychodząca rozmowa wideo",
+    "groupInvite": "zaprasza do rozmowy kursu „{title}”",
+    "directCalling": "dzwoni do Ciebie",
+    "decline": "Odrzuć",
+    "accept": "Odbierz",
+    "videoCall": "Rozmowa wideo"
+  },
+  "onlineLesson": {
+    "label": "Zajęcia online",
+    "startFailed": "Nie udało się rozpocząć zajęć online"
+  },
+  "window": {
+    "label": "Rozmowa wideo: {title}",
+    "yourVideo": "Twój obraz",
+    "peerVideo": "Obraz: {name}",
+    "micOff": "Mikrofon wyłączony",
+    "cameraOff": "Kamera wyłączona",
+    "duration": "Czas rozmowy",
+    "participants": "{count} z 6 uczestników",
+    "waitingParticipants": "Czekamy na uczestników…",
+    "waitingAnswer": "Dzwonienie… czekamy na odpowiedź",
+    "offline": "Brak połączenia",
+    "connecting": "Łączenie…",
+    "controls": "Sterowanie rozmową",
+    "muteMic": "Wycisz mikrofon",
+    "unmuteMic": "Włącz mikrofon",
+    "muteCamera": "Wyłącz kamerę",
+    "unmuteCamera": "Włącz kamerę",
+    "screenShare": "Udostępnianie ekranu",
+    "stopScreenShare": "Zatrzymaj udostępnianie",
+    "startScreenShare": "Udostępnij ekran",
+    "hangUp": "Zakończ rozmowę",
+    "me": "Ty",
+    "participant": "Uczestnik",
+    "videoCall": "Rozmowa wideo",
+    "onlineLesson": "Zajęcia online",
+    "joinedCount": "Dołączyło: {count}",
+    "cancel": "Anuluj",
+    "moveSelfView": "Przeciągnij lub kliknij, aby przenieść",
+    "endedWith": "Rozmowa zakończona · {duration}"
+  },
+  "media": {
+    "notSupported": "Przeglądarka nie obsługuje dostępu do kamery i mikrofonu",
+    "audioOnly": "Kamera niedostępna — uczestniczysz w rozmowie tylko głosowo",
+    "denied": "Brak zgody na kamerę i mikrofon — możesz tylko widzieć i słyszeć innych",
+    "unavailable": "Kamera i mikrofon niedostępne — możesz tylko widzieć i słyszeć innych"
+  },
+  "errors": {
+    "full": "W rozmowie jest już maksymalna liczba uczestników (6)",
+    "ended": "Rozmowa została już zakończona",
+    "forbidden": "Brak dostępu do tej rozmowy",
+    "notFound": "Nie znaleziono rozmowy",
+    "generic": "Nie udało się połączyć z rozmową",
+    "noServer": "Brak połączenia z serwerem",
+    "alreadyInCall": "Już uczestniczysz w rozmowie",
+    "screenNeedsCamera": "Udostępnianie ekranu wymaga włączonej kamery"
+  },
+  "toast": {
+    "ended": "Rozmowa zakończona",
+    "declined": "Rozmówca odrzucił połączenie"
+  }
+}

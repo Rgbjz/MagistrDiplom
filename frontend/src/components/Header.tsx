@@ -2,70 +2,73 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useSession, signOut } from 'next-auth/react';
-import { useState } from 'react';
-import { BookOpen, Plus, MessageSquare, User, LogOut, Menu } from 'lucide-react';
-import { Avatar, ThemeToggle } from './ui';
-import styles from './Header.module.scss';
+import { useSession } from 'next-auth/react';
+import { useTranslations } from 'next-intl';
+import type { SessionUser } from '../lib/types';
+import { ThemeToggle } from './ui';
+import { Logo } from './layout/Logo';
+import { NavIcon } from './layout/NavIcon';
+import { NotificationBell } from './layout/NotificationBell';
+import { UserMenu } from './layout/UserMenu';
+import { LanguageSwitcher } from './layout/LanguageSwitcher';
+import { desktopNav, isActive } from './layout/nav';
+import styles from './layout/Header.module.scss';
 
+/**
+ * Site header. Signed-in users get role navigation, notifications and the
+ * avatar menu; guests get catalog + sign-in links (public pages).
+ */
 export function Header() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
-  const user = session?.user;
-  if (!user) return <header className={styles.header} />;
-
-  const email = user.email ?? '';
-  const links = [
-    { href: '/', label: 'Courses', icon: <BookOpen size={16} /> },
-    ...(user.role === 'TEACHER'
-      ? [
-          {
-            href: '/teacher/courses/new',
-            label: 'Create',
-            icon: <Plus size={16} />,
-          },
-        ]
-      : []),
-    { href: '/chat', label: 'Chat', icon: <MessageSquare size={16} /> },
-    { href: '/profile', label: 'Profile', icon: <User size={16} /> },
-  ];
+  const user = session?.user as SessionUser | undefined;
+  const t = useTranslations('nav');
 
   return (
-    <header className={styles.header}>
-      <button
-        className={styles.burger}
-        onClick={() => setOpen((o) => !o)}
-        aria-label="Menu"
-      >
-        <Menu size={20} />
-      </button>
-
-      <nav className={`${styles.nav} ${open ? styles.navOpen : ''}`}>
-        {links.map((l) => (
-          <Link
-            key={l.href}
-            href={l.href}
-            onClick={() => setOpen(false)}
-            className={`${styles.link} ${pathname === l.href ? styles.active : ''}`}
-          >
-            {l.icon}
-            {l.label}
-          </Link>
-        ))}
-      </nav>
-
-      <div className={styles.right}>
-        <ThemeToggle />
-        <span className={styles.email}>{email}</span>
-        <Avatar name={email} size={34} />
-        <button
-          className={styles.logout}
-          onClick={() => signOut({ callbackUrl: '/login' })}
-          aria-label="Logout"
-        >
-          <LogOut size={18} />
-        </button>
+    <header className={`${styles.header} no-print`}>
+      <div className={styles.inner}>
+        <Logo />
+        {user ? (
+          <>
+            <nav aria-label={t('mainLabel')} className={styles.nav}>
+              {desktopNav(user.role).map((l) => (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  aria-current={isActive(pathname, l.href) ? 'page' : undefined}
+                  className={`${styles.link} ${isActive(pathname, l.href) ? styles.active : ''}`}
+                >
+                  <NavIcon name={l.icon} size={16} />
+                  {t(`items.${l.label}`)}
+                </Link>
+              ))}
+            </nav>
+            <div className={styles.right}>
+              <LanguageSwitcher />
+              <ThemeToggle />
+              <NotificationBell />
+              <UserMenu user={user} />
+            </div>
+          </>
+        ) : (
+          <div className={styles.right}>
+            <Link href="/catalog" className={`${styles.link} ${styles.hideSm}`}>
+              {t('items.catalog')}
+            </Link>
+            <LanguageSwitcher />
+            <ThemeToggle />
+            {status !== 'loading' && (
+              <>
+                <Link href="/login" className={`${styles.link} ${styles.hideSm}`}>
+                  {t('guest.login')}
+                </Link>
+                <Link href="/register" className={styles.cta}>
+                  {t('guest.register')}
+                </Link>
+              </>
+            )}
+          </div>
+        )}
       </div>
     </header>
   );

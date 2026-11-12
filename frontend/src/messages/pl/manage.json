@@ -1,0 +1,178 @@
+{
+  "meta": {
+    "title": "Zarządzanie kursem"
+  },
+  "requests": {
+    "approved": "{name}: prośba zaakceptowana",
+    "rejected": "{name}: prośba odrzucona",
+    "emptyTitle": "Brak nowych próśb",
+    "emptyHint": "Gdy student poprosi o dostęp do kursu, prośba pojawi się tutaj.",
+    "ariaLabel": "Prośby o zapis",
+    "waiting": "Oczekujące na akceptację: {count}",
+    "rejectAria": "Odrzuć prośbę od {name}",
+    "approveAria": "Zaakceptuj prośbę od {name}",
+    "reject": "Odrzuć",
+    "approve": "Zaakceptuj"
+  },
+  "page": {
+    "forbidden": "Kursem może zarządzać tylko jego zespół.",
+    "breadcrumbCourses": "Moje kursy",
+    "breadcrumbManage": "Zarządzanie",
+    "published": "Opublikowany",
+    "draft": "Szkic",
+    "landing": "Strona kursu",
+    "builder": "Kreator",
+    "tabsAria": "Zarządzanie kursem",
+    "tabs": {
+      "requests": "Prośby",
+      "students": "Studenci",
+      "tests": "Wyniki testów",
+      "assignments": "Zadania",
+      "gradebook": "Dziennik ocen",
+      "team": "Zespół"
+    }
+  },
+  "students": {
+    "chatFailed": "Nie udało się otworzyć czatu",
+    "csv": {
+      "student": "Student",
+      "email": "E-mail",
+      "status": "Status",
+      "progress": "Postęp, %",
+      "lessons": "Lekcje",
+      "tests": "Testy",
+      "avgScore": "Średni wynik",
+      "lastActivity": "Ostatnia aktywność",
+      "filename": "{course} — studenci.csv"
+    },
+    "emptyTitle": "Kurs nie ma jeszcze studentów",
+    "emptyHint": "Udostępnij stronę kursu, aby studenci mogli się zapisać.",
+    "aria": "Studenci kursu",
+    "search": "Szukaj studenta",
+    "status": "Status",
+    "all": "Wszyscy",
+    "exportCsv": "Eksport CSV",
+    "table": {
+      "student": "Student",
+      "status": "Status",
+      "progress": "Postęp",
+      "lessons": "Lekcje",
+      "avgScore": "Średni wynik",
+      "lastActivity": "Ostatnia aktywność",
+      "actions": "Działania"
+    },
+    "progressOf": "Postęp: {name}",
+    "messageAria": "Napisz do {name}",
+    "message": "Napisz",
+    "detailsAria": "Szczegóły: {name}",
+    "details": "Szczegóły",
+    "shown": "Pokazano {shown} z {count, plural, one {# studenta} few {# studentów} many {# studentów} other {# studenta}}",
+    "close": "Zamknij",
+    "detail": {
+      "email": "E-mail",
+      "status": "Status",
+      "progress": "Postęp w kursie",
+      "lessons": "Lekcje",
+      "tests": "Testy",
+      "outOf": "{done} z {total}",
+      "avgScore": "Średni wynik",
+      "lastActivity": "Ostatnia aktywność"
+    }
+  },
+  "tests": {
+    "emptyTitle": "Kurs nie ma jeszcze testów",
+    "emptyHint": "Dodaj test do lekcji w kreatorze kursu.",
+    "aria": "Wyniki testów",
+    "table": {
+      "test": "Test",
+      "attempts": "Próby",
+      "students": "Studenci",
+      "passed": "Zaliczyło",
+      "avgScore": "Średni wynik",
+      "actions": "Działania"
+    },
+    "results": "Wyniki",
+    "resultsTitle": "Wyniki: {title}",
+    "close": "Zamknij",
+    "noResults": "Nikt jeszcze nie ukończył tego testu.",
+    "attempt": "Próba {number}",
+    "passedShort": "zaliczył",
+    "failedShort": "nie zaliczył",
+    "pendingShort": "w sprawdzaniu"
+  },
+  "assignments": {
+    "emptyTitle": "Kurs nie ma jeszcze zadań",
+    "emptyHint": "Dodaj zadanie praktyczne do lekcji w kreatorze kursu.",
+    "due": "do {date}",
+    "overdue": " (termin minął)",
+    "pending": "Oczekuje: {count}",
+    "graded": "Ocenione: {count}",
+    "returned": "Zwrócone: {count}",
+    "late": "Po terminie: {count}",
+    "none": "Nikt jeszcze nie oddał pracy.",
+    "table": {
+      "student": "Student",
+      "submitted": "Oddano",
+      "files": "Pliki",
+      "status": "Status",
+      "actions": "Działania"
+    },
+    "check": "Sprawdź",
+    "changeGrade": "Zmień ocenę"
+  },
+  "grade": {
+    "saved": "Ocena zapisana",
+    "saveFailed": "Nie udało się zapisać oceny",
+    "returned": "Praca zwrócona do poprawy",
+    "returnFailed": "Nie udało się zwrócić pracy",
+    "title": "Praca: {name}",
+    "return": "Zwróć do poprawy",
+    "grade": "Oceń",
+    "submittedAt": "{title} · oddano {date}",
+    "late": " · po terminie",
+    "score": "Ocena (0–{max})",
+    "scoreRange": "Od 0 do {max}",
+    "feedback": "Komentarz dla studenta",
+    "feedbackHint": "Wymagany przy zwrocie pracy"
+  },
+  "team": {
+    "inviteTitle": "Dodaj do zespołu",
+    "inviteHint": "Prowadzący może edytować materiały i oceniać; asystent — oceniać prace, rozpatrywać zgłoszenia i odpowiadać na czacie. Osoba musi mieć już konto.",
+    "email": "E-mail",
+    "role": "Rola",
+    "add": "Dodaj",
+    "added": "Dodano członka zespołu",
+    "roleChanged": "Zmieniono rolę",
+    "removed": "Usunięto członka zespołu",
+    "title": "Zespół kursu ({count})",
+    "readOnly": "Skład zespołu może zmieniać tylko właściciel kursu.",
+    "columns": {
+      "person": "Członek",
+      "role": "Rola",
+      "added": "Dodano",
+      "actions": "Działania"
+    },
+    "roles": {
+      "OWNER": "Właściciel",
+      "TEACHER": "Prowadzący",
+      "ASSISTANT": "Asystent"
+    },
+    "roleFor": "Rola: {name}",
+    "remove": "Usuń",
+    "removeFor": "Usuń {name} z zespołu",
+    "removeTitle": "Usunąć z zespołu?",
+    "removeText": "{name} straci dostęp do zarządzania kursem.",
+    "rolesTitle": "Co może każda rola",
+    "roleHints": {
+      "OWNER": "wszystko, w tym cena, usunięcie kursu i skład zespołu",
+      "TEACHER": "materiały, testy, zadania, publikacja, ocenianie, dziennik",
+      "ASSISTANT": "ocenianie prac, zgłoszenia, postęp i dziennik, czat kursu"
+    },
+    "errors": {
+      "notFound": "Nie znaleziono użytkownika z tym adresem e-mail",
+      "alreadyMember": "Ten użytkownik jest już w zespole kursu",
+      "teacherOnly": "Prowadzącym kursu może być tylko konto nauczyciela",
+      "admin": "Administratorzy mają już pełny dostęp"
+    }
+  }
+}

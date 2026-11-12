@@ -1,0 +1,178 @@
+{
+  "meta": {
+    "title": "Course management"
+  },
+  "requests": {
+    "approved": "{name}: request approved",
+    "rejected": "{name}: request rejected",
+    "emptyTitle": "No new requests",
+    "emptyHint": "When a student asks to join the course, the request will appear here.",
+    "ariaLabel": "Enrollment requests",
+    "waiting": "Awaiting approval: {count}",
+    "rejectAria": "Reject request from {name}",
+    "approveAria": "Approve request from {name}",
+    "reject": "Reject",
+    "approve": "Approve"
+  },
+  "page": {
+    "forbidden": "Only the course team can manage this course.",
+    "breadcrumbCourses": "My courses",
+    "breadcrumbManage": "Management",
+    "published": "Published",
+    "draft": "Draft",
+    "landing": "Landing page",
+    "builder": "Builder",
+    "tabsAria": "Course management",
+    "tabs": {
+      "requests": "Requests",
+      "students": "Students",
+      "tests": "Test results",
+      "assignments": "Assignments",
+      "gradebook": "Gradebook",
+      "team": "Team"
+    }
+  },
+  "students": {
+    "chatFailed": "Could not open the chat",
+    "csv": {
+      "student": "Student",
+      "email": "Email",
+      "status": "Status",
+      "progress": "Progress, %",
+      "lessons": "Lessons",
+      "tests": "Tests",
+      "avgScore": "Average score",
+      "lastActivity": "Last activity",
+      "filename": "{course} — students.csv"
+    },
+    "emptyTitle": "The course has no students yet",
+    "emptyHint": "Share the course landing page so students can enroll.",
+    "aria": "Course students",
+    "search": "Search for a student",
+    "status": "Status",
+    "all": "All",
+    "exportCsv": "Export CSV",
+    "table": {
+      "student": "Student",
+      "status": "Status",
+      "progress": "Progress",
+      "lessons": "Lessons",
+      "avgScore": "Average score",
+      "lastActivity": "Last activity",
+      "actions": "Actions"
+    },
+    "progressOf": "Progress of {name}",
+    "messageAria": "Message {name}",
+    "message": "Message",
+    "detailsAria": "Details for {name}",
+    "details": "Details",
+    "shown": "Showing {shown} of {count, plural, one {# student} other {# students}}",
+    "close": "Close",
+    "detail": {
+      "email": "Email",
+      "status": "Status",
+      "progress": "Course progress",
+      "lessons": "Lessons",
+      "tests": "Tests",
+      "outOf": "{done} of {total}",
+      "avgScore": "Average score",
+      "lastActivity": "Last activity"
+    }
+  },
+  "tests": {
+    "emptyTitle": "The course has no tests yet",
+    "emptyHint": "Add a test to a lesson in the course builder.",
+    "aria": "Test results",
+    "table": {
+      "test": "Test",
+      "attempts": "Attempts",
+      "students": "Students",
+      "passed": "Passed",
+      "avgScore": "Average score",
+      "actions": "Actions"
+    },
+    "results": "Results",
+    "resultsTitle": "Results: {title}",
+    "close": "Close",
+    "noResults": "No one has finished this test yet.",
+    "attempt": "Attempt {number}",
+    "passedShort": "passed",
+    "failedShort": "failed",
+    "pendingShort": "under review"
+  },
+  "assignments": {
+    "emptyTitle": "The course has no assignments yet",
+    "emptyHint": "Add a practical assignment to a lesson in the course builder.",
+    "due": "due {date}",
+    "overdue": " (overdue)",
+    "pending": "Waiting: {count}",
+    "graded": "Graded: {count}",
+    "returned": "Returned: {count}",
+    "late": "Late: {count}",
+    "none": "No one has handed in work yet.",
+    "table": {
+      "student": "Student",
+      "submitted": "Handed in",
+      "files": "Files",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "check": "Review",
+    "changeGrade": "Change grade"
+  },
+  "grade": {
+    "saved": "Grade saved",
+    "saveFailed": "Could not save the grade",
+    "returned": "Work returned for revision",
+    "returnFailed": "Could not return the work",
+    "title": "Work: {name}",
+    "return": "Return for revision",
+    "grade": "Grade",
+    "submittedAt": "{title} · handed in {date}",
+    "late": " · late",
+    "score": "Score (0–{max})",
+    "scoreRange": "From 0 to {max}",
+    "feedback": "Comment for the student",
+    "feedbackHint": "Required when returning the work"
+  },
+  "team": {
+    "inviteTitle": "Add to the team",
+    "inviteHint": "A teacher can edit materials and grade; an assistant can grade work, review enrollment requests and answer in the chat. The person must already have an account.",
+    "email": "Email",
+    "role": "Role",
+    "add": "Add",
+    "added": "Team member added",
+    "roleChanged": "Role changed",
+    "removed": "Team member removed",
+    "title": "Course team ({count})",
+    "readOnly": "Only the course owner can change the team.",
+    "columns": {
+      "person": "Member",
+      "role": "Role",
+      "added": "Added",
+      "actions": "Actions"
+    },
+    "roles": {
+      "OWNER": "Owner",
+      "TEACHER": "Teacher",
+      "ASSISTANT": "Assistant"
+    },
+    "roleFor": "Role: {name}",
+    "remove": "Remove",
+    "removeFor": "Remove {name} from the team",
+    "removeTitle": "Remove from the team?",
+    "removeText": "{name} will lose access to managing the course.",
+    "rolesTitle": "What each role can do",
+    "roleHints": {
+      "OWNER": "everything, including price, deleting the course and the team",
+      "TEACHER": "materials, tests, assignments, publishing, grading, gradebook",
+      "ASSISTANT": "grading work, enrollment requests, progress and gradebook, course chat"
+    },
+    "errors": {
+      "notFound": "No user with this email",
+      "alreadyMember": "This user is already on the course team",
+      "teacherOnly": "Only a teacher account can be a course teacher",
+      "admin": "Administrators already have full access"
+    }
+  }
+}

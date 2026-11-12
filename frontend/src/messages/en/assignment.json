@@ -1,0 +1,49 @@
+{
+  "status": {
+    "graded": "Graded {score}/{max}",
+    "returned": "Returned for revision",
+    "submitted": "Submitted",
+    "late": "late"
+  },
+  "viewer": {
+    "loadError": "Couldn't load the assignment.",
+    "eyebrow": "Practical assignment · {lesson}",
+    "dueTerm": "Deadline",
+    "dueAt": "Due {date}",
+    "noDue": "No deadline",
+    "maxScoreTerm": "Maximum score",
+    "maxScore": "Up to {count, plural, one {# point} other {# points}}",
+    "filesTerm": "Files",
+    "maxFiles": "Up to {count, plural, one {# file} other {# files}}",
+    "next": "Next"
+  },
+  "student": {
+    "title": "My work",
+    "submittedAt": "Submitted {date}",
+    "teacherComment": "Teacher's comment",
+    "locked": "Your work has been graded. It can't be resubmitted.",
+    "drop": "<strong>Drag files here</strong> or click to choose",
+    "dropHint": "up to {count, plural, one {# file} other {# files}}, each up to {size}",
+    "filesInput": "Work files",
+    "selected": "Selected files",
+    "remove": "Remove {name}",
+    "comment": "Comment on your work",
+    "optional": "Optional",
+    "uploading": "Uploading your work",
+    "resubmit": "Resubmit",
+    "submit": "Submit work",
+    "replaceHint": "New files will replace the previous ones until the work is graded.",
+    "unsupported": "“{name}”: this file type isn't supported",
+    "tooLarge": "“{name}” is larger than {size}",
+    "tooMany": "You can add at most {count, plural, one {# file} other {# files}}",
+    "atLeastOne": "Add at least one file",
+    "resubmitted": "Work resubmitted",
+    "submittedToast": "Work submitted",
+    "submitError": "Couldn't submit your work"
+  },
+  "teacher": {
+    "label": "Submitted work",
+    "summary": "Submissions: <strong>{total}</strong>, awaiting review: <strong>{pending}</strong>.",
+    "review": "Review submissions"
+  }
+}

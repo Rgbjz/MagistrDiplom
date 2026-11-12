@@ -1,0 +1,36 @@
+{
+  "forbidden": "Grades are available only to students of the course",
+  "back": "Back to the course",
+  "title": "My grades",
+  "subtitle": "Tests {tests}% · assignments {assignments}% · pass threshold {threshold}%",
+  "empty": "No grades yet",
+  "summary": "Summary",
+  "final": "Final grade",
+  "passed": "Course passed",
+  "notPassed": "Not passed yet",
+  "tests": "Tests",
+  "assignments": "Assignments",
+  "progress": "Course progress",
+  "noItems": "This course has no tests or assignments",
+  "kindTest": "Test",
+  "kindAssignment": "Assignment",
+  "due": "due {date}",
+  "state": {
+    "graded": "Graded",
+    "submitted": "Submitted, not reviewed",
+    "returned": "Returned for revision",
+    "missing": "Missing",
+    "late": "Overdue"
+  },
+  "cell": {
+    "submitted": "submitted",
+    "returned": "revision",
+    "late": "overdue"
+  },
+  "lateSuffix": ", late",
+  "note": "Tests and assignments not handed in count as 0 in the final grade.",
+  "scaleGrade": "Grade on the course scale",
+  "overridden": "Changed by the teacher",
+  "overriddenReason": "Grade changed manually. Reason: {reason}",
+  "wasValue": "Automatic value was: {value}"
+}

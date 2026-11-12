@@ -1,0 +1,52 @@
+{
+  "metaFallback": "Курс",
+  "levelBadge": "{level} рівень",
+  "free": "Безкоштовно",
+  "teacherRole": "Викладач курсу",
+  "facts": {
+    "sections": "Розділів",
+    "lessons": "Уроків",
+    "tests": "Тестів",
+    "access": "Доступ",
+    "forever": "Назавжди"
+  },
+  "priceAria": "Вартість курсу",
+  "oneTime": "одноразово",
+  "includes": {
+    "lessons": "{count, plural, one {# урок} few {# уроки} many {# уроків} other {# уроку}} з матеріалами",
+    "tests": "{count, plural, one {# тест} few {# тести} many {# тестів} other {# тесту}} з миттєвим результатом",
+    "chat": "Чат з викладачем і групою",
+    "certificate": "Сертифікат після завершення",
+    "mobile": "Працює на телефоні"
+  },
+  "programTitle": "Програма курсу",
+  "programEmpty": "Викладач ще наповнює програму курсу.",
+  "sectionLessons": "{count, plural, one {# урок} few {# уроки} many {# уроків} other {# уроку}}",
+  "sectionTests": "{count, plural, one {# тест} few {# тести} many {# тестів} other {# тесту}}",
+  "testTag": "тест",
+  "aboutTeacher": "Про викладача",
+  "backToCatalog": "← Повернутися до каталогу",
+  "cta": {
+    "buy": "Купити курс",
+    "enroll": "Записатися на курс",
+    "hasAccount": "Вже є акаунт?",
+    "login": "Увійти",
+    "notStudent": "Записуватися на курси можуть лише студенти. Ви переглядаєте сторінку як {role}.",
+    "roleAdmin": "адміністратор",
+    "roleTeacher": "викладач",
+    "goToCourse": "Перейти до курсу",
+    "alreadyOwned": "Курс уже є у вашому кабінеті.",
+    "requestSent": "Заявку надіслано",
+    "requestPending": "Викладач розгляне заявку найближчим часом.",
+    "buyFor": "Купити за {price}",
+    "afterPayment": "Після оплати курс одразу з’явиться у вашому кабінеті",
+    "startLearning": "Почати навчання",
+    "sendRequest": "Подати заявку",
+    "rejectedNote": "Попередню заявку відхилено — можна подати ще раз.",
+    "instantAccess": "Доступ відкривається одразу.",
+    "approvalAccess": "Доступ відкриється після схвалення викладачем.",
+    "enrolledToast": "Ви записані на курс",
+    "requestToast": "Заявку надіслано викладачу",
+    "enrollFailed": "Не вдалося записатися на курс"
+  }
+}

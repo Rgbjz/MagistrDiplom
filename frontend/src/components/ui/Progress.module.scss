@@ -1,0 +1,32 @@
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+}
+
+.track {
+  flex: 1;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--color-track);
+  overflow: hidden;
+}
+
+.sm {
+  height: 6px;
+}
+
+.fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--color-primary-fill);
+  transition: width 0.3s ease;
+}
+
+.value {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  min-width: 34px;
+  text-align: right;
+}

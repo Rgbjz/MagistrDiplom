@@ -1,0 +1,74 @@
+{
+  "title": "Profil i ustawienia",
+  "subtitle": "Dane osobowe, bezpieczeństwo konta i wygląd platformy.",
+  "sidebar": {
+    "photoUpdated": "Zdjęcie zaktualizowane",
+    "photoUploadFailed": "Nie udało się przesłać zdjęcia",
+    "chooseImage": "Wybierz obraz JPG lub PNG",
+    "tooLarge": "Plik jest większy niż 2 MB",
+    "uploading": "Przesyłanie…",
+    "changePhoto": "Zmień zdjęcie",
+    "photoHint": "JPG lub PNG, do 2 MB",
+    "emailNotVerified": "Email niepotwierdzony",
+    "emailVerified": "Email potwierdzony",
+    "stats": {
+      "courses": "Kursy",
+      "lessons": "Lekcje",
+      "certificates": "Certyf."
+    }
+  },
+  "personal": {
+    "title": "Dane osobowe",
+    "firstName": "Imię",
+    "lastName": "Nazwisko",
+    "bio": "O mnie",
+    "save": "Zapisz zmiany",
+    "saved": "Zmiany zapisane",
+    "max50": "Nie więcej niż 50 znaków",
+    "max500": "Nie więcej niż 500 znaków"
+  },
+  "security": {
+    "title": "Bezpieczeństwo",
+    "currentPassword": "Obecne hasło",
+    "newPassword": "Nowe hasło",
+    "repeatPassword": "Powtórz hasło",
+    "changePassword": "Zmień hasło",
+    "passwordChanged": "Hasło zmienione",
+    "enterCurrent": "Wpisz obecne hasło",
+    "min6": "Co najmniej 6 znaków",
+    "mismatch": "Hasła nie są zgodne",
+    "sessionsTitle": "Aktywne sesje",
+    "noSessions": "Brak aktywnych sesji.",
+    "activity": "aktywność {time}",
+    "thisDevice": "To urządzenie",
+    "end": "Zakończ",
+    "sessionEnded": "Sesja zakończona",
+    "unknownDevice": "Nieznane urządzenie",
+    "app": "Aplikacja",
+    "browser": "Przeglądarka",
+    "endOthers": "Zakończ wszystkie inne sesje",
+    "othersEnded": "Inne sesje zakończone",
+    "reloginForOthers": "Zaloguj się ponownie, aby zakończyć inne sesje"
+  },
+  "settings": {
+    "title": "Ustawienia",
+    "theme": "Motyw",
+    "themeLight": "Jasny",
+    "themeDark": "Ciemny",
+    "themeSystem": "Systemowy",
+    "emailTitle": "Powiadomienia e-mail",
+    "emailToggle": "Wysyłaj powiadomienia także e-mailem (zgłoszenia, wyniki testów, wiadomości)",
+    "saved": "Ustawienia zapisane",
+    "remindersTitle": "Przypomnienia o terminach",
+    "remindersToggle": "Przypominaj 24 godziny i godzinę przed terminem zadania i wydarzeniami kursu"
+  },
+  "danger": {
+    "title": "Strefa niebezpieczna",
+    "text": "Usunięcie konta usunie Twoje postępy, wyniki testów i wiadomości. Tej operacji nie można cofnąć.",
+    "delete": "Usuń konto",
+    "confirmTitle": "Usunąć konto?",
+    "confirmText": "Aby potwierdzić, wpisz swoje hasło. Po usunięciu danych nie da się odzyskać.",
+    "password": "Hasło",
+    "deleteForever": "Usuń na zawsze"
+  }
+}

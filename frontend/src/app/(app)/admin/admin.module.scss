@@ -1,0 +1,87 @@
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+}
+
+.search {
+  flex: 1 1 240px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  color: var(--color-text-muted);
+
+  svg {
+    position: absolute;
+    left: 12px;
+    pointer-events: none;
+  }
+
+  input {
+    padding-left: 38px;
+  }
+}
+
+.filter {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: 0 1 240px;
+}
+
+.filterLabel {
+  font-size: var(--fs-sm);
+  color: var(--color-text-muted);
+}
+
+.roleSelect {
+  min-width: 128px;
+  min-height: 40px;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.blockedRow td {
+  opacity: 0.75;
+}
+
+.you {
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
+
+/* Wraps to two lines so the actions column fits beside the payments aside at 1440. */
+.dateCell {
+  min-width: 96px;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.sum {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.plain {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 var(--space-2);
+}
+
+.pager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}

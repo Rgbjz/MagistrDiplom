@@ -1,0 +1,38 @@
+{
+  "paymentFailed": "Płatność nie powiodła się",
+  "notFound": "Nie znaleziono kursu",
+  "toCatalog": "Przejdź do katalogu",
+  "success": {
+    "paidTitle": "Płatność udana — kurs jest w Twoim panelu",
+    "ownedTitle": "Masz już dostęp do tego kursu",
+    "receiptSaved": "Potwierdzenie zapisano w historii zakupów.",
+    "receiptSavedFor": "Potwierdzenie zapisano w historii zakupów ({email}).",
+    "alreadyOwned": "„{title}” jest już w Twoich kursach.",
+    "toLearning": "Przejdź do nauki",
+    "purchases": "Historia zakupów"
+  },
+  "free": {
+    "title": "Ten kurs jest bezpłatny",
+    "enroll": "Zapisz się na stronie kursu"
+  },
+  "backToCourse": "Do strony kursu",
+  "title": "Realizacja zakupu",
+  "testNote": "Płatność testowa — prawdziwe środki nie są pobierane",
+  "order": {
+    "title": "Twoje zamówienie",
+    "sections": "{count, plural, one {# rozdział} few {# rozdziały} many {# rozdziałów} other {# rozdziału}}",
+    "lessons": "{count, plural, one {# lekcja} few {# lekcje} many {# lekcji} other {# lekcji}}",
+    "price": "Cena kursu",
+    "total": "Do zapłaty"
+  },
+  "form": {
+    "title": "Płatność kartą",
+    "cardNumber": "Numer karty",
+    "expiry": "Data ważności (MM/RR)",
+    "cvc": "CVC",
+    "holder": "Imię i nazwisko posiadacza",
+    "agree": "Akceptuję warunki korzystania z platformy",
+    "pay": "Zapłać {amount}",
+    "secure": "Dane karty nie są przechowywane na platformie"
+  }
+}

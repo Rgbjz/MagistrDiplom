@@ -1,0 +1,88 @@
+{
+  "state": {
+    "graded": "Ocenione",
+    "submitted": "Oddane, niesprawdzone",
+    "returned": "Do poprawy",
+    "missing": "Brak",
+    "late": "Po terminie"
+  },
+  "cell": {
+    "submitted": "oddane",
+    "returned": "poprawa",
+    "late": "po terminie",
+    "lateSuffix": ", po terminie"
+  },
+  "column": {
+    "test": "Test",
+    "assignment": "Zadanie",
+    "outOf": "z {max}"
+  },
+  "exportFailed": "Nie udało się wyeksportować dziennika",
+  "emptyTitle": "Na razie nie ma czego oceniać",
+  "emptyHint": "Dodaj do lekcji testy lub zadania — pojawią się w dzienniku.",
+  "title": "Dziennik ocen",
+  "weights": "Testy {tests}% · zadania {assignments}% · próg zaliczenia {threshold}%.",
+  "change": "Zmień",
+  "exportExcel": "Eksport Excel",
+  "exportCsv": "Eksport CSV",
+  "stats": {
+    "students": "Studentów",
+    "avgFinal": "Średni wynik końcowy",
+    "passed": "Zaliczyło"
+  },
+  "search": "Szukaj studenta",
+  "searchPlaceholder": "Szukaj po imieniu lub e-mailu",
+  "failedOnly": "Tylko ci, którzy nie zaliczyli",
+  "noStudents": "Kurs nie ma jeszcze aktywnych studentów",
+  "tableAria": "Dziennik ocen, przewijany w poziomie",
+  "head": {
+    "student": "Student",
+    "tests": "Testy",
+    "assignments": "Zadania",
+    "final": "Wynik końcowy",
+    "scale": "Ocena"
+  },
+  "passed": "Zaliczył",
+  "failed": "Nie zaliczył",
+  "average": "Średnia",
+  "handedIn": "oddało {count}",
+  "legend": "Legenda",
+  "scale": {
+    "fiveLabel": "{code} · {word}",
+    "five": {
+      "5": "bardzo dobry",
+      "4": "dobry",
+      "3": "dostateczny",
+      "2": "niedostateczny"
+    },
+    "fail": "Niezaliczone",
+    "pass": "Zaliczone"
+  },
+  "override": {
+    "open": "Zmień ocenę: {name}, {item}",
+    "title": "Zmień ocenę",
+    "final": "Ocena końcowa",
+    "computed": "Automatycznie",
+    "current": "Teraz",
+    "newValue": "Nowa ocena",
+    "valueHint": "Od 0 do {max}",
+    "reason": "Powód zmiany",
+    "reasonHint": "Student zobaczy powód. Co najmniej 5 znaków.",
+    "save": "Zapisz",
+    "reset": "Przywróć automatyczną",
+    "saved": "Ocena zmieniona",
+    "resetDone": "Przywrócono ocenę automatyczną",
+    "failed": "Nie udało się zmienić oceny",
+    "history": "Historia zmian",
+    "noHistory": "Brak zmian",
+    "change": "{old} → {new}",
+    "meta": "{by} · {at}",
+    "mark": "Zmieniono ręcznie: {reason}",
+    "markSr": "zmieniono ręcznie",
+    "openWork": "Otwórz prace studentów",
+    "valueRange": "Wpisz liczbę od 0 do {max}",
+    "reasonShort": "Podaj powód (co najmniej 5 znaków)",
+    "resetReason": "Przywrócono ocenę automatyczną"
+  },
+  "legendOverridden": "Zmieniono ręcznie"
+}

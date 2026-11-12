@@ -1,0 +1,93 @@
+{
+  "meta": {
+    "title": "Kalendarz"
+  },
+  "title": "Kalendarz",
+  "subtitle": "Terminy zadań i wydarzenia z Twoich kursów",
+  "view": {
+    "label": "Widok kalendarza",
+    "month": "Miesiąc",
+    "agenda": "Lista"
+  },
+  "nav": {
+    "prev": "Poprzedni miesiąc",
+    "next": "Następny miesiąc",
+    "today": "Dziś"
+  },
+  "filter": {
+    "label": "Kurs",
+    "all": "Wszystkie kursy"
+  },
+  "kind": {
+    "ASSIGNMENT": "Termin zadania",
+    "LECTURE": "Wykład",
+    "ONLINE_LESSON": "Zajęcia online",
+    "DEADLINE": "Termin",
+    "OTHER": "Wydarzenie"
+  },
+  "weekdays": "Pn,Wt,Śr,Cz,Pt,Sb,Nd",
+  "day": {
+    "label": "{date}, {count, plural, one {# pozycja} few {# pozycje} many {# pozycji} other {# pozycji}}",
+    "today": "dziś",
+    "empty": "Na ten dzień nic nie zaplanowano.",
+    "selected": "Wydarzenia w dniu {date}"
+  },
+  "more": "jeszcze {count}",
+  "status": {
+    "done": "Oddane",
+    "pending": "Nieoddane"
+  },
+  "agenda": {
+    "empty": "W najbliższym czasie nic nie zaplanowano.",
+    "emptyHint": "Tu pojawią się terminy zadań i wydarzenia z kursów, na które jesteś zapisany.",
+    "allDay": "termin"
+  },
+  "actions": {
+    "add": "Dodaj wydarzenie",
+    "edit": "Edytuj",
+    "delete": "Usuń",
+    "open": "Otwórz",
+    "subscribe": "Subskrybuj w Kalendarzu Google"
+  },
+  "form": {
+    "createTitle": "Nowe wydarzenie",
+    "editTitle": "Edytuj wydarzenie",
+    "course": "Kurs",
+    "title": "Nazwa",
+    "titlePlaceholder": "Np. Wykład: REST API",
+    "kind": "Rodzaj",
+    "startsAt": "Początek",
+    "endsAt": "Koniec (opcjonalnie)",
+    "description": "Opis",
+    "save": "Zapisz",
+    "create": "Dodaj",
+    "errorTitle": "Podaj nazwę",
+    "errorStart": "Podaj datę i godzinę rozpoczęcia",
+    "errorEnd": "Koniec musi być po początku",
+    "draftCourse": "{title} (wersja robocza)"
+  },
+  "toast": {
+    "created": "Dodano wydarzenie",
+    "updated": "Zaktualizowano wydarzenie",
+    "deleted": "Usunięto wydarzenie",
+    "copied": "Skopiowano link",
+    "reset": "Utworzono nowy link — stary już nie działa"
+  },
+  "confirmDelete": {
+    "title": "Usunąć wydarzenie?",
+    "text": "„{title}” zniknie z kalendarza wszystkich uczestników kursu.",
+    "confirm": "Usuń"
+  },
+  "subscribe": {
+    "title": "Subskrypcja kalendarza",
+    "text": "Dodaj ten link do Kalendarza Google, Apple lub Outlooka — terminy i wydarzenia będą się aktualizować automatycznie.",
+    "urlLabel": "Link do kalendarza (iCal)",
+    "copy": "Kopiuj",
+    "steps": "Kalendarz Google: „Inne kalendarze” → „+” → „Z adresu URL” → wklej link.",
+    "privacy": "Link jest osobisty: nie udostępniaj go. Jeśli trafił do osób trzecich, utwórz nowy.",
+    "reset": "Utwórz nowy link",
+    "resetConfirm": "Stary link przestanie działać we wszystkich kalendarzach, do których go dodano.",
+    "loading": "Przygotowujemy link…"
+  },
+  "error": "Nie udało się wczytać kalendarza"
+}

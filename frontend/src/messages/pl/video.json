@@ -1,0 +1,40 @@
+{
+  "uploader": {
+    "region": "Przesyłanie filmu do lekcji",
+    "drop": "Przeciągnij tu film lub kliknij, aby wybrać",
+    "formats": "MP4, WebM lub MOV, do {gb} GB. Po przesłaniu film zostanie przekonwertowany do odtwarzania strumieniowego (720p i 360p).",
+    "uploading": "Przesyłanie… {percent}%",
+    "paused": "Przesyłanie wstrzymane — {percent}%",
+    "progressLabel": "Przesyłanie filmu",
+    "processing": "Przetwarzanie filmu… {percent}%",
+    "processingLabel": "Przetwarzanie filmu",
+    "processingHint": "Możesz zamknąć stronę — film jest przetwarzany na serwerze.",
+    "ready": "Film jest gotowy do oglądania",
+    "readyMeta": "{duration} · jakość: {qualities}",
+    "progressiveOnly": "Film jest dostępny jako MP4, wersja strumieniowa jest jeszcze przygotowywana.",
+    "failed": "Nie udało się przetworzyć filmu",
+    "failedUpload": "Nie udało się przesłać filmu",
+    "pause": "Wstrzymaj",
+    "resume": "Wznów",
+    "cancel": "Anuluj",
+    "retry": "Spróbuj ponownie",
+    "replace": "Zamień film",
+    "delete": "Usuń film",
+    "deleted": "Film usunięty",
+    "deleteFailed": "Nie udało się usunąć filmu",
+    "confirmDeleteTitle": "Usunąć film?",
+    "confirmDeleteText": "Film zniknie z lekcji dla wszystkich studentów.",
+    "unsupported": "Obsługiwane są tylko filmy MP4, WebM lub MOV",
+    "tooLarge": "Plik jest większy niż {gb} GB",
+    "uploaded": "Film przesłany, rozpoczyna się przetwarzanie",
+    "fileInputLabel": "Wybierz plik wideo"
+  },
+  "player": {
+    "label": "Film do lekcji „{title}”",
+    "quality": "Jakość",
+    "auto": "Auto",
+    "processing": "Film jest jeszcze przetwarzany. Spróbuj za kilka minut.",
+    "failed": "Film jest chwilowo niedostępny.",
+    "fallback": "Odtwarzanie strumieniowe nie działa — pokazano zwykłą wersję."
+  }
+}

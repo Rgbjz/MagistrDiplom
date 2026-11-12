@@ -1,0 +1,31 @@
+{
+  "title": "Чат",
+  "empty": "Розмов поки немає",
+  "emptyText": "Чат курсу з’явиться, щойно вас запишуть на курс.",
+  "selectConversation": "Оберіть розмову",
+  "list": {
+    "label": "Розмови",
+    "title": "Повідомлення",
+    "searchLabel": "Пошук розмов",
+    "searchPlaceholder": "Пошук",
+    "nothingFound": "Нічого не знайдено.",
+    "courseChats": "Чати курсів",
+    "direct": "Особисті",
+    "noMessages": "Повідомлень ще немає"
+  },
+  "thread": {
+    "label": "Розмова: {title}",
+    "back": "Назад до списку розмов",
+    "courseChat": "Чат курсу",
+    "directChat": "Особисті повідомлення",
+    "videoCall": "Відеодзвінок",
+    "toCourse": "До курсу",
+    "empty": "Напишіть перше повідомлення.",
+    "teacherBadge": "викладач",
+    "today": "Сьогодні",
+    "yesterday": "Вчора",
+    "messageLabel": "Повідомлення",
+    "placeholder": "Напишіть повідомлення…",
+    "send": "Надіслати"
+  }
+}

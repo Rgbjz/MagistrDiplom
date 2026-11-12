@@ -1,9 +1,9 @@
-import {
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import {
+  assertCourseRole,
+  assertRoleOnCourse,
+} from '../../common/access/course-access';
 import type { AuthUser } from '../../common/decorators/current-user.decorator';
 
 @Injectable()
@@ -11,15 +11,7 @@ export class SectionsService {
   constructor(private prisma: PrismaService) {}
 
   async create(courseId: number, data: { title?: string }, user: AuthUser) {
-    const course = await this.prisma.course.findUnique({
-      where: { id: courseId },
-    });
-    if (!course) {
-      throw new NotFoundException('Course not found');
-    }
-    if (course.teacherId !== user.id) {
-      throw new ForbiddenException('Not your course');
-    }
+    await assertCourseRole(this.prisma, courseId, user, 'content');
     const agg = await this.prisma.section.aggregate({
       where: { courseId },
       _max: { order: true },
@@ -42,9 +34,7 @@ export class SectionsService {
     if (!section) {
       throw new NotFoundException('Section not found');
     }
-    if (!section.course || section.course.teacherId !== user.id) {
-      throw new ForbiddenException('Not your course');
-    }
+    await assertRoleOnCourse(this.prisma, section.course, user, 'content');
     return this.prisma.section.update({ where: { id }, data });
   }
 
@@ -56,9 +46,7 @@ export class SectionsService {
     if (!section) {
       throw new NotFoundException('Section not found');
     }
-    if (!section.course || section.course.teacherId !== user.id) {
-      throw new ForbiddenException('Not your course');
-    }
+    await assertRoleOnCourse(this.prisma, section.course, user, 'content');
     await this.prisma.section.delete({ where: { id } });
   }
 }

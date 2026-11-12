@@ -8,9 +8,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../../common/auth/jwt-auth.guard';
-import { RolesGuard } from '../../common/auth/roles.guard';
-import { Roles } from '../../common/auth/roles.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import type { AuthUser } from '../../common/decorators/current-user.decorator';
 import { ProgressService } from './progress.service';
 
 @Controller('courseProgress')
@@ -26,14 +25,14 @@ export class CourseProgressController {
     return this.progress.getProgress(courseId, userId);
   }
 
+  // Course team only (previously any teacher could read any student's progress).
   @Get('courses/:courseId/progress/:userId')
-  @UseGuards(RolesGuard)
-  @Roles('TEACHER', 'ADMIN')
   getUserProgress(
     @Param('courseId', ParseIntPipe) courseId: number,
     @Param('userId', ParseIntPipe) userId: number,
+    @CurrentUser() user: AuthUser,
   ) {
-    return this.progress.getProgress(courseId, userId);
+    return this.progress.getProgressAsStaff(courseId, userId, user);
   }
 
   @Post('lessons/:lessonId/complete')

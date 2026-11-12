@@ -12,12 +12,16 @@ import { JwtAuthGuard } from '../../common/auth/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import type { AuthUser } from '../../common/decorators/current-user.decorator';
 import { ChatService } from './chat.service';
+import { CallService } from './call.service';
 import { DirectDto } from './dto/direct.dto';
 
 @Controller('chat')
 @UseGuards(JwtAuthGuard)
 export class ChatController {
-  constructor(private chat: ChatService) {}
+  constructor(
+    private chat: ChatService,
+    private calls: CallService,
+  ) {}
 
   @Get('conversations')
   list(@CurrentUser('id') userId: number) {
@@ -31,6 +35,16 @@ export class ChatController {
     @Query('cursor') cursor?: string,
   ) {
     return this.chat.getMessages(id, user, cursor ? Number(cursor) : undefined);
+  }
+
+  /** Active video call in the conversation, or null. */
+  @Get('conversations/:id/call')
+  async activeCall(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() user: AuthUser,
+  ) {
+    await this.chat.assertAccess(id, user);
+    return this.calls.info(id);
   }
 
   @Post('conversations/direct')

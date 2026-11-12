@@ -1,9 +1,17 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { assertCourseRole } from '../../common/access/course-access';
+import type { AuthUser } from '../../common/decorators/current-user.decorator';
 
 @Injectable()
 export class ProgressService {
   constructor(private prisma: PrismaService) {}
+
+  /** A student's progress as seen by the course team. */
+  async getProgressAsStaff(courseId: number, userId: number, viewer: AuthUser) {
+    await assertCourseRole(this.prisma, courseId, viewer, 'view');
+    return this.getProgress(courseId, userId);
+  }
 
   async getProgress(courseId: number, userId: number) {
     const lessons = await this.prisma.lesson.findMany({
@@ -28,8 +36,22 @@ export class ProgressService {
       select: { testId: true },
     });
 
-    const total = lessonIds.length + testIds.length;
-    const completed = completedLessons.length + passedTests.length;
+    const assignments = await this.prisma.assignment.findMany({
+      where: { lesson: { section: { courseId } } },
+      select: { id: true },
+    });
+    const gradedSubmissions = await this.prisma.submission.findMany({
+      where: {
+        userId,
+        status: 'GRADED',
+        assignmentId: { in: assignments.map((a) => a.id) },
+      },
+      select: { assignmentId: true },
+    });
+
+    const total = lessonIds.length + testIds.length + assignments.length;
+    const completed =
+      completedLessons.length + passedTests.length + gradedSubmissions.length;
     const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
 
     return {
@@ -38,6 +60,7 @@ export class ProgressService {
       completed,
       lessons: completedLessons.map((l) => l.lessonId),
       tests: passedTests.map((t) => t.testId),
+      assignments: gradedSubmissions.map((s) => s.assignmentId),
     };
   }
 

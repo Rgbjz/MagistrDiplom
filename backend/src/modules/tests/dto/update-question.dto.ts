@@ -1,4 +1,14 @@
-import { IsIn, IsInt, IsOptional, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsIn,
+  IsInt,
+  IsObject,
+  IsOptional,
+  IsString,
+  Max,
+  Min,
+} from 'class-validator';
+import { QUESTION_TYPES, type QType } from '../question-types';
 
 export class UpdateQuestionDto {
   @IsOptional()
@@ -6,10 +16,24 @@ export class UpdateQuestionDto {
   text?: string;
 
   @IsOptional()
-  @IsIn(['SINGLE', 'MULTIPLE'])
-  type?: 'SINGLE' | 'MULTIPLE';
+  @IsIn([...QUESTION_TYPES])
+  type?: QType;
 
   @IsOptional()
   @IsInt()
   difficulty?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(100)
+  points?: number;
+
+  @IsOptional()
+  @IsBoolean()
+  partialCredit?: boolean;
+
+  @IsOptional()
+  @IsObject()
+  config?: Record<string, unknown>;
 }

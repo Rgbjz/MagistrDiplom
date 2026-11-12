@@ -14,8 +14,8 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
+import { StorageService } from '../storage/storage.service';
+import { imageUploadOptions } from '../storage/upload.options';
 import { JwtAuthGuard } from '../../common/auth/jwt-auth.guard';
 import { RolesGuard } from '../../common/auth/roles.guard';
 import { Roles } from '../../common/auth/roles.decorator';
@@ -24,18 +24,21 @@ import type { AuthUser } from '../../common/decorators/current-user.decorator';
 import type { EnrollmentStatus } from '@prisma/client';
 import { CoursesService } from './courses.service';
 import { EnrollmentsService } from '../enrollments/enrollments.service';
+import { CertificatesService } from '../certificates/certificates.service';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 
-const courseImageInterceptor = FileInterceptor('image', {
-  storage: diskStorage({
-    destination: './public/courses',
-    filename: (_req, file, cb) =>
-      cb(null, `courses-${Date.now()}${extname(file.originalname)}`),
-  }),
-  limits: { fileSize: 5 * 1024 * 1024 },
-  fileFilter: (_req, file, cb) => cb(null, file.mimetype.startsWith('image/')),
-});
+const ENROLLMENT_STATUSES: EnrollmentStatus[] = [
+  'PENDING',
+  'ACTIVE',
+  'REJECTED',
+  'COMPLETED',
+];
+
+const courseImageInterceptor = FileInterceptor(
+  'image',
+  imageUploadOptions(5 * 1024 * 1024),
+);
 
 @Controller('courses')
 @UseGuards(JwtAuthGuard)
@@ -43,18 +46,20 @@ export class CoursesController {
   constructor(
     private courses: CoursesService,
     private enrollments: EnrollmentsService,
+    private certificates: CertificatesService,
+    private storage: StorageService,
   ) {}
 
   @Post()
   @UseGuards(RolesGuard)
   @Roles('TEACHER', 'ADMIN')
   @UseInterceptors(courseImageInterceptor)
-  create(
+  async create(
     @Body() dto: CreateCourseDto,
     @UploadedFile() file: Express.Multer.File | undefined,
     @CurrentUser() user: AuthUser,
   ) {
-    const imageUrl = file ? `/public/courses/${file.filename}` : null;
+    const imageUrl = file ? await this.storage.save(file, 'courses') : null;
     return this.courses.create({ ...dto, imageUrl }, user);
   }
 
@@ -62,16 +67,17 @@ export class CoursesController {
   @UseGuards(RolesGuard)
   @Roles('TEACHER', 'ADMIN')
   @UseInterceptors(courseImageInterceptor)
-  update(
+  async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateCourseDto,
     @UploadedFile() file: Express.Multer.File | undefined,
+    @CurrentUser() user: AuthUser,
   ) {
     const data: UpdateCourseDto & { imageUrl?: string } = { ...dto };
     if (file) {
-      data.imageUrl = `/public/courses/${file.filename}`;
+      data.imageUrl = await this.storage.save(file, 'courses');
     }
-    return this.courses.update(id, data);
+    return this.courses.update(id, data, user);
   }
 
   @Get()
@@ -80,21 +86,37 @@ export class CoursesController {
   }
 
   @Get(':id')
-  getOne(
-    @Param('id', ParseIntPipe) id: number,
-    @CurrentUser() user: AuthUser,
-  ) {
+  getOne(@Param('id', ParseIntPipe) id: number, @CurrentUser() user: AuthUser) {
     return this.courses.getCourseWithStructure(id, user);
   }
 
+  // Course team incl. assistants (checked in the service).
   @Get(':courseId/students/progress')
-  @UseGuards(RolesGuard)
-  @Roles('TEACHER', 'ADMIN')
   studentsProgress(
     @Param('courseId', ParseIntPipe) courseId: number,
     @CurrentUser() user: AuthUser,
   ) {
-    return this.courses.getStudentsProgress(courseId, user.id, user.role);
+    return this.courses.getStudentsProgress(courseId, user);
+  }
+
+  // Course team incl. assistants (checked in the service).
+  @Get(':id/tests-summary')
+  testsSummary(
+    @Param('id', ParseIntPipe) courseId: number,
+    @CurrentUser() user: AuthUser,
+  ) {
+    return this.courses.getTestsSummary(courseId, user);
+  }
+
+  @Post(':id/certificate')
+  @HttpCode(200)
+  @UseGuards(RolesGuard)
+  @Roles('STUDENT')
+  issueCertificate(
+    @Param('id', ParseIntPipe) courseId: number,
+    @CurrentUser('id') userId: number,
+  ) {
+    return this.certificates.issue(courseId, userId);
   }
 
   @Post(':id/enroll')
@@ -109,46 +131,43 @@ export class CoursesController {
 
   @Post(':id/enroll/:userId/approve')
   @HttpCode(200)
-  @UseGuards(RolesGuard)
-  @Roles('TEACHER', 'ADMIN')
   approve(
     @Param('id', ParseIntPipe) courseId: number,
     @Param('userId', ParseIntPipe) userId: number,
-    @CurrentUser('id') teacherId: number,
+    @CurrentUser() user: AuthUser,
   ) {
-    return this.enrollments.approve(userId, courseId, teacherId);
+    return this.enrollments.approve(userId, courseId, user);
   }
 
   @Post(':id/enroll/:userId/reject')
   @HttpCode(200)
-  @UseGuards(RolesGuard)
-  @Roles('TEACHER', 'ADMIN')
   reject(
     @Param('id', ParseIntPipe) courseId: number,
     @Param('userId', ParseIntPipe) userId: number,
-    @CurrentUser('id') teacherId: number,
+    @CurrentUser() user: AuthUser,
   ) {
-    return this.enrollments.reject(userId, courseId, teacherId);
+    return this.enrollments.reject(userId, courseId, user);
   }
 
+  // Course team incl. assistants (checked in the service).
   @Get(':id/enrollments')
-  @UseGuards(RolesGuard)
-  @Roles('TEACHER', 'ADMIN')
   enrollmentsList(
     @Param('id', ParseIntPipe) courseId: number,
+    @CurrentUser() user: AuthUser,
     @Query('status') status?: string,
   ) {
-    const normalized = status
-      ? (status.toUpperCase() as EnrollmentStatus)
+    const upper = status?.toUpperCase();
+    const normalized = ENROLLMENT_STATUSES.includes(upper as EnrollmentStatus)
+      ? (upper as EnrollmentStatus)
       : undefined;
-    return this.enrollments.getCourseEnrollments(courseId, normalized);
+    return this.enrollments.getCourseEnrollments(courseId, user, normalized);
   }
 
   @Delete(':id')
   @HttpCode(204)
   @UseGuards(RolesGuard)
   @Roles('TEACHER', 'ADMIN')
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.courses.remove(id);
+  remove(@Param('id', ParseIntPipe) id: number, @CurrentUser() user: AuthUser) {
+    return this.courses.remove(id, user);
   }
 }

@@ -8,8 +8,11 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../../common/auth/jwt-auth.guard';
 import { RolesGuard } from '../../common/auth/roles.guard';
 import { Roles } from '../../common/auth/roles.decorator';
@@ -18,6 +21,7 @@ import type { AuthUser } from '../../common/decorators/current-user.decorator';
 import { LessonsService } from './lessons.service';
 import { CreateLessonDto } from './dto/create-lesson.dto';
 import { UpdateLessonDto } from './dto/update-lesson.dto';
+import { lessonFileUploadOptions } from '../storage/upload.options';
 
 @Controller('lessons')
 export class LessonsController {
@@ -25,10 +29,7 @@ export class LessonsController {
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
-  getOne(
-    @Param('id', ParseIntPipe) id: number,
-    @CurrentUser() user: AuthUser,
-  ) {
+  getOne(@Param('id', ParseIntPipe) id: number, @CurrentUser() user: AuthUser) {
     return this.lessons.getLesson(id, user);
   }
 
@@ -76,5 +77,28 @@ export class LessonsController {
   ) {
     await this.lessons.completeLesson(id, user);
     return { message: 'Lesson completed' };
+  }
+
+  @Post(':id/files')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('TEACHER')
+  @UseInterceptors(FileInterceptor('file', lessonFileUploadOptions))
+  addFile(
+    @Param('id', ParseIntPipe) id: number,
+    @UploadedFile() file: Express.Multer.File | undefined,
+    @CurrentUser() user: AuthUser,
+  ) {
+    return this.lessons.addFile(id, file, user);
+  }
+
+  @Delete('files/:fileId')
+  @HttpCode(204)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('TEACHER')
+  async deleteFile(
+    @Param('fileId', ParseIntPipe) fileId: number,
+    @CurrentUser() user: AuthUser,
+  ) {
+    await this.lessons.deleteFile(fileId, user);
   }
 }

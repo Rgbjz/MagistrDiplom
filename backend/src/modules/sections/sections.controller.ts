@@ -44,10 +44,7 @@ export class SectionsController {
 
   @Delete(':id')
   @HttpCode(204)
-  remove(
-    @Param('id', ParseIntPipe) id: number,
-    @CurrentUser() user: AuthUser,
-  ) {
+  remove(@Param('id', ParseIntPipe) id: number, @CurrentUser() user: AuthUser) {
     return this.sections.remove(id, user);
   }
 }

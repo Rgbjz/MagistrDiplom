@@ -18,6 +18,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
     let status: number = HttpStatus.INTERNAL_SERVER_ERROR;
     let message = 'Unexpected server error';
     let errors: unknown = null;
+    // Machine-readable reason the UI can branch on (e.g. INCOMPLETE_QUESTIONS).
+    let code: string | undefined;
 
     if (exception instanceof HttpException) {
       status = exception.getStatus();
@@ -31,13 +33,16 @@ export class AllExceptionsFilter implements ExceptionFilter {
           errors = b.message;
         } else {
           message = (b.message as string) ?? exception.message;
-          errors = (b.errors as unknown) ?? null;
+          errors = b.errors ?? null;
         }
+        if (typeof b.code === 'string') code = b.code;
       }
     } else if (exception instanceof Error) {
       this.logger.error(exception.message, exception.stack);
     }
 
-    res.status(status).json({ message, errors });
+    res
+      .status(status)
+      .json(code ? { message, code, errors } : { message, errors });
   }
 }

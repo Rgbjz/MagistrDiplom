@@ -1,4 +1,11 @@
-import { IsEmail, IsIn, IsOptional, IsString, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsIn,
+  IsOptional,
+  IsString,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 export class RegisterDto {
   @IsEmail()
@@ -11,4 +18,19 @@ export class RegisterDto {
   @IsOptional()
   @IsIn(['TEACHER', 'STUDENT'])
   role?: 'TEACHER' | 'STUDENT';
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(60)
+  firstName?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(60)
+  lastName?: string;
+
+  /** Interface language chosen before sign-up; used for emails. */
+  @IsOptional()
+  @IsIn(['uk', 'en', 'pl'])
+  locale?: 'uk' | 'en' | 'pl';
 }

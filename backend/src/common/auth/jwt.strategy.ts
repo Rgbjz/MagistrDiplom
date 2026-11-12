@@ -8,6 +8,7 @@ interface JwtPayload {
   id: number;
   role: UserRole;
   email?: string;
+  sid?: number;
 }
 
 @Injectable()
@@ -24,6 +25,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!payload?.id) {
       throw new UnauthorizedException('Invalid token');
     }
-    return { id: payload.id, role: payload.role, email: payload.email };
+    return {
+      id: payload.id,
+      role: payload.role,
+      email: payload.email,
+      sid: payload.sid,
+    };
   }
 }

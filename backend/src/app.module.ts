@@ -11,11 +11,34 @@ import { TestsModule } from './modules/tests/tests.module';
 import { ChatModule } from './modules/chat/chat.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { StoreModule } from './modules/store/store.module';
+import { AssignmentsModule } from './modules/assignments/assignments.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
+import { CertificatesModule } from './modules/certificates/certificates.module';
+import { AdminModule } from './modules/admin/admin.module';
+import { GradebookModule } from './modules/gradebook/gradebook.module';
+import { MailModule } from './modules/mail/mail.module';
+import { StorageModule } from './modules/storage/storage.module';
+import { HealthModule } from './modules/health/health.module';
+import { ThrottleModule } from './common/throttle/throttle.module';
+import { RedisModule } from './common/redis/redis.module';
+import { QueueModule } from './common/queue/queue.module';
+import { FilesModule } from './modules/files/files.module';
 
+import { CourseStaffModule } from './modules/course-staff/course-staff.module';
+import { CalendarModule } from './modules/calendar/calendar.module';
+import { VideosModule } from './modules/videos/videos.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     PrismaModule,
+    RedisModule,
+    QueueModule,
+    ThrottleModule,
+    FilesModule,
+    MailModule,
+    StorageModule,
+    HealthModule,
+    NotificationsModule,
     AuthModule,
     UsersModule,
     CoursesModule,
@@ -26,6 +49,13 @@ import { StoreModule } from './modules/store/store.module';
     ChatModule,
     DashboardModule,
     StoreModule,
+    AssignmentsModule,
+    CertificatesModule,
+    AdminModule,
+    GradebookModule,
+    CourseStaffModule,
+    CalendarModule,
+    VideosModule,
   ],
 })
 export class AppModule {}

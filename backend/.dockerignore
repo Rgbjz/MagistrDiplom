@@ -1,0 +1,13 @@
+node_modules
+dist
+coverage
+.env
+.env.*
+!.env.example
+public/avatars/*
+public/courses/*
+!public/avatars/.gitkeep
+!public/courses/.gitkeep
+test
+private
+*.log

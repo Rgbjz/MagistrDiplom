@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "Course" ADD COLUMN     "assignmentsWeight" INTEGER NOT NULL DEFAULT 50,
+ADD COLUMN     "gradePassThreshold" INTEGER NOT NULL DEFAULT 60,
+ADD COLUMN     "testsWeight" INTEGER NOT NULL DEFAULT 50;

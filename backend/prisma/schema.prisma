@@ -30,6 +30,26 @@ enum LessonProgressStatus {
 enum QuestionType {
   SINGLE
   MULTIPLE
+  TRUE_FALSE
+  SHORT_TEXT
+  NUMERIC
+  MATCHING
+  ORDERING
+  ESSAY
+}
+
+// When students may see the correct answers on the result page.
+enum ShowAnswersMode {
+  NEVER
+  AFTER_SUBMIT
+  AFTER_PASS
+  AFTER_CLOSE
+}
+
+enum AttemptQuestionStatus {
+  AUTO
+  PENDING
+  GRADED
 }
 
 enum ConversationType {
@@ -37,38 +57,100 @@ enum ConversationType {
   DIRECT
 }
 
+enum CourseLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum NotificationType {
+  ENROLLMENT_REQUEST
+  ENROLLMENT_APPROVED
+  ENROLLMENT_REJECTED
+  NEW_LESSON
+  TEST_RESULT
+  NEW_MESSAGE
+  PAYMENT
+  CERTIFICATE
+  ASSIGNMENT_SUBMITTED
+  ASSIGNMENT_GRADED
+  COURSE_STAFF_ADDED
+  DEADLINE_REMINDER
+  GRADE_UPDATED
+}
+
+// How the final percent is presented: plain %, Ukrainian 5-point, ECTS letters or pass/fail.
+enum GradingScale {
+  PERCENT
+  FIVE_POINT
+  ECTS
+  PASS_FAIL
+}
+
+// Course team. OWNER mirrors Course.teacherId (kept for compatibility).
+enum CourseStaffRole {
+  OWNER
+  TEACHER
+  ASSISTANT
+}
+
+enum SubmissionStatus {
+  SUBMITTED
+  GRADED
+  RETURNED
+}
+
 // ===== Core =====
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  password  String
-  role              UserRole @default(STUDENT)
-  emailVerified     Boolean  @default(false)
-  verificationToken String?  @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                Int       @id @default(autoincrement())
+  email             String    @unique
+  password          String
+  role              UserRole  @default(STUDENT)
+  emailVerified     Boolean   @default(false)
+  verificationToken String?   @unique
+  blocked           Boolean   @default(false)
+  failedLoginCount  Int       @default(0)
+  lockedUntil       DateTime?
+  resetToken        String?   @unique
+  resetTokenExpires DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
-  profile          UserProfile?
-  sessions         Session[]
-  courses          Course[]         @relation("TeacherCourses")
-  enrollments      Enrollment[]
-  lessonProgresses LessonProgress[]
-  testResults      TestResult[]
-  userAnswers      UserAnswer[]
-  messages         Message[]
-  participations   ConversationParticipant[]
-  payments         Payment[]
+  profile              UserProfile?
+  sessions             Session[]
+  courses              Course[]                  @relation("TeacherCourses")
+  enrollments          Enrollment[]
+  lessonProgresses     LessonProgress[]
+  testResults          TestResult[]
+  userAnswers          UserAnswer[]
+  messages             Message[]
+  participations       ConversationParticipant[]
+  payments             Payment[]
+  notifications        Notification[]
+  certificates         Certificate[]
+  submissions          Submission[]
+  staffships           CourseStaff[]
+  courseEvents         CourseEvent[]             @relation("CourseEventAuthor")
+  gradeOverrides       GradeOverride[]
+  gradeOverrideHistory GradeOverrideHistory[]
 }
 
 model UserProfile {
-  id        Int      @id @default(autoincrement())
-  firstName String?
-  lastName  String?
-  avatarUrl String?
-  bio       String?
-  userId    Int      @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                   Int      @id @default(autoincrement())
+  firstName            String?
+  lastName             String?
+  avatarUrl            String?
+  bio                  String?
+  emailNotifications   Boolean  @default(true)
+  /// Interface/email language: uk | en | pl
+  locale               String   @default("uk")
+  /// Deadline reminders (in-app + email) — calendar feature
+  deadlineReminders    Boolean  @default(true)
+  /// Bumped to revoke the personal iCal feed URL
+  calendarTokenVersion Int      @default(0)
+  userId               Int      @unique
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
@@ -87,20 +169,51 @@ model Session {
 }
 
 model Course {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String?
-  imageUrl    String?
-  price       Int      @default(0)
-  teacherId   Int
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                 Int          @id @default(autoincrement())
+  title              String
+  description        String?
+  imageUrl           String?
+  price              Int          @default(0)
+  category           String?
+  level              CourseLevel?
+  published          Boolean      @default(false)
+  autoApprove        Boolean      @default(false)
+  // Gradebook: category weights (sum 100) and the final-grade pass mark, %.
+  testsWeight        Int          @default(50)
+  assignmentsWeight  Int          @default(50)
+  gradePassThreshold Int          @default(60)
+  gradingScale       GradingScale @default(PERCENT)
+  // Custom thresholds for FIVE_POINT / ECTS: [{ code, min }] in descending order.
+  gradingScaleConfig Json?
+  teacherId          Int
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
 
-  teacher       User           @relation("TeacherCourses", fields: [teacherId], references: [id])
-  sections      Section[]
-  enrollments   Enrollment[]
-  conversations Conversation[]
-  payments      Payment[]
+  teacher              User                   @relation("TeacherCourses", fields: [teacherId], references: [id])
+  sections             Section[]
+  enrollments          Enrollment[]
+  conversations        Conversation[]
+  payments             Payment[]
+  certificates         Certificate[]
+  staff                CourseStaff[]
+  questionBank         QuestionBankCategory[]
+  events               CourseEvent[]
+  gradeOverrides       GradeOverride[]
+  gradeOverrideHistory GradeOverrideHistory[]
+}
+
+model CourseStaff {
+  id        Int             @id @default(autoincrement())
+  courseId  Int
+  userId    Int
+  role      CourseStaffRole
+  createdAt DateTime        @default(now())
+
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([courseId, userId])
+  @@index([userId])
 }
 
 model Section {
@@ -128,34 +241,200 @@ model Lesson {
   section    Section          @relation(fields: [sectionId], references: [id], onDelete: Cascade)
   progresses LessonProgress[]
   test       Test?
+  files      LessonFile[]
+  assignment Assignment?
+  video      LessonVideo?
+}
+
+enum VideoStatus {
+  UPLOADING
+  PROCESSING
+  READY
+  FAILED
+}
+
+// Video uploaded for a lesson (YouTube/Vimeo links stay in Lesson.videoUrl).
+// The source is transcoded to HLS renditions by the background "video" queue.
+model LessonVideo {
+  id          Int         @id @default(autoincrement())
+  lessonId    Int         @unique
+  status      VideoStatus @default(UPLOADING)
+  progress    Int         @default(0)
+  // Uploaded original: /private/... path (local) or a Vercel Blob URL.
+  sourceUrl   String?
+  // Progressive MP4 served when HLS is unavailable (legacy uploads, mp4 sources).
+  mp4Url      String?
+  // HLS output folder: "hls/<id>-<rand>" (local) or a Blob base URL ending with "/".
+  hlsPrefix   String?
+  renditions  String?
+  hasPoster   Boolean     @default(false)
+  durationSec Float?
+  width       Int?
+  height      Int?
+  sizeBytes   Int?
+  error       String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+}
+
+// Practical task attached to a lesson; students hand in files.
+model Assignment {
+  id          Int       @id @default(autoincrement())
+  lessonId    Int       @unique
+  title       String
+  description String?
+  dueAt       DateTime?
+  maxScore    Int       @default(100)
+  maxFiles    Int       @default(5)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  lesson      Lesson       @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  submissions Submission[]
+}
+
+// A student's current hand-in for an assignment (resubmission replaces files).
+model Submission {
+  id           Int              @id @default(autoincrement())
+  assignmentId Int
+  userId       Int
+  comment      String?
+  status       SubmissionStatus @default(SUBMITTED)
+  score        Int?
+  feedback     String?
+  submittedAt  DateTime         @default(now())
+  gradedAt     DateTime?
+  late         Boolean          @default(false)
+
+  assignment Assignment       @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  files      SubmissionFile[]
+
+  @@unique([assignmentId, userId])
+}
+
+model SubmissionFile {
+  id           Int      @id @default(autoincrement())
+  submissionId Int
+  name         String
+  url          String
+  size         Int
+  mimeType     String
+  createdAt    DateTime @default(now())
+
+  submission Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  @@index([submissionId])
+}
+
+// Attachment a teacher uploads to a lesson (slides, PDFs, archives…).
+model LessonFile {
+  id        Int      @id @default(autoincrement())
+  lessonId  Int
+  name      String
+  url       String
+  size      Int
+  mimeType  String
+  createdAt DateTime @default(now())
+
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@index([lessonId])
 }
 
 model Test {
-  id           Int      @id @default(autoincrement())
-  lessonId     Int      @unique
-  title        String   @default("Test")
-  timeLimit    Int
-  passingScore Int      @default(60)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id                  Int             @id @default(autoincrement())
+  lessonId            Int             @unique
+  title               String          @default("Test")
+  timeLimit           Int
+  passingScore        Int             @default(60)
+  shuffleQuestions    Boolean         @default(false)
+  shuffleAnswers      Boolean         @default(false)
+  maxAttempts         Int?
+  questionsPerAttempt Int?
+  showCorrectAnswers  ShowAnswersMode @default(AFTER_SUBMIT)
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
 
-  lesson    Lesson       @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-  questions Question[]
-  results   TestResult[]
+  lesson      Lesson           @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  questions   Question[]
+  results     TestResult[]
+  randomRules TestRandomRule[]
 }
 
+// A question belongs either to a test (testId) or to the course question bank (categoryId).
 model Question {
-  id         Int          @id @default(autoincrement())
-  testId     Int
-  text       String
-  type       QuestionType @default(SINGLE)
-  difficulty Int          @default(1)
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
+  id            Int          @id @default(autoincrement())
+  testId        Int?
+  categoryId    Int?
+  text          String
+  type          QuestionType @default(SINGLE)
+  difficulty    Int          @default(1)
+  points        Int          @default(1)
+  partialCredit Boolean      @default(false)
+  // Type-specific settings: accepted answers, numeric value/tolerance, matching pairs, ordering items, essay limits.
+  config        Json?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
 
-  test        Test         @relation(fields: [testId], references: [id], onDelete: Cascade)
-  answers     Answer[]
-  userAnswers UserAnswer[]
+  test             Test?                 @relation(fields: [testId], references: [id], onDelete: Cascade)
+  category         QuestionBankCategory? @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  answers          Answer[]
+  userAnswers      UserAnswer[]
+  attemptQuestions AttemptQuestion[]
+
+  @@index([categoryId])
+}
+
+model QuestionBankCategory {
+  id        Int      @id @default(autoincrement())
+  courseId  Int
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  course    Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  questions Question[]
+  rules     TestRandomRule[]
+
+  @@index([courseId])
+}
+
+// «N random questions from bank category X» added to every attempt of a test.
+model TestRandomRule {
+  id         Int @id @default(autoincrement())
+  testId     Int
+  categoryId Int
+  count      Int
+
+  test     Test                 @relation(fields: [testId], references: [id], onDelete: Cascade)
+  category QuestionBankCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([testId, categoryId])
+}
+
+// A question as drawn for one attempt: order, shuffled options, response and points.
+model AttemptQuestion {
+  id           Int                   @id @default(autoincrement())
+  testResultId Int
+  questionId   Int
+  position     Int
+  // Option order shown to the student (answer ids, matching right indexes or ordering item indexes).
+  optionOrder  Json?
+  response     Json?
+  earned       Float                 @default(0)
+  maxPoints    Int
+  status       AttemptQuestionStatus @default(AUTO)
+  feedback     String?
+  gradedAt     DateTime?
+  gradedById   Int?
+
+  testResult TestResult @relation(fields: [testResultId], references: [id], onDelete: Cascade)
+  question   Question   @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([testResultId, questionId])
 }
 
 model Answer {
@@ -203,20 +482,23 @@ model LessonProgress {
 }
 
 model TestResult {
-  id         Int       @id @default(autoincrement())
-  userId     Int
-  testId     Int
-  attempt    Int
-  startedAt  DateTime
-  finishedAt DateTime?
-  score      Int?
-  passed     Boolean?
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  id            Int       @id @default(autoincrement())
+  userId        Int
+  testId        Int
+  attempt       Int
+  startedAt     DateTime
+  finishedAt    DateTime?
+  score         Int?
+  passed        Boolean?
+  // An essay answer awaits manual grading; score is provisional and passed is null.
+  pendingReview Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
-  user    User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  test    Test         @relation(fields: [testId], references: [id], onDelete: Cascade)
-  answers UserAnswer[]
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  test      Test              @relation(fields: [testId], references: [id], onDelete: Cascade)
+  answers   UserAnswer[]
+  questions AttemptQuestion[]
 }
 
 model UserAnswer {
@@ -281,4 +563,97 @@ model Payment {
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id        Int              @id @default(autoincrement())
+  userId    Int
+  type      NotificationType
+  title     String
+  body      String?
+  link      String?
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+model Certificate {
+  id       Int      @id @default(autoincrement())
+  code     String   @unique
+  userId   Int
+  courseId Int
+  avgScore Int?
+  issuedAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+}
+
+// ===== Calendar =====
+enum CourseEventKind {
+  LECTURE
+  ONLINE_LESSON
+  DEADLINE
+  OTHER
+}
+
+// A dated event a course team adds to the calendar (lecture, online lesson…).
+model CourseEvent {
+  id          Int             @id @default(autoincrement())
+  courseId    Int
+  title       String
+  description String?
+  kind        CourseEventKind @default(OTHER)
+  startsAt    DateTime
+  endsAt      DateTime?
+  createdById Int?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  course    Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  createdBy User?  @relation("CourseEventAuthor", fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([courseId, startsAt])
+}
+
+// Manual gradebook correction by course staff. itemKey: 'test-<id>' | 'assignment-<id>' | 'final'.
+// value is a percent for tests and the final grade, points for assignments.
+model GradeOverride {
+  id          Int      @id @default(autoincrement())
+  courseId    Int
+  userId      Int
+  itemKey     String
+  value       Float
+  reason      String
+  createdById Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([courseId, userId, itemKey])
+}
+
+// Audit trail: every set / change / reset of an override.
+model GradeOverrideHistory {
+  id          Int      @id @default(autoincrement())
+  courseId    Int
+  userId      Int
+  itemKey     String
+  oldValue    Float?
+  newValue    Float?
+  reason      String
+  changedById Int
+  createdAt   DateTime @default(now())
+
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([courseId, userId])
 }

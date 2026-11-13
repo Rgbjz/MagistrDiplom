@@ -532,3 +532,14 @@ UI: Керування → Тести → блок «Потребує перев
 **Інтерфейс.** У списку розмов — кнопка «Нова група» (діалог: назва, пошук і вибір учасників) і розділ «Групи». У шапці розмови — кнопки «Аудіодзвінок» і «Відеодзвінок», для групи — «Учасники й налаштування групи» (перейменування, список з позначками «власник»/«ви», додавання, видалення, вихід). Вхідний дзвінок показує тип: «Аудіодзвінок», «Груповий аудіодзвінок», «Груповий відеодзвінок».
 
 **Тести.** `chat.groups.spec.ts`, розділ «audio calls» у `call.service.spec.ts` (unit); `frontend/e2e/groups.spec.ts` і «direct audio call» у `frontend/e2e/call.spec.ts`.
+
+## ICE-сервери для дзвінків (TURN)
+
+`GET /api/calls/ice-servers` (JWT) → `{ iceServers: RTCIceServer[], ttl: number }`.
+Завжди містить STUN Google; TURN — від провайдера, вибраного змінними бекенду:
+`CLOUDFLARE_TURN_KEY_ID` + `CLOUDFLARE_TURN_API_TOKEN` (Cloudflare Realtime TURN,
+`POST https://rtc.live.cloudflare.com/v1/turn/keys/<id>/credentials/generate-ice-servers`),
+`METERED_TURN_DOMAIN` + `METERED_TURN_API_KEY` (Metered), або статичні `TURN_URLS`/`TURN_USERNAME`/`TURN_CREDENTIAL`.
+Облікові дані провайдера кешуються на половину строку дії (12 год); `ttl` — скільки секунд браузер
+може тримати список. Помилка провайдера не ламає дзвінок: відповідь містить STUN (і статичний TURN, якщо є) з `ttl: 60`.
+Фронтенд (`lib/call/ice.ts`) запитує список паралельно з доступом до камери/мікрофона і чекає не довше 2,5 с.

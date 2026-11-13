@@ -74,5 +74,6 @@
   "toast": {
     "ended": "Call ended",
     "declined": "The other person declined the call"
-  }
+  },
+  "reconnecting": "Couldn't connect directly, trying through the server…"
 }

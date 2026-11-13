@@ -74,5 +74,6 @@
   "toast": {
     "ended": "Rozmowa zakończona",
     "declined": "Rozmówca odrzucił połączenie"
-  }
+  },
+  "reconnecting": "Nie udało się połączyć bezpośrednio, próbujemy przez serwer…"
 }

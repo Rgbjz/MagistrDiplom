@@ -41,6 +41,11 @@ services:
         sync: false
       - key: CLOUDINARY_URL
         sync: false # optional; cloudinary://<key>:<secret>@<cloud> — replaces Blob
+      # TURN relay for calls (optional; see docs/DEPLOY.md «Відеодзвінки (TURN)»).
+      - key: CLOUDFLARE_TURN_KEY_ID
+        sync: false
+      - key: CLOUDFLARE_TURN_API_TOKEN
+        sync: false
       - key: API_PUBLIC_URL
         sync: false # https://<service>.onrender.com/api — signed file links
       - key: FILES_SIGNING_SECRET

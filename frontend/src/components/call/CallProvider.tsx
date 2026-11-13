@@ -28,6 +28,7 @@ import {
   type SignalData,
 } from '../../lib/call/rtc';
 import { startTone } from '../../lib/call/ringtone';
+import { loadIceServers } from '../../lib/call/ice';
 import type { SessionUser } from '../../lib/types';
 import { useToast } from '../ui';
 import { IncomingCall } from './IncomingCall';
@@ -136,6 +137,10 @@ export function CallProvider({ children }: { children: ReactNode }) {
   const cameraTrack = useRef<MediaStreamTrack | null>(null);
   const screenTrack = useRef<MediaStreamTrack | null>(null);
   const meRef = useRef<number | null>(null);
+  // STUN/TURN list for this call (TURN credentials come from the backend).
+  const iceRef = useRef<RTCIceServer[] | null>(null);
+  // Peers whose failed connection we already tried to restart once.
+  const iceRestarted = useRef(new Set<number>());
   meRef.current = me?.id ?? null;
 
   const setCall = useCallback((next: CurrentCall | null) => {
@@ -196,6 +201,7 @@ export function CallProvider({ children }: { children: ReactNode }) {
   const cleanup = useCallback(() => {
     for (const pc of pcs.current.values()) pc.close();
     pcs.current.clear();
+    iceRestarted.current.clear();
     remoteStreams.current.clear();
     pendingIce.current.clear();
     names.current.clear();
@@ -225,7 +231,7 @@ export function CallProvider({ children }: { children: ReactNode }) {
   const createPeer = useCallback(
     (userId: number, asOfferer: boolean) => {
       pcs.current.get(userId)?.close();
-      const pc = new RTCPeerConnection({ iceServers: iceServers() });
+      const pc = new RTCPeerConnection({ iceServers: iceRef.current ?? iceServers() });
       pcs.current.set(userId, pc);
       if (asOfferer) {
         addLocalTracks(pc);
@@ -249,10 +255,24 @@ export function CallProvider({ children }: { children: ReactNode }) {
         markConnected();
       };
       pc.onconnectionstatechange = () => patchPeer(userId, { connection: pc.connectionState });
+      // A dropped/failed path (network switch, NAT timeout): restart ICE once,
+      // which also retries the TURN relay. Only the side with the smaller id
+      // sends the new offer so the two don't collide.
+      pc.oniceconnectionstatechange = () => {
+        if (pc.iceConnectionState !== 'failed' || iceRestarted.current.has(userId)) return;
+        iceRestarted.current.add(userId);
+        if ((meRef.current ?? 0) > userId) return;
+        toast(tRef.current('reconnecting'));
+        void (async () => {
+          const offer = await pc.createOffer({ iceRestart: true });
+          await pc.setLocalDescription(offer);
+          signal(userId, { type: 'offer', sdp: offer.sdp ?? '' });
+        })().catch(() => undefined);
+      };
       patchPeer(userId, { connection: pc.connectionState });
       return pc;
     },
-    [addLocalTracks, markConnected, patchPeer, signal],
+    [addLocalTracks, markConnected, patchPeer, signal, toast],
   );
 
   const flushIce = useCallback(async (userId: number) => {
@@ -350,7 +370,9 @@ export function CallProvider({ children }: { children: ReactNode }) {
       // Joining from the chat banner also answers a pending ring for this call.
       if (incomingRef.current?.conversationId === conversationId) setRing(null);
       setCall({ conversationId, title, type: null, media, phase: 'calling', connectedAt: null });
-      await prepareMedia(media);
+      // TURN credentials load while the browser asks for camera/microphone.
+      const [ice] = await Promise.all([loadIceServers(), prepareMedia(media)]);
+      iceRef.current = ice;
       if (!currentRef.current) return; // hung up while asking for permissions
       const stream = localStream.current;
       const payload = {

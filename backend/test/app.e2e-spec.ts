@@ -68,6 +68,7 @@ describe('API routes (e2e, no DB)', () => {
     ['get', '/api/store/me/purchases'],
     ['get', '/api/chat/conversations/1/call'],
     ['get', '/api/chat/contacts?q=a'],
+    ['get', '/api/calls/ice-servers'],
     ['post', '/api/chat/groups'],
     ['get', '/api/chat/groups/1'],
     ['patch', '/api/chat/groups/1'],

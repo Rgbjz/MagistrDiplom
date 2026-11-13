@@ -1,31 +1,33 @@
 // Demo course content for prisma/seed.ts. Lesson bodies are plain, safe HTML.
 
 export type QuizQuestion = {
-  text: string
-  type: 'SINGLE' | 'MULTIPLE'
-  answers: [string, boolean][]
-}
+  text: string;
+  type: 'SINGLE' | 'MULTIPLE';
+  answers: [string, boolean][];
+};
 
 export type LessonDef = {
-  title: string
-  content: string
-  test?: { title: string; timeLimit: number; questions: QuizQuestion[] }
-}
+  title: string;
+  content: string;
+  /** YouTube/Vimeo link shown above the lesson text. */
+  videoUrl?: string;
+  test?: { title: string; timeLimit: number; questions: QuizQuestion[] };
+};
 
-export type SectionDef = { title: string; lessons: LessonDef[] }
+export type SectionDef = { title: string; lessons: LessonDef[] };
 
 export type CourseDef = {
-  key: 'web' | 'ts' | 'sql' | 'ux' | 'git' | 'english' | 'algo'
-  title: string
-  description: string
-  category: string
-  level: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED'
-  price: number
-  autoApprove: boolean
-  published: boolean
-  teacher: 'teacher1' | 'teacher2'
-  sections: SectionDef[]
-}
+  key: 'web' | 'ts' | 'sql' | 'ux' | 'git' | 'english' | 'algo' | 'html';
+  title: string;
+  description: string;
+  category: string;
+  level: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
+  price: number;
+  autoApprove: boolean;
+  published: boolean;
+  teacher: 'teacher1' | 'teacher2';
+  sections: SectionDef[];
+};
 
 export const COURSES: CourseDef[] = [
   // ───────────────────────────── Основи веб-розробки ─────────────────────────────
@@ -91,27 +93,49 @@ export const COURSES: CourseDef[] = [
                 {
                   text: 'Який метод HTTP використовують, щоб отримати сторінку без зміни даних?',
                   type: 'SINGLE',
-                  answers: [['GET', true], ['POST', false], ['DELETE', false], ['PATCH', false]],
+                  answers: [
+                    ['GET', true],
+                    ['POST', false],
+                    ['DELETE', false],
+                    ['PATCH', false],
+                  ],
                 },
                 {
                   text: 'Що означає код статусу 404?',
                   type: 'SINGLE',
-                  answers: [['Ресурс не знайдено', true], ['Доступ заборонено', false], ['Помилка сервера', false]],
+                  answers: [
+                    ['Ресурс не знайдено', true],
+                    ['Доступ заборонено', false],
+                    ['Помилка сервера', false],
+                  ],
                 },
                 {
                   text: 'Які теги є семантичними?',
                   type: 'MULTIPLE',
-                  answers: [['<nav>', true], ['<article>', true], ['<div>', false], ['<span>', false]],
+                  answers: [
+                    ['<nav>', true],
+                    ['<article>', true],
+                    ['<div>', false],
+                    ['<span>', false],
+                  ],
                 },
                 {
                   text: 'Де розміщують тег <title>?',
                   type: 'SINGLE',
-                  answers: [['У <head>', true], ['У <body>', false], ['Перед <html>', false]],
+                  answers: [
+                    ['У <head>', true],
+                    ['У <body>', false],
+                    ['Перед <html>', false],
+                  ],
                 },
                 {
                   text: 'Що додає HTTPS порівняно з HTTP?',
                   type: 'SINGLE',
-                  answers: [['Шифрування трафіку через TLS', true], ['Швидше завантаження картинок', false], ['Нові методи запитів', false]],
+                  answers: [
+                    ['Шифрування трафіку через TLS', true],
+                    ['Швидше завантаження картинок', false],
+                    ['Нові методи запитів', false],
+                  ],
                 },
               ],
             },
@@ -189,27 +213,52 @@ export const COURSES: CourseDef[] = [
                 {
                   text: 'Який селектор має найвищу специфічність?',
                   type: 'SINGLE',
-                  answers: [['#header', true], ['.header', false], ['header', false]],
+                  answers: [
+                    ['#header', true],
+                    ['.header', false],
+                    ['header', false],
+                  ],
                 },
                 {
                   text: 'Що робить box-sizing: border-box?',
                   type: 'SINGLE',
-                  answers: [['Включає padding і border у ширину елемента', true], ['Прибирає рамку', false], ['Робить елемент рядковим', false]],
+                  answers: [
+                    ['Включає padding і border у ширину елемента', true],
+                    ['Прибирає рамку', false],
+                    ['Робить елемент рядковим', false],
+                  ],
                 },
                 {
                   text: 'Які властивості належать до Flexbox-контейнера?',
                   type: 'MULTIPLE',
-                  answers: [['justify-content', true], ['flex-wrap', true], ['grid-template-columns', false], ['float', false]],
+                  answers: [
+                    ['justify-content', true],
+                    ['flex-wrap', true],
+                    ['grid-template-columns', false],
+                    ['float', false],
+                  ],
                 },
                 {
                   text: 'Що створює repeat(auto-fill, minmax(260px, 1fr))?',
                   type: 'SINGLE',
-                  answers: [['Стільки колонок мінімум по 260 px, скільки вміщується', true], ['Рівно 260 колонок', false], ['Одну колонку шириною 260 px', false]],
+                  answers: [
+                    [
+                      'Стільки колонок мінімум по 260 px, скільки вміщується',
+                      true,
+                    ],
+                    ['Рівно 260 колонок', false],
+                    ['Одну колонку шириною 260 px', false],
+                  ],
                 },
                 {
                   text: 'Які шари входять у блокову модель?',
                   type: 'MULTIPLE',
-                  answers: [['padding', true], ['border', true], ['margin', true], ['z-index', false]],
+                  answers: [
+                    ['padding', true],
+                    ['border', true],
+                    ['margin', true],
+                    ['z-index', false],
+                  ],
                 },
               ],
             },
@@ -266,22 +315,39 @@ button.addEventListener('click', () =&gt; {
                 {
                   text: 'Яке ключове слово використати для значення, що не перепризначається?',
                   type: 'SINGLE',
-                  answers: [['const', true], ['let', false], ['var', false]],
+                  answers: [
+                    ['const', true],
+                    ['let', false],
+                    ['var', false],
+                  ],
                 },
                 {
-                  text: 'Чому дорівнює вираз \'5\' === 5?',
+                  text: "Чому дорівнює вираз '5' === 5?",
                   type: 'SINGLE',
-                  answers: [['false', true], ['true', false], ['undefined', false]],
+                  answers: [
+                    ['false', true],
+                    ['true', false],
+                    ['undefined', false],
+                  ],
                 },
                 {
                   text: 'Які з типів є примітивними у JavaScript?',
                   type: 'MULTIPLE',
-                  answers: [['string', true], ['boolean', true], ['number', true], ['array', false]],
+                  answers: [
+                    ['string', true],
+                    ['boolean', true],
+                    ['number', true],
+                    ['array', false],
+                  ],
                 },
                 {
                   text: 'Як безпечно вивести текст, введений користувачем?',
                   type: 'SINGLE',
-                  answers: [['Через textContent', true], ['Через innerHTML', false], ['Через document.write', false]],
+                  answers: [
+                    ['Через textContent', true],
+                    ['Через innerHTML', false],
+                    ['Через document.write', false],
+                  ],
                 },
               ],
             },
@@ -352,22 +418,38 @@ let point: [number, number] = [10, 20]; // кортеж</code></pre>
                 {
                   text: 'У що компілюється TypeScript?',
                   type: 'SINGLE',
-                  answers: [['У JavaScript', true], ['У WebAssembly', false], ['У байт-код Java', false]],
+                  answers: [
+                    ['У JavaScript', true],
+                    ['У WebAssembly', false],
+                    ['У байт-код Java', false],
+                  ],
                 },
                 {
                   text: 'Чи існують типи TypeScript під час виконання програми?',
                   type: 'SINGLE',
-                  answers: [['Ні, лише під час компіляції', true], ['Так, завжди', false], ['Лише в браузері', false]],
+                  answers: [
+                    ['Ні, лише під час компіляції', true],
+                    ['Так, завжди', false],
+                    ['Лише в браузері', false],
+                  ],
                 },
                 {
                   text: 'Який тип безпечніший для значень невідомого походження?',
                   type: 'SINGLE',
-                  answers: [['unknown', true], ['any', false], ['never', false]],
+                  answers: [
+                    ['unknown', true],
+                    ['any', false],
+                    ['never', false],
+                  ],
                 },
                 {
                   text: 'Які записи є коректними анотаціями?',
                   type: 'MULTIPLE',
-                  answers: [['let a: string[] = []', true], ['let p: [number, number] = [1, 2]', true], ['let n: num = 5', false]],
+                  answers: [
+                    ['let a: string[] = []', true],
+                    ['let p: [number, number] = [1, 2]', true],
+                    ['let n: num = 5', false],
+                  ],
                 },
               ],
             },
@@ -404,7 +486,7 @@ let point: [number, number] = [10, 20]; // кортеж</code></pre>
 <p>TypeScript порівнює типи за формою, а не за назвою. Якщо об'єкт має всі потрібні поля інтерфейсу, він йому відповідає, навіть якщо ніде явно не сказано <code>implements</code>.</p>`,
           },
           {
-            title: 'Об\'єднання та звуження типів',
+            title: "Об'єднання та звуження типів",
             content: `<h2>Об'єднання</h2>
 <p>Тип <code>A | B</code> означає «або A, або B». Особливо зручні об'єднання літералів:</p>
 <pre><code>type Status = 'PENDING' | 'ACTIVE' | 'REJECTED';</code></pre>
@@ -432,24 +514,41 @@ function show(r: Result) {
               timeLimit: 10,
               questions: [
                 {
-                  text: 'Як позначити необов\'язкове поле в інтерфейсі?',
+                  text: "Як позначити необов'язкове поле в інтерфейсі?",
                   type: 'SINGLE',
-                  answers: [['title?: string', true], ['title!: string', false], ['optional title: string', false]],
+                  answers: [
+                    ['title?: string', true],
+                    ['title!: string', false],
+                    ['optional title: string', false],
+                  ],
                 },
                 {
                   text: 'Що вміє type, але не вміє interface?',
                   type: 'SINGLE',
-                  answers: [['Описувати об\'єднання літералів', true], ['Описувати поля об\'єкта', false], ['Мати readonly поля', false]],
+                  answers: [
+                    ["Описувати об'єднання літералів", true],
+                    ["Описувати поля об'єкта", false],
+                    ['Мати readonly поля', false],
+                  ],
                 },
                 {
                   text: 'Якими перевірками можна звузити тип?',
                   type: 'MULTIPLE',
-                  answers: [['typeof', true], ['instanceof', true], ['оператор in', true], ['console.log', false]],
+                  answers: [
+                    ['typeof', true],
+                    ['instanceof', true],
+                    ['оператор in', true],
+                    ['console.log', false],
+                  ],
                 },
                 {
                   text: 'За яким принципом TypeScript порівнює типи?',
                   type: 'SINGLE',
-                  answers: [['За структурою (формою)', true], ['За назвою типу', false], ['За файлом оголошення', false]],
+                  answers: [
+                    ['За структурою (формою)', true],
+                    ['За назвою типу', false],
+                    ['За файлом оголошення', false],
+                  ],
                 },
               ],
             },
@@ -514,27 +613,48 @@ type CoursePage = Paginated&lt;Course&gt;;</code></pre>
                 {
                   text: 'Що поверне first<T>(items: T[]) для масиву рядків?',
                   type: 'SINGLE',
-                  answers: [['string | undefined', true], ['any', false], ['T[]', false]],
+                  answers: [
+                    ['string | undefined', true],
+                    ['any', false],
+                    ['T[]', false],
+                  ],
                 },
                 {
                   text: 'Що робить запис T extends { id: number }?',
                   type: 'SINGLE',
-                  answers: [['Вимагає, щоб тип мав поле id', true], ['Успадковує клас', false], ['Створює новий об\'єкт', false]],
+                  answers: [
+                    ['Вимагає, щоб тип мав поле id', true],
+                    ['Успадковує клас', false],
+                    ["Створює новий об'єкт", false],
+                  ],
                 },
                 {
                   text: 'Які з утиліт є вбудованими дженериками TypeScript?',
                   type: 'MULTIPLE',
-                  answers: [['Partial<T>', true], ['Pick<T, K>', true], ['Record<K, V>', true], ['Optional<T>', false]],
+                  answers: [
+                    ['Partial<T>', true],
+                    ['Pick<T, K>', true],
+                    ['Record<K, V>', true],
+                    ['Optional<T>', false],
+                  ],
                 },
                 {
                   text: 'Як позначити, що результат функції не використовується?',
                   type: 'SINGLE',
-                  answers: [['void', true], ['null', false], ['never', false]],
+                  answers: [
+                    ['void', true],
+                    ['null', false],
+                    ['never', false],
+                  ],
                 },
                 {
                   text: 'Що відбувається з параметром, який має значення за замовчуванням?',
                   type: 'SINGLE',
-                  answers: [['Він стає необов\'язковим', true], ['Він стає readonly', false], ['Його тип стає any', false]],
+                  answers: [
+                    ["Він стає необов'язковим", true],
+                    ['Він стає readonly', false],
+                    ['Його тип стає any', false],
+                  ],
                 },
               ],
             },
@@ -561,7 +681,7 @@ type CoursePage = Paginated&lt;Course&gt;;</code></pre>
         title: 'Реляційна модель',
         lessons: [
           {
-            title: 'Таблиці, ключі та зв\'язки',
+            title: "Таблиці, ключі та зв'язки",
             content: `<h2>Таблиця — це множина рядків</h2>
 <p>Реляційна база зберігає дані в таблицях. Кожен рядок — один запис, кожна колонка — атрибут з чітким типом: <code>integer</code>, <code>text</code>, <code>boolean</code>, <code>timestamp</code>.</p>
 <h2>Первинний ключ</h2>
@@ -608,22 +728,38 @@ type CoursePage = Paginated&lt;Course&gt;;</code></pre>
                 {
                   text: 'Що однозначно ідентифікує рядок таблиці?',
                   type: 'SINGLE',
-                  answers: [['Первинний ключ', true], ['Зовнішній ключ', false], ['Індекс', false]],
+                  answers: [
+                    ['Первинний ключ', true],
+                    ['Зовнішній ключ', false],
+                    ['Індекс', false],
+                  ],
                 },
                 {
-                  text: 'Як реалізують зв\'язок «багато до багатьох»?',
+                  text: "Як реалізують зв'язок «багато до багатьох»?",
                   type: 'SINGLE',
-                  answers: [['Через проміжну таблицю', true], ['Одним зовнішнім ключем', false], ['Масивом у колонці', false]],
+                  answers: [
+                    ['Через проміжну таблицю', true],
+                    ['Одним зовнішнім ключем', false],
+                    ['Масивом у колонці', false],
+                  ],
                 },
                 {
                   text: 'Що робить ON DELETE CASCADE?',
                   type: 'SINGLE',
-                  answers: [['Видаляє залежні рядки разом з батьківським', true], ['Забороняє видалення', false], ['Обнуляє зовнішній ключ', false]],
+                  answers: [
+                    ['Видаляє залежні рядки разом з батьківським', true],
+                    ['Забороняє видалення', false],
+                    ['Обнуляє зовнішній ключ', false],
+                  ],
                 },
                 {
                   text: 'Які твердження відповідають 1НФ?',
                   type: 'MULTIPLE',
-                  answers: [['У клітинці одне атомарне значення', true], ['Немає списків через кому в одній колонці', true], ['Усі таблиці мають однакову кількість колонок', false]],
+                  answers: [
+                    ['У клітинці одне атомарне значення', true],
+                    ['Немає списків через кому в одній колонці', true],
+                    ['Усі таблиці мають однакову кількість колонок', false],
+                  ],
                 },
               ],
             },
@@ -709,32 +845,58 @@ WHERE e.id IS NULL;</code></pre>
                 {
                   text: 'Який JOIN поверне всі рядки лівої таблиці, навіть без збігів у правій?',
                   type: 'SINGLE',
-                  answers: [['LEFT JOIN', true], ['INNER JOIN', false], ['CROSS JOIN', false], ['RIGHT JOIN', false]],
+                  answers: [
+                    ['LEFT JOIN', true],
+                    ['INNER JOIN', false],
+                    ['CROSS JOIN', false],
+                    ['RIGHT JOIN', false],
+                  ],
                 },
                 {
                   text: 'Чим HAVING відрізняється від WHERE?',
                   type: 'SINGLE',
-                  answers: [['HAVING фільтрує групи після GROUP BY', true], ['HAVING працює лише з текстом', false], ['Нічим, це синоніми', false]],
+                  answers: [
+                    ['HAVING фільтрує групи після GROUP BY', true],
+                    ['HAVING працює лише з текстом', false],
+                    ['Нічим, це синоніми', false],
+                  ],
                 },
                 {
                   text: 'Як правильно перевірити відсутність значення?',
                   type: 'SINGLE',
-                  answers: [['column IS NULL', true], ['column = NULL', false], ['column == NULL', false]],
+                  answers: [
+                    ['column IS NULL', true],
+                    ['column = NULL', false],
+                    ['column == NULL', false],
+                  ],
                 },
                 {
                   text: 'Які з функцій є агрегатними?',
                   type: 'MULTIPLE',
-                  answers: [['COUNT', true], ['AVG', true], ['MAX', true], ['UPPER', false]],
+                  answers: [
+                    ['COUNT', true],
+                    ['AVG', true],
+                    ['MAX', true],
+                    ['UPPER', false],
+                  ],
                 },
                 {
                   text: 'Що поверне INNER JOIN?',
                   type: 'SINGLE',
-                  answers: [['Лише рядки зі збігом в обох таблицях', true], ['Усі рядки обох таблиць', false], ['Кожен рядок з кожним', false]],
+                  answers: [
+                    ['Лише рядки зі збігом в обох таблицях', true],
+                    ['Усі рядки обох таблиць', false],
+                    ['Кожен рядок з кожним', false],
+                  ],
                 },
                 {
                   text: 'Яка частина запиту логічно виконується першою?',
                   type: 'SINGLE',
-                  answers: [['FROM', true], ['SELECT', false], ['ORDER BY', false]],
+                  answers: [
+                    ['FROM', true],
+                    ['SELECT', false],
+                    ['ORDER BY', false],
+                  ],
                 },
               ],
             },
@@ -786,22 +948,38 @@ COMMIT;   -- або ROLLBACK, якщо щось пішло не так</code></p
                 {
                   text: 'Яку структуру PostgreSQL використовує для індексу за замовчуванням?',
                   type: 'SINGLE',
-                  answers: [['B-tree', true], ['Hash', false], ['GiST', false]],
+                  answers: [
+                    ['B-tree', true],
+                    ['Hash', false],
+                    ['GiST', false],
+                  ],
                 },
                 {
                   text: 'Що сповільнюють зайві індекси?',
                   type: 'MULTIPLE',
-                  answers: [['INSERT', true], ['UPDATE', true], ['DELETE', true]],
+                  answers: [
+                    ['INSERT', true],
+                    ['UPDATE', true],
+                    ['DELETE', true],
+                  ],
                 },
                 {
                   text: 'Що означає літера A в ACID?',
                   type: 'SINGLE',
-                  answers: [['Атомарність', true], ['Доступність', false], ['Асинхронність', false]],
+                  answers: [
+                    ['Атомарність', true],
+                    ['Доступність', false],
+                    ['Асинхронність', false],
+                  ],
                 },
                 {
                   text: 'Яка команда скасовує незавершену транзакцію?',
                   type: 'SINGLE',
-                  answers: [['ROLLBACK', true], ['COMMIT', false], ['TRUNCATE', false]],
+                  answers: [
+                    ['ROLLBACK', true],
+                    ['COMMIT', false],
+                    ['TRUNCATE', false],
+                  ],
                 },
               ],
             },
@@ -865,22 +1043,42 @@ COMMIT;   -- або ROLLBACK, якщо щось пішло не так</code></p
                 {
                   text: 'Що описує UX?',
                   type: 'SINGLE',
-                  answers: [['Досвід і зручність досягнення мети', true], ['Лише кольори і шрифти', false], ['Код інтерфейсу', false]],
+                  answers: [
+                    ['Досвід і зручність досягнення мети', true],
+                    ['Лише кольори і шрифти', false],
+                    ['Код інтерфейсу', false],
+                  ],
                 },
                 {
                   text: 'Які з принципів входять до евристик Нільсена?',
                   type: 'MULTIPLE',
-                  answers: [['Видимість стану системи', true], ['Запобігання помилкам', true], ['Максимум анімацій', false], ['Контроль і свобода користувача', true]],
+                  answers: [
+                    ['Видимість стану системи', true],
+                    ['Запобігання помилкам', true],
+                    ['Максимум анімацій', false],
+                    ['Контроль і свобода користувача', true],
+                  ],
                 },
                 {
                   text: 'Скільки учасників зазвичай достатньо, щоб виявити більшість проблем у юзабіліті-тесті?',
                   type: 'SINGLE',
-                  answers: [['Близько п\'яти', true], ['Не менше ста', false], ['Одного', false]],
+                  answers: [
+                    ["Близько п'яти", true],
+                    ['Не менше ста', false],
+                    ['Одного', false],
+                  ],
                 },
                 {
                   text: 'Що таке персона?',
                   type: 'SINGLE',
-                  answers: [['Узагальнений портрет користувача на основі досліджень', true], ['Реальний клієнт компанії', false], ['Аватар у профілі', false]],
+                  answers: [
+                    [
+                      'Узагальнений портрет користувача на основі досліджень',
+                      true,
+                    ],
+                    ['Реальний клієнт компанії', false],
+                    ['Аватар у профілі', false],
+                  ],
                 },
               ],
             },
@@ -945,27 +1143,47 @@ COMMIT;   -- або ROLLBACK, якщо щось пішло не так</code></p
                 {
                   text: 'Який мінімальний контраст WCAG AA для звичайного тексту?',
                   type: 'SINGLE',
-                  answers: [['4.5:1', true], ['2:1', false], ['7:1', false]],
+                  answers: [
+                    ['4.5:1', true],
+                    ['2:1', false],
+                    ['7:1', false],
+                  ],
                 },
                 {
                   text: 'Чому 12-колонкова сітка зручна?',
                   type: 'SINGLE',
-                  answers: [['12 ділиться на 2, 3, 4 і 6', true], ['Так вимагає браузер', false], ['Вона найвужча', false]],
+                  answers: [
+                    ['12 ділиться на 2, 3, 4 і 6', true],
+                    ['Так вимагає браузер', false],
+                    ['Вона найвужча', false],
+                  ],
                 },
                 {
                   text: 'Як правильно позначити помилку в полі форми?',
                   type: 'MULTIPLE',
-                  answers: [['Текстом повідомлення', true], ['Іконкою', true], ['Лише червоним кольором', false]],
+                  answers: [
+                    ['Текстом повідомлення', true],
+                    ['Іконкою', true],
+                    ['Лише червоним кольором', false],
+                  ],
                 },
                 {
                   text: 'Що означає підхід mobile first?',
                   type: 'SINGLE',
-                  answers: [['Спочатку проєктуємо для вузького екрана', true], ['Робимо лише мобільний застосунок', false], ['Тестуємо тільки на телефонах', false]],
+                  answers: [
+                    ['Спочатку проєктуємо для вузького екрана', true],
+                    ['Робимо лише мобільний застосунок', false],
+                    ['Тестуємо тільки на телефонах', false],
+                  ],
                 },
                 {
                   text: 'Який мінімальний розмір цілі для дотику радять настанови Apple?',
                   type: 'SINGLE',
-                  answers: [['44×44 px', true], ['16×16 px', false], ['100×100 px', false]],
+                  answers: [
+                    ['44×44 px', true],
+                    ['16×16 px', false],
+                    ['100×100 px', false],
+                  ],
                 },
               ],
             },
@@ -980,7 +1198,7 @@ COMMIT;   -- або ROLLBACK, якщо щось пішло не так</code></p
     key: 'git',
     title: 'Git і GitHub з нуля',
     description:
-      'Коміти, гілки, злиття і розв\'язання конфліктів, робота з віддаленими репозиторіями та pull request на GitHub.',
+      "Коміти, гілки, злиття і розв'язання конфліктів, робота з віддаленими репозиторіями та pull request на GitHub.",
     category: 'Інструменти',
     level: 'BEGINNER',
     price: 0,
@@ -1039,22 +1257,39 @@ git log -p file.txt    # історія змін конкретного файл
                 {
                   text: 'Яка команда додає зміни в індекс?',
                   type: 'SINGLE',
-                  answers: [['git add', true], ['git commit', false], ['git push', false]],
+                  answers: [
+                    ['git add', true],
+                    ['git commit', false],
+                    ['git push', false],
+                  ],
                 },
                 {
                   text: 'Чому Git називають розподіленою системою?',
                   type: 'SINGLE',
-                  answers: [['Кожен має повну копію репозиторію з історією', true], ['Він працює лише в хмарі', false], ['Файли зберігаються на різних серверах GitHub', false]],
+                  answers: [
+                    ['Кожен має повну копію репозиторію з історією', true],
+                    ['Він працює лише в хмарі', false],
+                    ['Файли зберігаються на різних серверах GitHub', false],
+                  ],
                 },
                 {
                   text: 'Які зони є в Git?',
                   type: 'MULTIPLE',
-                  answers: [['Робоча директорія', true], ['Індекс', true], ['Репозиторій', true], ['Кошик', false]],
+                  answers: [
+                    ['Робоча директорія', true],
+                    ['Індекс', true],
+                    ['Репозиторій', true],
+                    ['Кошик', false],
+                  ],
                 },
                 {
                   text: 'Навіщо потрібен файл .gitignore?',
                   type: 'SINGLE',
-                  answers: [['Щоб Git не відстежував вказані файли', true], ['Щоб видалити історію', false], ['Щоб приховати репозиторій на GitHub', false]],
+                  answers: [
+                    ['Щоб Git не відстежував вказані файли', true],
+                    ['Щоб видалити історію', false],
+                    ['Щоб приховати репозиторій на GitHub', false],
+                  ],
                 },
               ],
             },
@@ -1118,22 +1353,39 @@ const passingScore = 70;
                 {
                   text: 'Що таке гілка в Git?',
                   type: 'SINGLE',
-                  answers: [['Рухомий вказівник на коміт', true], ['Повна копія проєкту', false], ['Окремий репозиторій', false]],
+                  answers: [
+                    ['Рухомий вказівник на коміт', true],
+                    ['Повна копія проєкту', false],
+                    ['Окремий репозиторій', false],
+                  ],
                 },
                 {
                   text: 'Яка команда створює нову гілку і переходить на неї?',
                   type: 'SINGLE',
-                  answers: [['git switch -c name', true], ['git merge name', false], ['git log name', false]],
+                  answers: [
+                    ['git switch -c name', true],
+                    ['git merge name', false],
+                    ['git log name', false],
+                  ],
                 },
                 {
-                  text: 'Що треба зробити для розв\'язання конфлікту?',
+                  text: "Що треба зробити для розв'язання конфлікту?",
                   type: 'MULTIPLE',
-                  answers: [['Видалити маркери конфлікту', true], ['Залишити правильний варіант коду', true], ['Додати файл через git add і закомітити', true], ['Видалити гілку main', false]],
+                  answers: [
+                    ['Видалити маркери конфлікту', true],
+                    ['Залишити правильний варіант коду', true],
+                    ['Додати файл через git add і закомітити', true],
+                    ['Видалити гілку main', false],
+                  ],
                 },
                 {
                   text: 'Чого не варто робити з rebase?',
                   type: 'SINGLE',
-                  answers: [['Перебазовувати гілки, які вже використовують інші', true], ['Перебазовувати локальну гілку', false], ['Оновлювати свою гілку від main', false]],
+                  answers: [
+                    ['Перебазовувати гілки, які вже використовують інші', true],
+                    ['Перебазовувати локальну гілку', false],
+                    ['Оновлювати свою гілку від main', false],
+                  ],
                 },
               ],
             },
@@ -1182,22 +1434,38 @@ git fetch                                 # лише отримати, без з
                 {
                   text: 'З яких операцій складається git pull?',
                   type: 'SINGLE',
-                  answers: [['fetch і merge', true], ['push і commit', false], ['clone і add', false]],
+                  answers: [
+                    ['fetch і merge', true],
+                    ['push і commit', false],
+                    ['clone і add', false],
+                  ],
                 },
                 {
                   text: 'Як аутентифікуватися в GitHub для операцій Git?',
                   type: 'MULTIPLE',
-                  answers: [['SSH-ключем', true], ['Персональним токеном доступу', true], ['Паролем від акаунта по HTTPS', false]],
+                  answers: [
+                    ['SSH-ключем', true],
+                    ['Персональним токеном доступу', true],
+                    ['Паролем від акаунта по HTTPS', false],
+                  ],
                 },
                 {
                   text: 'Що робить squash під час злиття PR?',
                   type: 'SINGLE',
-                  answers: [['Стискає всі коміти PR в один', true], ['Видаляє гілку main', false], ['Скасовує PR', false]],
+                  answers: [
+                    ['Стискає всі коміти PR в один', true],
+                    ['Видаляє гілку main', false],
+                    ['Скасовує PR', false],
+                  ],
                 },
                 {
                   text: 'Яка назва віддаленого репозиторію за замовчуванням?',
                   type: 'SINGLE',
-                  answers: [['origin', true], ['main', false], ['remote', false]],
+                  answers: [
+                    ['origin', true],
+                    ['main', false],
+                    ['remote', false],
+                  ],
                 },
               ],
             },
@@ -1271,22 +1539,38 @@ git fetch                                 # лише отримати, без з
                 {
                   text: 'Що означає deprecated?',
                   type: 'SINGLE',
-                  answers: [['Застарілий, буде видалений', true], ['Обов\'язковий', false], ['Новий експериментальний', false]],
+                  answers: [
+                    ['Застарілий, буде видалений', true],
+                    ["Обов'язковий", false],
+                    ['Новий експериментальний', false],
+                  ],
                 },
                 {
                   text: 'Що означає MUST у специфікаціях RFC?',
                   type: 'SINGLE',
-                  answers: [['Обов\'язкова вимога', true], ['Рекомендація', false], ['На розсуд розробника', false]],
+                  answers: [
+                    ["Обов'язкова вимога", true],
+                    ['Рекомендація', false],
+                    ['На розсуд розробника', false],
+                  ],
                 },
                 {
                   text: 'Що означає connection refused?',
                   type: 'SINGLE',
-                  answers: [['Сервер не приймає з\'єднання', true], ['Недостатньо прав', false], ['Синтаксична помилка', false]],
+                  answers: [
+                    ["Сервер не приймає з'єднання", true],
+                    ['Недостатньо прав', false],
+                    ['Синтаксична помилка', false],
+                  ],
                 },
                 {
-                  text: 'Які слова означають параметри функції за обов\'язковістю?',
+                  text: "Які слова означають параметри функції за обов'язковістю?",
                   type: 'MULTIPLE',
-                  answers: [['required', true], ['optional', true], ['deprecated', false]],
+                  answers: [
+                    ['required', true],
+                    ['optional', true],
+                    ['deprecated', false],
+                  ],
                 },
               ],
             },
@@ -1345,22 +1629,39 @@ git fetch                                 # лише отримати, без з
                 {
                   text: 'Що означає LGTM у code review?',
                   type: 'SINGLE',
-                  answers: [['Looks good to me — схвалення', true], ['Let\'s go to meeting', false], ['Low global test metric', false]],
+                  answers: [
+                    ['Looks good to me — схвалення', true],
+                    ["Let's go to meeting", false],
+                    ['Low global test metric', false],
+                  ],
                 },
                 {
                   text: 'Який час використати для «Я вже задеплоїла виправлення»?',
                   type: 'SINGLE',
-                  answers: [['Present Perfect', true], ['Past Continuous', false], ['Future Simple', false]],
+                  answers: [
+                    ['Present Perfect', true],
+                    ['Past Continuous', false],
+                    ['Future Simple', false],
+                  ],
                 },
                 {
                   text: 'Що означає позначка nit у коментарі?',
                   type: 'SINGLE',
-                  answers: [['Дрібне зауваження, що не блокує злиття', true], ['Критична помилка', false], ['Новий запит на функцію', false]],
+                  answers: [
+                    ['Дрібне зауваження, що не блокує злиття', true],
+                    ['Критична помилка', false],
+                    ['Новий запит на функцію', false],
+                  ],
                 },
                 {
                   text: 'Які скорочення правильно розшифровано?',
                   type: 'MULTIPLE',
-                  answers: [['FYI — до відома', true], ['WIP — робота в процесі', true], ['ETA — очікуваний час завершення', true], ['ASAP — після обіду', false]],
+                  answers: [
+                    ['FYI — до відома', true],
+                    ['WIP — робота в процесі', true],
+                    ['ETA — очікуваний час завершення', true],
+                    ['ASAP — після обіду', false],
+                  ],
                 },
               ],
             },
@@ -1374,7 +1675,8 @@ git fetch                                 # лише отримати, без з
   {
     key: 'algo',
     title: 'Алгоритми та структури даних',
-    description: 'Чернетка курсу: складність алгоритмів, базові структури даних і сортування.',
+    description:
+      'Чернетка курсу: складність алгоритмів, базові структури даних і сортування.',
     category: 'Програмування',
     level: 'ADVANCED',
     price: 0,
@@ -1399,7 +1701,7 @@ git fetch                                 # лише отримати, без з
 <p>Для мільйона елементів різниця між <code>O(n log n)</code> і <code>O(n²)</code> — це секунди проти годин.</p>`,
           },
           {
-            title: 'Масиви та зв\'язні списки',
+            title: "Масиви та зв'язні списки",
             content: `<h2>Два способи зберігати послідовність</h2>
 <p><strong>Масив</strong> зберігає елементи підряд у пам'яті: доступ за індексом — <code>O(1)</code>, але вставка в середину — <code>O(n)</code>, бо треба зсунути решту елементів.</p>
 <p><strong>Зв'язний список</strong> зберігає вузли, кожен з яких посилається на наступний: вставка після відомого вузла — <code>O(1)</code>, а доступ до k-го елемента — <code>O(n)</code>.</p>
@@ -1409,4 +1711,131 @@ git fetch                                 # лише отримати, без з
       },
     ],
   },
-]
+  // Real free video course: «Вивчення HTML українською» by the YouTube
+  // channel «Школа програмування» (https://www.youtube.com/playlist?list=PL7vq4D0vOpQbLLkQTkJIV0rtkHtQ3Pses).
+  // Videos are embedded from YouTube; descriptions and tasks are ours.
+  {
+    key: 'html',
+    title: 'HTML з нуля (відеокурс)',
+    description:
+      'Безкоштовний відеокурс для тих, хто тільки починає вивчати веб-розробку. За 15 коротких уроків ви розберетеся, як влаштована HTML-сторінка, навчитеся розмічати текст, списки, посилання, зображення й таблиці, а наприкінці зберете власну форму зворотного звʼязку.\n\nВідео записав канал «Школа програмування» (https://www.youtube.com/@ProgerSchool); оригінальний плейлист: https://www.youtube.com/playlist?list=PL7vq4D0vOpQbLLkQTkJIV0rtkHtQ3Pses. У нашій системі до кожного відео додано короткий план і завдання для самоперевірки, а прогрес зберігається автоматично.',
+    category: 'Програмування',
+    level: 'BEGINNER',
+    price: 0,
+    autoApprove: true,
+    published: true,
+    teacher: 'teacher1',
+    sections: [
+      {
+        title: 'Знайомство з HTML',
+        lessons: [
+          {
+            title: 'Що таке HTML5?',
+            videoUrl: 'https://www.youtube.com/watch?v=ZY6uf5985PI',
+            content:
+              '<p>Дізнайтеся, навіщо потрібна мова розмітки і як браузер перетворює HTML-код на сторінку.</p><p>Дивіться відео вище, потім виконайте завдання й позначте урок як пройдений.</p>',
+          },
+          {
+            title: 'Файл index.html. Відображення сайту',
+            videoUrl: 'https://www.youtube.com/watch?v=l3Cok3fkwPE',
+            content:
+              '<p>Створіть перший файл index.html і відкрийте його в браузері. Спробуйте змінити текст і оновити сторінку.</p><p>Дивіться відео вище, потім виконайте завдання й позначте урок як пройдений.</p>',
+          },
+          {
+            title: 'Як створюються сайти? Код чужого проєкту',
+            videoUrl: 'https://www.youtube.com/watch?v=qV5ywWez7OU',
+            content:
+              '<p>Відкрийте інструменти розробника на будь-якому сайті й знайдіть у коді теги, про які йдеться у відео.</p><p>Дивіться відео вище, потім виконайте завдання й позначте урок як пройдений.</p>',
+          },
+          {
+            title: 'Коментарі в HTML. Метадані meta',
+            videoUrl: 'https://www.youtube.com/watch?v=6d4ysMiT0IY',
+            content:
+              '<p>Додайте до свого файлу коментар, кодування UTF-8 і тег viewport для мобільних пристроїв.</p><p>Дивіться відео вище, потім виконайте завдання й позначте урок як пройдений.</p>',
+          },
+        ],
+      },
+      {
+        title: 'Текст, списки та атрибути',
+        lessons: [
+          {
+            title: 'Теги для роботи з текстом',
+            videoUrl: 'https://www.youtube.com/watch?v=SjIwvaFaVto',
+            content:
+              '<p>Розмітьте коротку статтю: заголовки, абзаци, виділення жирним і курсивом.</p><p>Дивіться відео вище, потім виконайте завдання й позначте урок як пройдений.</p>',
+          },
+          {
+            title: 'Робота зі списками',
+            videoUrl: 'https://www.youtube.com/watch?v=Q1GU1LBuWKA',
+            content:
+              '<p>Складіть нумерований список кроків і маркований список покупок, спробуйте вкладений список.</p><p>Дивіться відео вище, потім виконайте завдання й позначте урок як пройдений.</p>',
+          },
+          {
+            title: 'Що таке атрибути HTML?',
+            videoUrl: 'https://www.youtube.com/watch?v=W-PrTNceTz8',
+            content:
+              '<p>Розберіться, як атрибути змінюють поведінку тегів, і додайте атрибут title до кількох елементів.</p><p>Дивіться відео вище, потім виконайте завдання й позначте урок як пройдений.</p>',
+          },
+        ],
+      },
+      {
+        title: 'Посилання, зображення й таблиці',
+        lessons: [
+          {
+            title: 'Створення посилань',
+            videoUrl: 'https://www.youtube.com/watch?v=8CNfX7n0F80',
+            content:
+              '<p>Зробіть посилання на інший сайт, на іншу сторінку проєкту та на розділ усередині сторінки.</p><p>Дивіться відео вище, потім виконайте завдання й позначте урок як пройдений.</p>',
+          },
+          {
+            title: 'Робота із зображеннями',
+            videoUrl: 'https://www.youtube.com/watch?v=e0dK6ZllwxM',
+            content:
+              '<p>Додайте на сторінку зображення з описом у атрибуті alt — він важливий для доступності.</p><p>Дивіться відео вище, потім виконайте завдання й позначте урок як пройдений.</p>',
+          },
+          {
+            title: 'Створення HTML-таблиць',
+            videoUrl: 'https://www.youtube.com/watch?v=rU72_aenNXc',
+            content:
+              '<p>Побудуйте таблицю розкладу з рядком заголовків і обʼєднаною клітинкою.</p><p>Дивіться відео вище, потім виконайте завдання й позначте урок як пройдений.</p>',
+          },
+        ],
+      },
+      {
+        title: 'Структура сторінки та форми',
+        lessons: [
+          {
+            title: 'Теги для підключення файлів',
+            videoUrl: 'https://www.youtube.com/watch?v=GCGOyUaVQAI',
+            content:
+              '<p>Підключіть до сторінки окремий файл стилів і скрипт, перевірте, що вони завантажуються.</p><p>Дивіться відео вище, потім виконайте завдання й позначте урок як пройдений.</p>',
+          },
+          {
+            title: 'Теги div та span',
+            videoUrl: 'https://www.youtube.com/watch?v=LoG39l2AUho',
+            content:
+              '<p>Згрупуйте частини сторінки блоками div, а окремі слова в рядку виділіть через span.</p><p>Дивіться відео вище, потім виконайте завдання й позначте урок як пройдений.</p>',
+          },
+          {
+            title: 'HTML-форми та поля для введення',
+            videoUrl: 'https://www.youtube.com/watch?v=o9KrPxKRn_U',
+            content:
+              '<p>Створіть форму реєстрації з полями для імені, email і пароля.</p><p>Дивіться відео вище, потім виконайте завдання й позначте урок як пройдений.</p>',
+          },
+          {
+            title: 'Поле для тексту й кнопки',
+            videoUrl: 'https://www.youtube.com/watch?v=Sei9LwOF6H0',
+            content:
+              '<p>Додайте до форми багаторядкове поле для повідомлення та кнопку надсилання.</p><p>Дивіться відео вище, потім виконайте завдання й позначте урок як пройдений.</p>',
+          },
+          {
+            title: 'Селектори вибору інформації',
+            videoUrl: 'https://www.youtube.com/watch?v=2fpOvwUrOQk',
+            content:
+              '<p>Додайте до форми випадаючий список, перемикачі та прапорці. Фінальне завдання — повна форма зворотного звʼязку.</p><p>Дивіться відео вище, потім виконайте завдання й позначте урок як пройдений.</p>',
+          },
+        ],
+      },
+    ],
+  },
+];

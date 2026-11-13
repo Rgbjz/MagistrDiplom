@@ -126,7 +126,11 @@ export class StoreService {
           include: {
             lessons: {
               orderBy: { order: 'asc' },
-              select: { title: true, test: { select: { id: true } } },
+              select: {
+                title: true,
+                videoUrl: true,
+                test: { select: { id: true } },
+              },
             },
           },
         },
@@ -166,6 +170,7 @@ export class StoreService {
         lessons: s.lessons.map((l) => ({
           title: l.title,
           hasTest: !!l.test,
+          previewUrl: youtubeThumbnail(l.videoUrl),
         })),
       })),
     };
@@ -233,4 +238,30 @@ export class StoreService {
       },
     });
   }
+}
+
+/**
+ * Lesson preview for the public course page: YouTube's own thumbnail of a
+ * linked video. Uploaded videos stay private, so they get no public preview.
+ */
+export function youtubeThumbnail(
+  url: string | null | undefined,
+): string | null {
+  if (!url) return null;
+  let id: string | null = null;
+  try {
+    const u = new URL(url);
+    if (/(^|\.)youtube\.com$/.test(u.hostname)) {
+      id = u.pathname.startsWith('/embed/')
+        ? u.pathname.split('/')[2]
+        : u.searchParams.get('v');
+    } else if (u.hostname === 'youtu.be') {
+      id = u.pathname.slice(1);
+    }
+  } catch {
+    return null;
+  }
+  return id && /^[\w-]{11}$/.test(id)
+    ? `https://i.ytimg.com/vi/${id}/mqdefault.jpg`
+    : null;
 }

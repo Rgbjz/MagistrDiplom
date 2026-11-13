@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument -- loose Prisma mocks */
-import { StoreService } from './store.service';
+import { StoreService, youtubeThumbnail } from './store.service';
 
 describe('StoreService.catalog', () => {
   let prisma: any;
@@ -87,5 +87,31 @@ describe('StoreService.catalog', () => {
     await service.catalog({ sort: 'popular' });
     const args = prisma.course.findMany.mock.calls[0][0];
     expect(args.orderBy[0]).toEqual({ enrollments: { _count: 'desc' } });
+  });
+});
+
+describe('youtubeThumbnail', () => {
+  it('builds a thumbnail for watch, short and embed links', () => {
+    for (const url of [
+      'https://www.youtube.com/watch?v=ZY6uf5985PI',
+      'https://youtu.be/ZY6uf5985PI',
+      'https://www.youtube.com/embed/ZY6uf5985PI',
+    ]) {
+      expect(youtubeThumbnail(url)).toBe(
+        'https://i.ytimg.com/vi/ZY6uf5985PI/mqdefault.jpg',
+      );
+    }
+  });
+
+  it('gives nothing for uploaded videos, other hosts and junk', () => {
+    expect(youtubeThumbnail('/public/videos/a.mp4')).toBeNull();
+    expect(youtubeThumbnail('https://vimeo.com/123')).toBeNull();
+    expect(
+      youtubeThumbnail('https://evil.youtube.com.example/watch?v=ZY6uf5985PI'),
+    ).toBeNull();
+    expect(
+      youtubeThumbnail('https://www.youtube.com/watch?v=<script>'),
+    ).toBeNull();
+    expect(youtubeThumbnail(null)).toBeNull();
   });
 });

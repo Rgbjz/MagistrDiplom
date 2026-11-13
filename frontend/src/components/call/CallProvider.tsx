@@ -11,7 +11,7 @@ import {
   type ReactNode,
 } from 'react';
 import { useSession } from 'next-auth/react';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import type { Socket } from 'socket.io-client';
 import { getSocket } from '../../lib/socket';
@@ -29,7 +29,9 @@ import {
 } from '../../lib/call/rtc';
 import { startTone } from '../../lib/call/ringtone';
 import { loadIceServers } from '../../lib/call/ice';
-import type { SessionUser } from '../../lib/types';
+import type { Me, SessionUser } from '../../lib/types';
+import { clientApi } from '../../lib/api/client';
+import { displayName } from '../../lib/format';
 import { useToast } from '../ui';
 import { IncomingCall } from './IncomingCall';
 import { CallEnded, CallWindow } from './CallWindow';
@@ -99,6 +101,12 @@ const NO_LOCAL: LocalMedia = {
  */
 export function CallProvider({ children }: { children: ReactNode }) {
   const { data: session } = useSession();
+  // Same cached query as the user menu: your name for your own call tile.
+  const { data: meProfile } = useQuery({
+    queryKey: ['me'],
+    queryFn: () => clientApi<Me>('/users/me'),
+    enabled: !!session,
+  });
   const toast = useToast();
   const t = useTranslations('call');
   // Socket handlers and media callbacks are long-lived; read the latest
@@ -668,6 +676,7 @@ export function CallProvider({ children }: { children: ReactNode }) {
           local={local}
           peers={Object.values(peers)}
           myName={t('window.me')}
+          myAvatarName={displayName(meProfile?.profile, session?.user?.email ?? t('window.me'))}
           onToggleAudio={toggleAudio}
           onToggleVideo={toggleVideo}
           onToggleScreen={() => void toggleScreen()}

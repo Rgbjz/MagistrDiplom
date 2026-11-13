@@ -70,6 +70,17 @@ function incompleteQuestions(e: unknown): PublishProblem[] | null {
   }
 }
 
+/** Machine-readable reason of a 400 from the API (e.g. EMPTY_COURSE). */
+function apiErrorCode(e: unknown): string | null {
+  const m = e instanceof Error ? /^API 400 [^:]+: ([\s\S]*)$/.exec(e.message) : null;
+  if (!m) return null;
+  try {
+    return (JSON.parse(m[1]) as { code?: string }).code ?? null;
+  } catch {
+    return null;
+  }
+}
+
 function Builder() {
   const params = useParams<{ id: string }>();
   const id = Number(params.id);
@@ -107,6 +118,7 @@ function Builder() {
     onError: (e) => {
       const problems = incompleteQuestions(e);
       if (problems) setPublishProblems(problems);
+      else if (apiErrorCode(e) === 'EMPTY_COURSE') toast(t('publishEmpty'), 'error');
       else toast(errorText(e), 'error');
     },
   });

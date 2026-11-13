@@ -25,7 +25,8 @@
     "linkProgress": "Прогрес студентів",
     "tabBank": "Банк питань",
     "publishBlocked": "Курс не можна опублікувати: {count, plural, one {# питання неповне} few {# питання неповні} many {# питань неповні} other {# питання неповні}}",
-    "publishProblem": "«{test}», питання {index}"
+    "publishProblem": "«{test}», питання {index}",
+    "publishEmpty": "Курс не можна опублікувати: додайте хоча б один урок."
   },
   "settings": {
     "saved": "Налаштування збережено",

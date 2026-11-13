@@ -59,8 +59,10 @@ export function LessonEditor({
   }, [lesson.id, lesson.title, lesson.content, lesson.videoUrl]);
 
   const hasUpload = Boolean(lesson.video);
+  // The editor is reused when you switch lessons: follow each lesson's own
+  // video (uploaded file → «Свій файл», otherwise the link tab).
   useEffect(() => {
-    if (hasUpload) setVideoMode('file');
+    setVideoMode(hasUpload ? 'file' : 'link');
   }, [lesson.id, hasUpload]);
 
   const embed = useMemo(() => toEmbedUrl(videoUrl), [videoUrl]);

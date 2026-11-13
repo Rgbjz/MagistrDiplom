@@ -91,7 +91,17 @@ function RemoteTile({
 }
 
 /** Your own camera as a regular grid tile (group calls). */
-function LocalTile({ local, name, style }: { local: LocalMedia; name: string; style: React.CSSProperties }) {
+function LocalTile({
+  local,
+  name,
+  avatarName,
+  style,
+}: {
+  local: LocalMedia;
+  name: string;
+  avatarName: string;
+  style: React.CSSProperties;
+}) {
   const t = useTranslations('call.window');
   const ref = useStream(local.stream);
   const showVideo = hasVideo(local.stream, local.video || local.screen);
@@ -107,7 +117,7 @@ function LocalTile({ local, name, style }: { local: LocalMedia; name: string; st
       />
       {!showVideo && (
         <div className={styles.placeholder} aria-hidden="true">
-          <span className={styles.bigAvatar}>{initials(name)}</span>
+          <span className={styles.bigAvatar}>{initials(avatarName)}</span>
         </div>
       )}
       <figcaption className={styles.tileLabel}>
@@ -125,7 +135,7 @@ function LocalTile({ local, name, style }: { local: LocalMedia; name: string; st
 type Corner = 'tl' | 'tr' | 'bl' | 'br';
 
 /** Your own camera as a small picture-in-picture; drag it to any corner. */
-function SelfView({ local, name }: { local: LocalMedia; name: string }) {
+function SelfView({ local, avatarName }: { local: LocalMedia; avatarName: string }) {
   const t = useTranslations('call.window');
   const ref = useStream(local.stream);
   const [corner, setCorner] = useState<Corner>('br');
@@ -184,7 +194,7 @@ function SelfView({ local, name }: { local: LocalMedia; name: string }) {
       />
       {!showVideo && (
         <div className={styles.placeholder} aria-hidden="true">
-          <span className={styles.smallAvatar}>{initials(name)}</span>
+          <span className={styles.smallAvatar}>{initials(avatarName)}</span>
         </div>
       )}
       {!local.audio && (
@@ -282,6 +292,7 @@ export function CallWindow({
   local,
   peers,
   myName,
+  myAvatarName,
   onToggleAudio,
   onToggleVideo,
   onToggleScreen,
@@ -291,6 +302,8 @@ export function CallWindow({
   local: LocalMedia;
   peers: RemotePeer[];
   myName: string;
+  /** Your real name: initials on your tile while the camera is off («Ви» is only the caption). */
+  myAvatarName: string;
   onToggleAudio: () => void;
   onToggleVideo: () => void | Promise<void>;
   onToggleScreen: () => void;
@@ -391,10 +404,10 @@ export function CallWindow({
                   style={tileStyle}
                 />
               ))}
-              <LocalTile local={local} name={myName} style={tileStyle} />
+              <LocalTile local={local} name={myName} avatarName={myAvatarName} style={tileStyle} />
             </div>
           )}
-          {!waiting && !group && <SelfView local={local} name={myName} />}
+          {!waiting && !group && <SelfView local={local} avatarName={myAvatarName} />}
         </div>
 
         <div className={styles.controls} role="toolbar" aria-label={t('controls')}>

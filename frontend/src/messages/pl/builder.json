@@ -25,7 +25,8 @@
     "linkProgress": "Postępy studentów",
     "tabBank": "Bank pytań",
     "publishBlocked": "Nie można opublikować kursu: {count, plural, one {# pytanie jest niekompletne} few {# pytania są niekompletne} many {# pytań jest niekompletnych} other {# pytania są niekompletne}}",
-    "publishProblem": "„{test}”, pytanie {index}"
+    "publishProblem": "„{test}”, pytanie {index}",
+    "publishEmpty": "Nie można opublikować kursu: dodaj co najmniej jedną lekcję."
   },
   "settings": {
     "saved": "Ustawienia zapisane",

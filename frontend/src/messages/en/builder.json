@@ -25,7 +25,8 @@
     "linkProgress": "Student progress",
     "tabBank": "Question bank",
     "publishBlocked": "The course can’t be published: {count, plural, one {# question is incomplete} other {# questions are incomplete}}",
-    "publishProblem": "“{test}”, question {index}"
+    "publishProblem": "“{test}”, question {index}",
+    "publishEmpty": "The course can’t be published yet: add at least one lesson."
   },
   "settings": {
     "saved": "Settings saved",

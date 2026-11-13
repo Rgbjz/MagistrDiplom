@@ -267,6 +267,16 @@ export class CoursesService {
    * pairs…), so a course with one can't be published: 400 lists each problem.
    */
   private async assertPublishable(courseId: number) {
+    // A course without a single lesson would open as an empty page.
+    const lessons = await this.prisma.lesson.count({
+      where: { section: { courseId } },
+    });
+    if (lessons === 0) {
+      throw new BadRequestException({
+        code: 'EMPTY_COURSE',
+        message: 'Add at least one lesson before publishing',
+      });
+    }
     const tests = await this.prisma.test.findMany({
       where: { lesson: { section: { courseId } } },
       orderBy: [

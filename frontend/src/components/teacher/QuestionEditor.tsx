@@ -65,7 +65,11 @@ export function QuestionItem({
     setPoints(question.points);
   }, [question.id, question.text, question.type, question.points]);
 
+  // Saves of one question run one after another: two quick blurs (e.g. a
+  // matching pair's left then right field) must not reach the server out of
+  // order, or the older config overwrites the newer one.
   const patchQuestion = useMutation({
+    scope: { id: `question-${question.id}` },
     mutationFn: (data: QuestionPatch) =>
       clientApi(`/tests/questions/${question.id}`, { method: 'PATCH', ...json(data) }),
     onSuccess: onChanged,
@@ -86,6 +90,7 @@ export function QuestionItem({
     onError,
   });
   const patchAnswer = useMutation({
+    scope: { id: `question-${question.id}-answers` },
     mutationFn: ({ id, data }: { id: number; data: Partial<{ text: string; isCorrect: boolean }> }) =>
       clientApi(`/tests/answers/${id}`, { method: 'PATCH', ...json(data) }),
     onSuccess: onChanged,

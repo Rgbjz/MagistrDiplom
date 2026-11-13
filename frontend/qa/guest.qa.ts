@@ -97,8 +97,21 @@ import { step, courseId, pause, overflowCulprits } from './util';
   for (const loc of ['en', 'pl'] as const) {
     await step(qa, page, `lang-${loc}`, async () => {
       await page.goto(BASE);
-      const sw = page.getByRole('combobox', { name: /мова|language|język/i }).first();
-      await sw.selectOption(loc);
+      // New language menu: pill button → menu of radio items (mouse for en, keyboard for pl).
+      const sw = page.locator('header').first().getByRole('button', { name: /Мова інтерфейсу|Interface language|Język interfejsu/ });
+      if (loc === 'en') {
+        await sw.click();
+        await qa.snap(page, 'lang-menu-open', { fullPage: false });
+        await page.getByRole('menuitemradio', { name: /English/ }).click();
+      } else {
+        await sw.focus();
+        await page.keyboard.press('ArrowDown');
+        await pause(300);
+        const focused = await page.evaluate(() => document.activeElement?.textContent ?? '');
+        if (!/Українська|English/.test(focused)) qa.add('lang-menu-keyboard', 'bug', 'minor', `ArrowDown on the language button focused "${focused}" instead of the current language`);
+        await page.keyboard.press('End');
+        await page.keyboard.press('Enter');
+      }
       await pause(1200);
       const lang = await page.evaluate(() => document.documentElement.lang);
       if (lang !== loc) qa.add(`lang-${loc}`, 'bug', 'major', `html lang is ${lang} after switching to ${loc}`);

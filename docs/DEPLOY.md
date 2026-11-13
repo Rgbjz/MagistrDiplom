@@ -71,8 +71,10 @@ Vercel → **Storage** → **Create** → **Blob** → скопируйте `BLO
 `CLOUDINARY_MAX_FILE_MB` и `CLOUDINARY_MAX_VIDEO_MB`.
 
 **Настройки Cloudinary.** Менять ничего не нужно:
-- PDF и ZIP загружаются как `raw`, поэтому ограничение бесплатных аккаунтов «Allow delivery of PDF and ZIP files»
-  (Settings → Security) их не касается — оно относится к PDF/ZIP, загруженным как изображения.
+- **Обязательно включите Settings → Security → «Allow delivery of PDF and ZIP files».** На бесплатном аккаунте
+  без этой галочки Cloudinary отказывает в выдаче PDF и ZIP даже типа `raw` (ответ `deny or ACL failure`,
+  бэкенд возвращает 502 и пишет причину в заголовок `X-Storage-Error`). Файлы при этом остаются закрытыми:
+  они `authenticated` и выдаются только по подписанной ссылке, которую строит бэкенд.
 - Если включить **Strict transformations**, постер (`so_auto`) и MP4 перестанут строиться «на лету»; HLS работает,
   потому что он создаётся заранее (eager).
 

@@ -47,7 +47,10 @@
     "pageInfo": "Сторінка {page} з {pages} · {count, plural, one {# користувач} few {# користувачі} many {# користувачів} other {# користувача}}",
     "confirmTitle": "Заблокувати користувача?",
     "confirmText": "{name} не зможе увійти в систему, доки ви не розблокуєте акаунт.",
-    "confirmBlock": "Заблокувати"
+    "confirmBlock": "Заблокувати",
+    "confirmEmail": "Підтвердити email",
+    "confirmEmailOf": "Підтвердити email: {name}",
+    "emailConfirmed": "Email підтверджено"
   },
   "payments": {
     "aria": "Останні платежі",

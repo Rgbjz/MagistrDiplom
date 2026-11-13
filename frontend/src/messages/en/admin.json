@@ -47,7 +47,10 @@
     "pageInfo": "Page {page} of {pages} · {count, plural, one {# user} other {# users}}",
     "confirmTitle": "Block the user?",
     "confirmText": "{name} will not be able to sign in until you unblock the account.",
-    "confirmBlock": "Block"
+    "confirmBlock": "Block",
+    "confirmEmail": "Confirm email",
+    "confirmEmailOf": "Confirm email: {name}",
+    "emailConfirmed": "Email confirmed"
   },
   "payments": {
     "aria": "Recent payments",

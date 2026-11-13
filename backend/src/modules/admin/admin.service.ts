@@ -115,6 +115,9 @@ export class AdminService {
       data: {
         role: dto.role,
         blocked: dto.blocked,
+        ...(dto.emailVerified
+          ? { emailVerified: true, verificationToken: null }
+          : {}),
         // An admin action also lifts a temporary login lockout.
         failedLoginCount: 0,
         lockedUntil: null,

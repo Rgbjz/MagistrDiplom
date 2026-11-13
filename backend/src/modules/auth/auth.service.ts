@@ -145,7 +145,7 @@ export class AuthService {
     return {
       email: dto.email,
       emailSent: this.mail.enabled,
-      ...(this.mail.enabled ? {} : { confirmToken }),
+      ...(this.mail.exposeDevTokens ? { confirmToken } : {}),
     };
   }
 
@@ -186,7 +186,7 @@ export class AuthService {
     return {
       email,
       emailSent: this.mail.enabled,
-      ...(this.mail.enabled ? {} : { confirmToken }),
+      ...(this.mail.exposeDevTokens ? { confirmToken } : {}),
     };
   }
 
@@ -199,7 +199,7 @@ export class AuthService {
     if (!user) {
       return {
         emailSent: this.mail.enabled,
-        ...(this.mail.enabled ? {} : { resetToken: null }),
+        ...(this.mail.exposeDevTokens ? { resetToken: null } : {}),
       };
     }
     const resetToken = crypto.randomBytes(32).toString('hex');
@@ -213,7 +213,7 @@ export class AuthService {
     this.mail.sendPasswordReset(email, resetToken, user.profile?.locale);
     return {
       emailSent: this.mail.enabled,
-      ...(this.mail.enabled ? {} : { resetToken }),
+      ...(this.mail.exposeDevTokens ? { resetToken } : {}),
     };
   }
 

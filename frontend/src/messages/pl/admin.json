@@ -47,7 +47,10 @@
     "pageInfo": "Strona {page} z {pages} · {count, plural, one {# użytkownik} few {# użytkowników} many {# użytkowników} other {# użytkownika}}",
     "confirmTitle": "Zablokować użytkownika?",
     "confirmText": "{name} nie będzie mógł się zalogować, dopóki nie odblokujesz konta.",
-    "confirmBlock": "Zablokuj"
+    "confirmBlock": "Zablokuj",
+    "confirmEmail": "Potwierdź email",
+    "confirmEmailOf": "Potwierdź email: {name}",
+    "emailConfirmed": "Email potwierdzony"
   },
   "payments": {
     "aria": "Ostatnie płatności",

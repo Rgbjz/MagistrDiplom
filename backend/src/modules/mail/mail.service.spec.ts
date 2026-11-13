@@ -53,4 +53,13 @@ describe('MailService', () => {
     await new Promise((r) => setImmediate(r));
     expect(error).toHaveBeenCalledWith(expect.stringContaining('boom'));
   });
+
+  it('returns dev tokens only in development without SMTP', () => {
+    expect(service({}).exposeDevTokens).toBe(true);
+    // Production without SMTP must never put confirm/reset tokens in responses.
+    expect(service({ NODE_ENV: 'production' }).exposeDevTokens).toBe(false);
+    expect(service({ SMTP_HOST: 'smtp.example.com' }).exposeDevTokens).toBe(
+      false,
+    );
+  });
 });

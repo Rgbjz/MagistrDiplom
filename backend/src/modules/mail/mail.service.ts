@@ -20,9 +20,11 @@ export class MailService {
   private readonly transporter: Transporter | null;
   private readonly from: string;
   private readonly appUrl: string;
+  private readonly production: boolean;
 
   constructor(config: ConfigService) {
     const host = config.get<string>('SMTP_HOST');
+    this.production = config.get<string>('NODE_ENV') === 'production';
     this.from = config.get<string>('MAIL_FROM') ?? 'LMS <no-reply@lms.local>';
     this.appUrl = (
       config.get<string>('APP_URL') ??
@@ -52,6 +54,15 @@ export class MailService {
   /** True when real delivery is configured. */
   get enabled(): boolean {
     return this.transporter !== null;
+  }
+
+  /**
+   * Development without SMTP: confirm/reset tokens are returned in the API
+   * response so the flows can be tried locally. Never in production — there
+   * a token in the response would let anyone confirm or reset any account.
+   */
+  get exposeDevTokens(): boolean {
+    return !this.enabled && !this.production;
   }
 
   link(path: string): string {

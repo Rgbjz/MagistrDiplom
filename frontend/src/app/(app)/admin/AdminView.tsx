@@ -160,7 +160,13 @@ function UsersTable({ currentUserId }: { currentUserId: number }) {
   });
 
   const update = useMutation({
-    mutationFn: ({ id, body }: { id: number; body: { role?: Role; blocked?: boolean } }) =>
+    mutationFn: ({
+      id,
+      body,
+    }: {
+      id: number;
+      body: { role?: Role; blocked?: boolean; emailVerified?: true };
+    }) =>
       clientApi<AdminUser>(`/admin/users/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -171,7 +177,9 @@ function UsersTable({ currentUserId }: { currentUserId: number }) {
       toast(
         body.role
           ? t('roleChanged', { role: labels.role(body.role) })
-          : body.blocked
+          : body.emailVerified
+            ? t('emailConfirmed')
+            : body.blocked
             ? t('blocked')
             : t('unblocked'),
       );
@@ -286,6 +294,17 @@ function UsersTable({ currentUserId }: { currentUserId: number }) {
                     <td className={styles.dateCell}>{f.date(u.createdAt)}</td>
                     <td>
                       <div className={ui.rowActions}>
+                        {!u.emailVerified && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            disabled={update.isPending}
+                            aria-label={t('confirmEmailOf', { name })}
+                            onClick={() => update.mutate({ id: u.id, body: { emailVerified: true } })}
+                          >
+                            {t('confirmEmail')}
+                          </Button>
+                        )}
                         <Button
                           variant={u.blocked ? 'outline' : 'ghost'}
                           size="sm"

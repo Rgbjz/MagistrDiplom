@@ -10,4 +10,9 @@ export class AdminUpdateUserDto {
   @IsOptional()
   @IsBoolean()
   blocked?: boolean;
+
+  /** Confirm the email by hand (e.g. while no SMTP is configured). */
+  @IsOptional()
+  @IsIn([true])
+  emailVerified?: true;
 }

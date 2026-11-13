@@ -71,7 +71,18 @@ function makeDb() {
     courseStaff: { findMany: jest.fn(() => []) },
     user: {
       findMany: jest.fn(({ where }) =>
-        users.filter((u) => inList(u.id, where.id) && !u.blocked),
+        users.filter(
+          (u) =>
+            inList(u.id, where.id) &&
+            !u.blocked &&
+            (where.AND ?? []).every((c: any) =>
+              c.OR
+                ? c.OR.some((o: any) =>
+                    o.role ? u.role !== o.role.not : inList(u.id, o.id),
+                  )
+                : inList(u.id, c.id),
+            ),
+        ),
       ),
       findUnique: jest.fn(({ where }) => users.find((u) => u.id === where.id)),
     },
@@ -229,5 +240,52 @@ describe('ChatService groups', () => {
     expect(db.conversations[0].ownerId).toBe(3);
     await service.leaveGroup(id, as(3));
     expect(db.conversations).toHaveLength(0);
+  });
+});
+
+describe('ChatService direct chats', () => {
+  let service: ChatService;
+
+  beforeEach(() => {
+    service = new ChatService(makeDb().prisma, {
+      notifyMany: jest.fn(),
+    } as any);
+  });
+
+  const canStart = (user: AuthUser, otherId: number, role: string) =>
+    (service as any).canStartDirect(user, {
+      id: otherId,
+      role,
+    }) as Promise<boolean>;
+
+  it('a student can start a chat with any teacher and with classmates', async () => {
+    expect(await canStart(as(4), 1, 'TEACHER')).toBe(true); // not their course
+    expect(await canStart(as(4), 9, 'ADMIN')).toBe(true);
+    expect(await canStart(as(2), 3, 'STUDENT')).toBe(true); // same course
+  });
+
+  it('a student cannot cold-message an unrelated student', async () => {
+    expect(await canStart(as(2), 4, 'STUDENT')).toBe(false);
+  });
+
+  it('teachers and admins can start a chat with anyone', async () => {
+    expect(await canStart(as(1, 'TEACHER'), 4, 'STUDENT')).toBe(true);
+    expect(await canStart(as(9, 'ADMIN'), 4, 'STUDENT')).toBe(true);
+  });
+
+  it('new-chat search offers a student classmates plus all staff', async () => {
+    const ids = (await service.contacts(as(4), '', 'direct')).map((c) => c.id);
+    expect(ids.sort()).toEqual([1, 9]); // no shared course, but staff are listed
+    const classmates = (await service.contacts(as(2), '', 'direct')).map(
+      (c) => c.id,
+    );
+    expect(classmates.sort()).toEqual([1, 3, 9]);
+  });
+
+  it('teachers can search everyone for a new chat', async () => {
+    const ids = (await service.contacts(as(1, 'TEACHER'), '', 'direct')).map(
+      (c) => c.id,
+    );
+    expect(ids.sort()).toEqual([2, 3, 4, 9]);
   });
 });

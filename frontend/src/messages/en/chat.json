@@ -13,7 +13,8 @@
     "direct": "Direct",
     "noMessages": "No messages yet",
     "groups": "Groups",
-    "newGroup": "New group"
+    "newGroup": "New group",
+    "newMessage": "New message"
   },
   "thread": {
     "label": "Conversation: {title}",
@@ -71,5 +72,17 @@
     "left": "You left the group",
     "actionFailed": "Something went wrong",
     "memberCount": "{count, plural, one {# member} other {# members}}"
+  },
+  "direct": {
+    "title": "New message",
+    "searchLabel": "Who to write to",
+    "searchPlaceholder": "Name or email",
+    "searchHint": "Teachers, people from your courses and those you have written to.",
+    "people": "People",
+    "noContacts": "No one found.",
+    "write": "Message {name}",
+    "cancel": "Cancel",
+    "failed": "Could not open the conversation",
+    "writeShort": "Message"
   }
 }

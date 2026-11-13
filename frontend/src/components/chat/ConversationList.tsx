@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { BookOpen, Search, Users } from 'lucide-react';
+import { BookOpen, Search, SquarePen, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { initials } from '../../lib/format';
 import { useFormat } from '../../i18n/format';
@@ -14,11 +14,13 @@ export function ConversationList({
   activeId,
   onSelect,
   onNewGroup,
+  onNewMessage,
 }: {
   conversations: Conversation[];
   activeId: number | null;
   onSelect: (id: number) => void;
   onNewGroup: () => void;
+  onNewMessage: () => void;
 }) {
   const t = useTranslations('chat.list');
   const f = useFormat();
@@ -38,10 +40,21 @@ export function ConversationList({
       <div className={styles.listHead}>
         <div className={styles.listTitleRow}>
           <h1 className={styles.listTitle}>{t('title')}</h1>
-          <button type="button" className={styles.newGroupBtn} onClick={onNewGroup}>
-            <Users size={16} aria-hidden="true" />
-            {t('newGroup')}
-          </button>
+          <div className={styles.listActions}>
+            <button
+              type="button"
+              className={styles.newGroupBtn}
+              onClick={onNewMessage}
+              aria-label={t('newMessage')}
+              title={t('newMessage')}
+            >
+              <SquarePen size={16} aria-hidden="true" />
+            </button>
+            <button type="button" className={styles.newGroupBtn} onClick={onNewGroup}>
+              <Users size={16} aria-hidden="true" />
+              {t('newGroup')}
+            </button>
+          </div>
         </div>
         <label className={styles.search}>
           <Search size={18} aria-hidden="true" />

@@ -115,14 +115,16 @@ export class ChatService {
     return this.dto(conversation.id, user.id);
   }
 
-  async getOrCreateDirect(userId: number, otherUserId: number) {
+  async getOrCreateDirect(user: AuthUser, otherUserId: number) {
+    const userId = user.id;
     if (userId === otherUserId) {
       throw new BadRequestException('Cannot message yourself');
     }
     const other = await this.prisma.user.findUnique({
       where: { id: otherUserId },
+      select: { id: true, role: true, blocked: true },
     });
-    if (!other) throw new NotFoundException('User not found');
+    if (!other || other.blocked) throw new NotFoundException('User not found');
 
     let conversation = await this.prisma.conversation.findFirst({
       where: {
@@ -134,6 +136,11 @@ export class ChatService {
       },
     });
     if (!conversation) {
+      if (!(await this.canStartDirect(user, other))) {
+        throw new ForbiddenException(
+          'You can message teachers and people from your courses',
+        );
+      }
       conversation = await this.prisma.conversation.create({
         data: {
           type: 'DIRECT',
@@ -437,14 +444,54 @@ export class ChatService {
     return ids;
   }
 
-  /** Contacts matching a name/email query, for the member picker. */
-  async contacts(user: AuthUser, query = '') {
+  /**
+   * Who may open a new direct chat: teachers and admins with anyone; a
+   * student with any teacher/admin and with people from their courses or
+   * earlier chats — not with unrelated students.
+   */
+  private async canStartDirect(
+    user: AuthUser,
+    other: { id: number; role: string },
+  ): Promise<boolean> {
+    if (user.role !== 'STUDENT') return true;
+    if (other.role !== 'STUDENT') return true;
     const allowed = await this.contactIds(user);
+    return allowed === 'all' || allowed.has(other.id);
+  }
+
+  /**
+   * Contacts matching a name/email query. `group`: people who can be added
+   * to a group chat; `direct`: people the user can start a chat with.
+   */
+  async contacts(
+    user: AuthUser,
+    query = '',
+    scope: 'group' | 'direct' = 'group',
+  ) {
+    const allowed =
+      scope === 'direct' && user.role !== 'STUDENT'
+        ? 'all'
+        : await this.contactIds(user);
     const q = query.trim();
     const users = await this.prisma.user.findMany({
       where: {
         blocked: false,
-        id: allowed === 'all' ? { not: user.id } : { in: [...allowed] },
+        ...(allowed === 'all'
+          ? { id: { not: user.id } }
+          : scope === 'direct'
+            ? // A student may also start a chat with any teacher or admin.
+              {
+                AND: [
+                  { id: { not: user.id } },
+                  {
+                    OR: [
+                      { id: { in: [...allowed] } },
+                      { role: { not: 'STUDENT' as const } },
+                    ],
+                  },
+                ],
+              }
+            : { id: { in: [...allowed] } }),
         ...(q
           ? {
               OR: [

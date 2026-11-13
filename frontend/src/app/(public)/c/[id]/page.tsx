@@ -6,6 +6,7 @@ import { getLocale, getTranslations } from 'next-intl/server';
 import type { PublicCourse } from '../../../../lib/types';
 import { fileUrl, formatPrice, initials } from '../../../../lib/format';
 import { Avatar, CourseCover } from '../../../../components/ui';
+import { MessageButton } from '../../../../components/chat/MessageButton';
 import { LandingCTA } from '../../../../components/store/LandingCTA';
 import {
   fetchPublicCourse,
@@ -95,6 +96,7 @@ export default async function CourseLandingPage({
               <span className={styles.teacherName}>{course.teacher.name}</span>
               <span className={styles.muted}>{t('teacherRole')}</span>
             </span>
+            <MessageButton userId={course.teacher.id} name={course.teacher.name} />
           </div>
           <dl className={styles.facts}>
             {facts.map((f) => (

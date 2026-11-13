@@ -187,6 +187,109 @@ export function NewGroupDialog({
   );
 }
 
+/**
+ * «Нове повідомлення»: pick one person and open (or create) the direct chat.
+ * Students see classmates, people they've written to and all teachers;
+ * teachers and admins can find anyone.
+ */
+export function NewMessageDialog({
+  open,
+  onClose,
+  onOpened,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onOpened: (conversation: Conversation) => void;
+}) {
+  const t = useTranslations('chat.direct');
+  const tr = useTranslations('common.role');
+  const queryClient = useQueryClient();
+  const [query, setQuery] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const q = useDebounced(query.trim());
+
+  useEffect(() => {
+    if (!open) {
+      setQuery('');
+      setError(null);
+    }
+  }, [open]);
+
+  const { data, isFetching } = useQuery({
+    queryKey: ['chat-contacts', 'direct', q],
+    queryFn: () =>
+      clientApi<ChatContact[]>(`/chat/contacts?scope=direct&q=${encodeURIComponent(q)}`),
+    enabled: open,
+  });
+
+  const start = useMutation({
+    mutationFn: (userId: number) =>
+      clientApi<Conversation>('/chat/conversations/direct', {
+        method: 'POST',
+        ...json({ userId }),
+      }),
+    onSuccess: async (conversation) => {
+      await queryClient.invalidateQueries({ queryKey: ['conversations'] });
+      onOpened(conversation);
+    },
+    onError: () => setError(t('failed')),
+  });
+
+  const people = data ?? [];
+
+  return (
+    <Modal
+      open={open}
+      onClose={onClose}
+      title={t('title')}
+      footer={
+        <Button variant="outline" onClick={onClose}>
+          {t('cancel')}
+        </Button>
+      }
+    >
+      <div className={styles.form}>
+        <Field label={t('searchLabel')} hint={t('searchHint')}>
+          <Input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={t('searchPlaceholder')}
+            autoFocus
+          />
+        </Field>
+        <ul className={styles.results} aria-busy={isFetching} aria-label={t('people')}>
+          {people.length === 0 && !isFetching && <li className={styles.empty}>{t('noContacts')}</li>}
+          {people.map((p) => (
+            <li key={p.id}>
+              <button
+                type="button"
+                className={`${styles.person} ${styles.personButton}`}
+                onClick={() => start.mutate(p.id)}
+                disabled={start.isPending}
+                aria-label={t('write', { name: p.name })}
+              >
+                <Avatar src={fileUrl(p.avatarUrl)} name={p.name} size={36} />
+                <span className={styles.personText}>
+                  <span className={styles.personName}>{p.name}</span>
+                  <span className={styles.personMeta}>
+                    {tr(p.role)} · {p.email}
+                  </span>
+                </span>
+              </button>
+            </li>
+          ))}
+        </ul>
+        {error && (
+          <p className={styles.error} role="alert">
+            {error}
+          </p>
+        )}
+      </div>
+    </Modal>
+  );
+}
+
 export function GroupSettingsDialog({
   open,
   onClose,

@@ -110,6 +110,7 @@ export class StoreService {
       include: {
         teacher: {
           select: {
+            id: true,
             email: true,
             profile: {
               select: {
@@ -161,6 +162,7 @@ export class StoreService {
       testsCount: lessons.filter((l) => l.test).length,
       studentsCount: course._count.enrollments,
       teacher: {
+        id: course.teacher.id,
         name: displayName(course.teacher),
         bio: course.teacher.profile?.bio ?? null,
         avatarUrl: course.teacher.profile?.avatarUrl ?? null,

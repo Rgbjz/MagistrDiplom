@@ -13,7 +13,8 @@
     "direct": "Особисті",
     "noMessages": "Повідомлень ще немає",
     "groups": "Групи",
-    "newGroup": "Нова група"
+    "newGroup": "Нова група",
+    "newMessage": "Нове повідомлення"
   },
   "thread": {
     "label": "Розмова: {title}",
@@ -71,5 +72,17 @@
     "left": "Ви вийшли з групи",
     "actionFailed": "Не вдалося виконати дію",
     "memberCount": "{count, plural, one {# учасник} few {# учасники} many {# учасників} other {# учасника}}"
+  },
+  "direct": {
+    "title": "Нове повідомлення",
+    "searchLabel": "Кому написати",
+    "searchPlaceholder": "Імʼя або email",
+    "searchHint": "Викладачі, люди з ваших курсів і ті, з ким ви вже листувалися.",
+    "people": "Люди",
+    "noContacts": "Нікого не знайдено.",
+    "write": "Написати: {name}",
+    "cancel": "Скасувати",
+    "failed": "Не вдалося відкрити розмову",
+    "writeShort": "Написати"
   }
 }

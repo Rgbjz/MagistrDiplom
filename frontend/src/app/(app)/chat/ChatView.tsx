@@ -3,13 +3,13 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
-import { MessageCircle, Users } from 'lucide-react';
+import { MessageCircle, SquarePen, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { clientApi } from '../../../lib/api/client';
 import type { Conversation } from '../../../lib/types';
 import { ConversationList } from '../../../components/chat/ConversationList';
 import { ChatThread } from '../../../components/chat/ChatThread';
-import { NewGroupDialog } from '../../../components/chat/GroupDialogs';
+import { NewGroupDialog, NewMessageDialog } from '../../../components/chat/GroupDialogs';
 import { Button, EmptyState, Skeleton } from '../../../components/ui';
 import styles from './chat.module.scss';
 
@@ -22,6 +22,7 @@ export function ChatView() {
   // On phones only one pane is visible: the list, or the open thread.
   const [mobileView, setMobileView] = useState<'list' | 'thread'>(initial ? 'thread' : 'list');
   const [newGroup, setNewGroup] = useState(false);
+  const [newMessage, setNewMessage] = useState(false);
 
   const { data: conversations, isLoading } = useQuery({
     queryKey: ['conversations'],
@@ -34,14 +35,24 @@ export function ChatView() {
 
   const t2 = useTranslations('chat.list');
   const dialog = (
-    <NewGroupDialog
-      open={newGroup}
-      onClose={() => setNewGroup(false)}
-      onCreated={(c) => {
-        setNewGroup(false);
-        select(c.id);
-      }}
-    />
+    <>
+      <NewGroupDialog
+        open={newGroup}
+        onClose={() => setNewGroup(false)}
+        onCreated={(c) => {
+          setNewGroup(false);
+          select(c.id);
+        }}
+      />
+      <NewMessageDialog
+        open={newMessage}
+        onClose={() => setNewMessage(false)}
+        onOpened={(c) => {
+          setNewMessage(false);
+          select(c.id);
+        }}
+      />
+    </>
   );
 
   /** After leaving a group: back to the list, open the first other chat. */
@@ -73,10 +84,16 @@ export function ChatView() {
         <EmptyState icon={<MessageCircle size={28} />} title={t('empty')}>
           <p>{t('emptyText')}</p>
           <p>{t('emptyGroupHint')}</p>
-          <Button variant="outline" onClick={() => setNewGroup(true)}>
-            <Users size={16} aria-hidden="true" />
-            {t2('newGroup')}
-          </Button>
+          <div className={styles.emptyActions}>
+            <Button onClick={() => setNewMessage(true)}>
+              <SquarePen size={16} aria-hidden="true" />
+              {t2('newMessage')}
+            </Button>
+            <Button variant="outline" onClick={() => setNewGroup(true)}>
+              <Users size={16} aria-hidden="true" />
+              {t2('newGroup')}
+            </Button>
+          </div>
         </EmptyState>
         {dialog}
       </div>
@@ -91,6 +108,7 @@ export function ChatView() {
           activeId={activeId}
           onSelect={select}
           onNewGroup={() => setNewGroup(true)}
+          onNewMessage={() => setNewMessage(true)}
         />
         {active ? (
           <ChatThread

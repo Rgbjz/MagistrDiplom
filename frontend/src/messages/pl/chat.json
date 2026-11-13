@@ -13,7 +13,8 @@
     "direct": "Prywatne",
     "noMessages": "Brak wiadomości",
     "groups": "Grupy",
-    "newGroup": "Nowa grupa"
+    "newGroup": "Nowa grupa",
+    "newMessage": "Nowa wiadomość"
   },
   "thread": {
     "label": "Rozmowa: {title}",
@@ -71,5 +72,17 @@
     "left": "Opuściłeś grupę",
     "actionFailed": "Nie udało się wykonać akcji",
     "memberCount": "{count, plural, one {# uczestnik} few {# uczestników} many {# uczestników} other {# uczestnika}}"
+  },
+  "direct": {
+    "title": "Nowa wiadomość",
+    "searchLabel": "Do kogo napisać",
+    "searchPlaceholder": "Imię lub email",
+    "searchHint": "Wykładowcy, osoby z Twoich kursów i ci, z którymi już pisałeś.",
+    "people": "Osoby",
+    "noContacts": "Nikogo nie znaleziono.",
+    "write": "Napisz do: {name}",
+    "cancel": "Anuluj",
+    "failed": "Nie udało się otworzyć rozmowy",
+    "writeShort": "Napisz"
   }
 }

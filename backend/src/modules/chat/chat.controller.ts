@@ -52,14 +52,22 @@ export class ChatController {
   }
 
   @Post('conversations/direct')
-  direct(@Body() dto: DirectDto, @CurrentUser('id') userId: number) {
-    return this.chat.getOrCreateDirect(userId, dto.userId);
+  direct(@Body() dto: DirectDto, @CurrentUser() user: AuthUser) {
+    return this.chat.getOrCreateDirect(user, dto.userId);
   }
 
-  /** People the user can add to a group chat (`q` filters by name/email). */
+  /** People for the group member picker or, with `scope=direct`, a new chat (`q` filters by name/email). */
   @Get('contacts')
-  contacts(@CurrentUser() user: AuthUser, @Query('q') q?: string) {
-    return this.chat.contacts(user, q ?? '');
+  contacts(
+    @CurrentUser() user: AuthUser,
+    @Query('q') q?: string,
+    @Query('scope') scope?: string,
+  ) {
+    return this.chat.contacts(
+      user,
+      q ?? '',
+      scope === 'direct' ? 'direct' : 'group',
+    );
   }
 
   @Post('groups')

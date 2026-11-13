@@ -503,3 +503,16 @@
     padding: 10px 12px;
   }
 }
+
+.emptyActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.listActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}

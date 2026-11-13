@@ -646,7 +646,7 @@ export interface PublicCourse {
   lessonsCount: number;
   testsCount: number;
   studentsCount: number;
-  teacher: { name: string; bio: string | null; avatarUrl: string | null };
+  teacher: { id: number; name: string; bio: string | null; avatarUrl: string | null };
   sections: PublicCourseSection[];
 }
 

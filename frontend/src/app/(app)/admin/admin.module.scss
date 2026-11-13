@@ -47,8 +47,10 @@
   gap: 6px;
 }
 
+// Blocked users are marked by a tinted row and the badge; no opacity, which
+// pushed the muted email line below WCAG contrast.
 .blockedRow td {
-  opacity: 0.75;
+  background: var(--color-surface-2);
 }
 
 .you {

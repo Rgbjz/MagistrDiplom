@@ -119,6 +119,18 @@
 
 .itemTitle {
   min-width: 0;
+  flex: 1 1 auto;
+}
+
+/* 16:9 preview of the lesson video, pushed to the right edge of the row. */
+.thumb {
+  flex: 0 0 auto;
+  width: 64px;
+  height: 36px;
+  border-radius: 6px;
+  object-fit: cover;
+  background: var(--color-track);
+  border: 1px solid var(--color-border);
 }
 
 .icon {

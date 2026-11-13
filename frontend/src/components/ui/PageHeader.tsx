@@ -66,9 +66,12 @@ export function CourseCover({
       className={styles.cover}
       style={{
         height,
-        background: `var(--cover-${tone})`,
+        // One shorthand: a separate `background` here would reset the
+        // stylesheet's background-size/position and show the picture's corner.
+        background: imageUrl
+          ? `center / cover no-repeat url("${imageUrl}"), var(--cover-${tone})`
+          : `var(--cover-${tone})`,
         color: `var(--cover-${tone}-ink)`,
-        backgroundImage: imageUrl ? `url(${imageUrl})` : undefined,
       }}
     >
       {!imageUrl && (

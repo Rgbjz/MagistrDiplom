@@ -67,6 +67,8 @@
   color: var(--color-text-muted);
   max-width: 640px;
   white-space: pre-line;
+  // Teachers paste links; a long URL must wrap instead of widening the page.
+  overflow-wrap: anywhere;
 }
 
 .teacher {
@@ -228,6 +230,16 @@
     font-size: 14px;
     color: var(--color-text-muted);
   }
+}
+
+.lessonThumb {
+  flex: 0 0 auto;
+  width: 72px;
+  height: 40px;
+  border-radius: 6px;
+  object-fit: cover;
+  background: var(--color-track);
+  border: 1px solid var(--color-border);
 }
 
 .testTag {

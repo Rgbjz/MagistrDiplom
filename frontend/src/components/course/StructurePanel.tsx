@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { Check, ChevronDown, ChevronUp, ClipboardCheck, FileUp, Play } from 'lucide-react';
 import type { ActiveItem, CourseDetail, SessionUser } from '../../lib/types';
 import { isDone, sameItem, type CourseItemType } from './courseItems';
+import { lessonPreview } from '../../lib/video';
 import styles from './StructurePanel.module.scss';
 
 export function StructurePanel({
@@ -100,6 +101,7 @@ export function StructurePanel({
                   if (lesson.assignment) {
                     items.push({ type: 'ASSIGNMENT', id: lesson.assignment.id, title: lesson.assignment.title });
                   }
+                  const preview = lessonPreview(lesson);
                   return items.map((item) => {
                     const current = sameItem(active, item);
                     const done = isStudent && isDone(course, item);
@@ -119,6 +121,11 @@ export function StructurePanel({
                                 ? t('assignment', { title: item.title })
                                 : item.title}
                           </span>
+                          {item.type === 'LESSON' && preview && (
+                            // Decorative: the title next to it already names the lesson.
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img className={styles.thumb} src={preview} alt="" loading="lazy" decoding="async" />
+                          )}
                           {done && <span className="sr-only">{t('done')}</span>}
                         </button>
                       </li>

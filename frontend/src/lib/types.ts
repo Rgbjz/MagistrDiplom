@@ -604,6 +604,8 @@ export interface DashboardData {
 export interface PublicCourseLesson {
   title: string;
   hasTest: boolean;
+  /** YouTube thumbnail of a linked video; null for uploaded or no video. */
+  previewUrl?: string | null;
 }
 
 export interface PublicCourseSection {

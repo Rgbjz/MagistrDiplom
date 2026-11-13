@@ -12,6 +12,7 @@ import { isDone, type CourseItem } from './courseItems';
 import styles from './LessonViewer.module.scss';
 import { sanitizeHtml } from '../../lib/sanitize';
 import { isVideoFile, videoSrc } from '../../lib/files';
+import { youtubeId } from '../../lib/video';
 import { FileList } from './FileList';
 import { VideoPlayer } from '../video/VideoPlayer';
 
@@ -22,15 +23,10 @@ function toEmbedUrl(url: string | null): string | null {
   if (!url || isVideoFile(url)) return null;
   try {
     const u = new URL(url);
-    if (url.includes('youtube.com/watch')) {
-      const id = u.searchParams.get('v');
+    if (url.includes('youtube.com/') || url.includes('youtu.be/')) {
+      const id = youtubeId(url);
       return id ? `https://www.youtube.com/embed/${id}` : null;
     }
-    if (url.includes('youtu.be/')) {
-      const id = u.pathname.slice(1);
-      return id ? `https://www.youtube.com/embed/${id}` : null;
-    }
-    if (url.includes('youtube.com/embed/')) return url;
     if (url.includes('vimeo.com')) {
       const id = u.pathname.split('/').filter(Boolean).pop();
       return id ? `https://player.vimeo.com/video/${id}` : null;

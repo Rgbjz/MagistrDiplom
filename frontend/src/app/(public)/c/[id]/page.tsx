@@ -158,7 +158,13 @@ export default async function CourseLandingPage({
                   <ol className={styles.lessons}>
                     {s.lessons.map((l, j) => (
                       <li key={j}>
-                        <PlayCircle size={16} aria-hidden="true" />
+                        {l.previewUrl ? (
+                          // Decorative: the lesson title follows.
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img className={styles.lessonThumb} src={l.previewUrl} alt="" loading="lazy" decoding="async" />
+                        ) : (
+                          <PlayCircle size={16} aria-hidden="true" />
+                        )}
                         <span>{l.title}</span>
                         {l.hasTest && (
                           <span className={styles.testTag}>

@@ -304,8 +304,8 @@ export class TranscodeService implements OnModuleInit {
   }
 }
 
-/** Heights of Cloudinary's "hd" streaming profile, for the quality list. */
-const CLOUDINARY_HEIGHTS = [1080, 720, 540, 360, 270, 240];
+/** Heights of Cloudinary's "hd" streaming profile (as seen in its playlists). */
+const CLOUDINARY_HEIGHTS = [1080, 720, 540, 360, 270, 180];
 
 function lastLine(stderr: string): string {
   const lines = stderr.trim().split('\n');

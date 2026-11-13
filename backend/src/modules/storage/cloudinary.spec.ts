@@ -437,7 +437,7 @@ describe('Videos on Cloudinary', () => {
         hlsPrefix: PREFIX,
         mp4Url: PREFIX,
         sourceUrl: null,
-        renditions: '720,540,360,270,240',
+        renditions: '720,540,360,270,180',
         hasPoster: true,
         durationSec: 12.5,
       });

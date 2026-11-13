@@ -53,6 +53,7 @@ export const NAMESPACES = [
   'calendar',
   'video',
   'analytics',
+  'adaptive',
 ] as const;
 export type Namespace = (typeof NAMESPACES)[number];
 

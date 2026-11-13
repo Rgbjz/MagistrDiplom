@@ -1,0 +1,86 @@
+{
+  "panel": {
+    "title": "Your progress by topic",
+    "hint": "Mastery estimated from your tests, assignments and lessons.",
+    "level": {
+      "unknown": "no data yet",
+      "weak": "needs review",
+      "progress": "in progress",
+      "mastered": "mastered"
+    },
+    "masteryOf": "{section}: {value}% — {level}",
+    "control": "You are in the experiment's control group: personal recommendations are off.",
+    "empty": "Complete a lesson or a test and your progress by topic will appear here."
+  },
+  "recs": {
+    "title": "Recommended for you",
+    "empty": "No recommendations yet — keep learning.",
+    "open": "Open",
+    "course": "Course «{course}»",
+    "reason": {
+      "review": "Topic «{section}» is {mastery}% mastered. Review the lesson «{lesson}».",
+      "retry": "Retake the test of «{section}»: questions will match your level.",
+      "next": "Next step: the lesson «{lesson}».",
+      "skip": "Topic «{section}» is {mastery}% mastered — you may skip {optional, plural, one {# lesson} other {# lessons}} and move on to «{lesson}».",
+      "challenge": "Try harder questions on «{section}».",
+      "deadline": "Hand in «{lesson}»: {days, plural, =0 {today} one {# day left} other {# days left}}."
+    },
+    "type": {
+      "REVIEW": "Review",
+      "RETRY_TEST": "Retake",
+      "NEXT": "Next",
+      "SKIP_AHEAD": "Speed up",
+      "CHALLENGE": "Challenge",
+      "DEADLINE": "Deadline"
+    }
+  },
+  "tab": {
+    "title": "Adaptive learning",
+    "subtitle": "Learner model, personal recommendations and adaptive question selection.",
+    "settings": "Settings",
+    "enabled": "Enable adaptation in the course",
+    "enabledHint": "Students see topic mastery and personal recommendations.",
+    "threshold": "Mastery threshold, %",
+    "thresholdHint": "Below it a topic «needs review».",
+    "acceleration": "Acceleration threshold, %",
+    "accelerationHint": "Above it (with enough data) a topic is «mastered» and the student can move on.",
+    "adaptiveTests": "Adaptive tests by default",
+    "adaptiveTestsHint": "Each attempt's questions match the student's level (P(correct) ≈ 70 %). A single test can be switched in the editor.",
+    "experiment": "A/B experiment",
+    "experimentHint": "Students are split at random into equal adaptive and control groups (no adaptation). Mastery is tracked for both to compare results.",
+    "experimentOn": "Experiment running since {date}",
+    "save": "Save",
+    "saved": "Settings saved",
+    "groups": "Groups: adaptive — {adaptive}, control — {control}",
+    "recompute": "Recompute the model",
+    "recomputed": "Model recomputed: {events} events",
+    "export": "Export results (CSV)",
+    "stats": "Recommendations",
+    "shown": "Shown",
+    "opened": "Opened",
+    "followed": "Followed",
+    "followedHint": "Followed — the student completed the lesson, took the test or handed in work within 7 days of seeing it.",
+    "heatmap": "Topic mastery by student",
+    "heatmapHint": "Colour and percent show mastery; «—» means no data yet.",
+    "student": "Student",
+    "group": "Group",
+    "mean": "Mean",
+    "theta": "Ability θ",
+    "weak": "Weak topics",
+    "noStudents": "No students in the course yet.",
+    "sectionMean": "Topic mean",
+    "groupName": {
+      "ADAPTIVE": "adaptive",
+      "CONTROL": "control"
+    },
+    "write": "Message"
+  },
+  "editor": {
+    "adaptive": "Adaptive question selection",
+    "adaptiveHint": "Each attempt is built from questions matching the student's level. The test (or bank) needs more questions than one attempt has.",
+    "inherit": "As in course settings",
+    "on": "On",
+    "off": "Off"
+  },
+  "analyticsLink": "Adaptation: topic mastery and recommendations →"
+}

@@ -34,6 +34,7 @@ import {
   Skeleton,
   StatCard,
 } from '../../ui';
+import { DashboardRecommendations } from '../../adaptive/DashboardRecommendations';
 import styles from './StudentDashboard.module.scss';
 
 function greetingKey(): 'night' | 'morning' | 'day' | 'evening' {
@@ -123,6 +124,8 @@ export function StudentDashboard({ user }: { user: SessionUser }) {
           </>
         )}
       </section>
+
+      <DashboardRecommendations />
 
       <div className={styles.columns}>
         <section className={styles.main} aria-labelledby="continue-title">

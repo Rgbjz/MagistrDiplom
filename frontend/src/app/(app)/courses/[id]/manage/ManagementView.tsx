@@ -37,6 +37,7 @@ import { EnrollRequests } from '../../../../../components/teacher/EnrollRequests
 import { AssignmentsTab } from '../../../../../components/teacher/AssignmentsTab';
 import { GradebookTab } from '../../../../../components/gradebook/GradebookTab';
 import { AnalyticsView } from '../../../../../components/analytics/AnalyticsView';
+import { AdaptationTab } from '../../../../../components/adaptive/AdaptationTab';
 import { TeamTab } from '../../../../../components/teacher/TeamTab';
 import { EssayReviews } from '../../../../../components/teacher/EssayReviews';
 import { canCourse } from '../../../../../lib/courseRole';
@@ -45,9 +46,9 @@ import { LinkButton } from '../../../../../components/states/LinkButton';
 import ui from '../../../../../components/teacher/shared.module.scss';
 import styles from './management.module.scss';
 
-type Tab = 'requests' | 'students' | 'tests' | 'assignments' | 'gradebook' | 'analytics' | 'team';
+type Tab = 'requests' | 'students' | 'tests' | 'assignments' | 'gradebook' | 'analytics' | 'adaptive' | 'team';
 
-const TABS: Tab[] = ['requests', 'students', 'tests', 'assignments', 'gradebook', 'analytics', 'team'];
+const TABS: Tab[] = ['requests', 'students', 'tests', 'assignments', 'gradebook', 'analytics', 'adaptive', 'team'];
 const asTab = (v: string | null): Tab => (TABS.includes(v as Tab) ? (v as Tab) : 'students');
 
 const STATUSES: EnrollmentStatus[] = ['PENDING', 'ACTIVE', 'REJECTED', 'COMPLETED'];
@@ -182,6 +183,7 @@ export function ManagementView() {
           { value: 'assignments', label: t('tabs.assignments') },
           { value: 'gradebook', label: t('tabs.gradebook') },
           { value: 'analytics', label: t('tabs.analytics') },
+          { value: 'adaptive', label: t('tabs.adaptive') },
           { value: 'team', label: t('tabs.team') },
         ]}
       />
@@ -202,6 +204,7 @@ export function ManagementView() {
       {tab === 'assignments' && <AssignmentsTab courseId={id} />}
       {tab === 'gradebook' && <GradebookTab courseId={id} />}
       {tab === 'analytics' && <AnalyticsView courseId={id} canEdit={canEditContent} />}
+      {tab === 'adaptive' && <AdaptationTab courseId={id} canManage={canCourse(myRole, 'manage')} />}
       {tab === 'team' && <TeamTab courseId={id} />}
     </div>
   );

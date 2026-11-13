@@ -33,6 +33,7 @@ const pctText = (v: number | null) => (v === null ? '—' : `${String(v).replace
  */
 export function AnalyticsView({ courseId, canEdit = false }: { courseId: number; canEdit?: boolean }) {
   const t = useTranslations('analytics');
+  const ta = useTranslations('adaptive');
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['course-analytics', courseId],
     queryFn: () => clientApi<CourseAnalytics>(`/courses/${courseId}/analytics`),
@@ -64,6 +65,9 @@ export function AnalyticsView({ courseId, canEdit = false }: { courseId: number;
 
   return (
     <div className={styles.stack}>
+      <Link href={`/courses/${courseId}/manage?tab=adaptive`} className={styles.link}>
+        {ta('analyticsLink')}
+      </Link>
       <Summary data={data} />
       <div className={styles.twoCol}>
         <DistributionCard data={data} />

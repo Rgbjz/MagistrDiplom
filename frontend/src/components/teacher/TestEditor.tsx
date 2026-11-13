@@ -209,6 +209,7 @@ function TestSettings({
   onError: (e: unknown) => void;
 }) {
   const t = useTranslations('builder.test');
+  const ta = useTranslations('adaptive.editor');
   const [maxAttempts, setMaxAttempts] = useState(test.maxAttempts ? String(test.maxAttempts) : '');
   const [perAttempt, setPerAttempt] = useState(
     test.questionsPerAttempt ? String(test.questionsPerAttempt) : '',
@@ -294,6 +295,20 @@ function TestSettings({
           {t('shuffleAnswers')}
         </label>
       </div>
+      <Field label={ta('adaptive')} hint={ta('adaptiveHint')}>
+        <Select
+          value={test.adaptive === true ? 'on' : test.adaptive === false ? 'off' : 'inherit'}
+          onChange={(e) =>
+            save.mutate({
+              adaptive: e.target.value === 'on' ? true : e.target.value === 'off' ? false : null,
+            })
+          }
+        >
+          <option value="inherit">{ta('inherit')}</option>
+          <option value="on">{ta('on')}</option>
+          <option value="off">{ta('off')}</option>
+        </Select>
+      </Field>
       <p className={styles.hint}>{t('questionCount', { count: test.questionCount })}</p>
     </fieldset>
   );

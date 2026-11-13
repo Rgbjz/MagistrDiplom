@@ -1,0 +1,86 @@
+{
+  "panel": {
+    "title": "Twój postęp według tematów",
+    "hint": "Opanowanie oszacowane na podstawie testów, prac i lekcji.",
+    "level": {
+      "unknown": "brak danych",
+      "weak": "do powtórki",
+      "progress": "w trakcie",
+      "mastered": "opanowane"
+    },
+    "masteryOf": "{section}: {value}% — {level}",
+    "control": "Jesteś w grupie kontrolnej eksperymentu: rekomendacje są wyłączone.",
+    "empty": "Ukończ lekcję lub test, a tutaj pojawi się twój postęp według tematów."
+  },
+  "recs": {
+    "title": "Polecane dla ciebie",
+    "empty": "Na razie brak rekomendacji — ucz się dalej.",
+    "open": "Otwórz",
+    "course": "Kurs «{course}»",
+    "reason": {
+      "review": "Temat «{section}» opanowany w {mastery}%. Powtórz lekcję «{lesson}».",
+      "retry": "Podejdź ponownie do testu z tematu «{section}»: pytania dopasują się do twojego poziomu.",
+      "next": "Następny krok: lekcja «{lesson}».",
+      "skip": "Temat «{section}» opanowany w {mastery}% — możesz pominąć {optional, plural, one {# lekcję} few {# lekcje} many {# lekcji} other {# lekcji}} i przejść do «{lesson}».",
+      "challenge": "Spróbuj trudniejszych pytań z tematu «{section}».",
+      "deadline": "Oddaj «{lesson}»: {days, plural, =0 {dzisiaj} one {został # dzień} few {zostały # dni} many {zostało # dni} other {zostało # dnia}}."
+    },
+    "type": {
+      "REVIEW": "Powtórka",
+      "RETRY_TEST": "Poprawa",
+      "NEXT": "Dalej",
+      "SKIP_AHEAD": "Przyspieszenie",
+      "CHALLENGE": "Wyzwanie",
+      "DEADLINE": "Termin"
+    }
+  },
+  "tab": {
+    "title": "Nauczanie adaptacyjne",
+    "subtitle": "Model studenta, rekomendacje i adaptacyjny dobór pytań.",
+    "settings": "Ustawienia",
+    "enabled": "Włącz adaptację w kursie",
+    "enabledHint": "Studenci widzą opanowanie tematów i rekomendacje.",
+    "threshold": "Próg opanowania, %",
+    "thresholdHint": "Poniżej temat jest «do powtórki».",
+    "acceleration": "Próg przyspieszenia, %",
+    "accelerationHint": "Powyżej (przy wystarczającej liczbie danych) temat jest «opanowany».",
+    "adaptiveTests": "Adaptacyjne testy domyślnie",
+    "adaptiveTestsHint": "Pytania każdej próby są dobierane do poziomu studenta (P(poprawnie) ≈ 70 %). Pojedynczy test można przełączyć w edytorze.",
+    "experiment": "Eksperyment A/B",
+    "experimentHint": "Studenci są losowo i po równo dzieleni na grupę z adaptacją i kontrolną bez niej. Opanowanie jest śledzone w obu grupach.",
+    "experimentOn": "Eksperyment trwa od {date}",
+    "save": "Zapisz",
+    "saved": "Ustawienia zapisane",
+    "groups": "Grupy: adaptacyjna — {adaptive}, kontrolna — {control}",
+    "recompute": "Przelicz model",
+    "recomputed": "Model przeliczony: {events} zdarzeń",
+    "export": "Eksport wyników (CSV)",
+    "stats": "Rekomendacje",
+    "shown": "Pokazane",
+    "opened": "Otwarte",
+    "followed": "Wykonane",
+    "followedHint": "Wykonane — student ukończył lekcję, test lub oddał pracę w ciągu 7 dni od pokazania.",
+    "heatmap": "Opanowanie tematów przez studentów",
+    "heatmapHint": "Kolor i procent to poziom opanowania; «—» — brak danych.",
+    "student": "Student",
+    "group": "Grupa",
+    "mean": "Średnia",
+    "theta": "Poziom θ",
+    "weak": "Słabe tematy",
+    "noStudents": "W kursie nie ma jeszcze studentów.",
+    "sectionMean": "Średnia tematu",
+    "groupName": {
+      "ADAPTIVE": "adaptacyjna",
+      "CONTROL": "kontrolna"
+    },
+    "write": "Napisz"
+  },
+  "editor": {
+    "adaptive": "Adaptacyjny dobór pytań",
+    "adaptiveHint": "Każda próba składa się z pytań dopasowanych do poziomu studenta. Test (lub bank) potrzebuje więcej pytań niż jedna próba.",
+    "inherit": "Jak w ustawieniach kursu",
+    "on": "Włączone",
+    "off": "Wyłączone"
+  },
+  "analyticsLink": "Adaptacja: opanowanie tematów i rekomendacje →"
+}

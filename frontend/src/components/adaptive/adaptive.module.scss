@@ -1,0 +1,375 @@
+// Adaptation module: mastery bars, recommendation cards, teacher heatmap.
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-width: 0;
+}
+
+.muted {
+  color: var(--color-text-muted);
+  font-size: var(--fs-sm);
+}
+
+.note {
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-2);
+  color: var(--color-text-muted);
+  font-size: var(--fs-sm);
+}
+
+.inlineIcon {
+  vertical-align: -3px;
+  margin-right: 6px;
+  color: var(--color-primary);
+}
+
+// ── Student: course side panel ──
+
+.panel {
+  margin-top: var(--space-4);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.panelTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--fs-md);
+  font-weight: 700;
+
+  svg {
+    color: var(--color-primary);
+  }
+}
+
+.subTitle {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  margin-top: var(--space-2);
+}
+
+.bars {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.bar {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  --bar: var(--color-text-muted);
+
+  &[data-level='weak'] {
+    --bar: var(--color-danger);
+  }
+
+  &[data-level='progress'] {
+    --bar: var(--color-warning);
+  }
+
+  &[data-level='mastered'] {
+    --bar: var(--color-success);
+  }
+}
+
+.barHead {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  font-size: var(--fs-sm);
+}
+
+.barTitle {
+  font-weight: 600;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.barValue {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+.track {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--color-surface-2);
+  overflow: hidden;
+
+  span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--bar);
+  }
+}
+
+.barLevel {
+  font-size: var(--fs-xs);
+  color: var(--color-text-muted);
+}
+
+// ── Recommendations ──
+
+.recs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.rec {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  text-decoration: none;
+  --accent: var(--color-primary);
+
+  &[data-type='REVIEW'],
+  &[data-type='RETRY_TEST'] {
+    --accent: var(--color-danger);
+  }
+
+  &[data-type='DEADLINE'] {
+    --accent: var(--color-warning);
+  }
+
+  &[data-type='SKIP_AHEAD'],
+  &[data-type='CHALLENGE'] {
+    --accent: var(--color-success);
+  }
+
+  &:hover {
+    border-color: var(--accent);
+    color: var(--color-text);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+.recIcon {
+  flex: 0 0 auto;
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--color-surface-2);
+  color: var(--accent);
+}
+
+.recBody {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.recType {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+}
+
+.recText {
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+}
+
+.recCourse {
+  font-size: var(--fs-xs);
+  color: var(--color-text-muted);
+}
+
+.recArrow {
+  flex: 0 0 auto;
+  margin-top: 8px;
+  color: var(--color-text-muted);
+}
+
+.recs[data-compact='true'] .rec {
+  padding: var(--space-2) var(--space-3);
+}
+
+// ── Student: dashboard ──
+
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+
+.dashboardTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 20px;
+  font-weight: 700;
+
+  svg {
+    color: var(--color-primary);
+  }
+}
+
+// ── Teacher: adaptation tab ──
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.settings {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-4);
+}
+
+.check {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  cursor: pointer;
+
+  input {
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    flex: 0 0 auto;
+    accent-color: var(--color-primary);
+  }
+
+  > span {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+}
+
+.checkLabel {
+  font-weight: 600;
+}
+
+.experiment {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+
+  legend {
+    padding: 0 6px;
+  }
+}
+
+.statRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-4);
+}
+
+.cardHead {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.heatmap {
+  th.sectionHead {
+    min-width: 110px;
+    white-space: normal;
+  }
+
+  tfoot th,
+  tfoot td {
+    font-weight: 700;
+    border-top: 2px solid var(--color-border);
+  }
+}
+
+// Row headers: undo the table-head look (uppercase, muted, tinted).
+.heatmap tbody th.studentCell,
+.heatmap tfoot th {
+  text-align: left;
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: var(--fs-sm);
+  color: var(--color-text);
+  background: transparent;
+}
+
+.studentInner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.cell {
+  display: inline-block;
+  min-width: 56px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  text-align: center;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  background: var(--color-surface-2);
+  color: var(--color-text-muted);
+
+  &[data-level='weak'] {
+    background: var(--color-danger-soft);
+    color: var(--color-danger-text);
+  }
+
+  &[data-level='progress'] {
+    background: var(--color-warning-soft);
+    color: var(--color-warning-text);
+  }
+
+  &[data-level='mastered'] {
+    background: var(--color-success-soft);
+    color: var(--color-success-text);
+  }
+}

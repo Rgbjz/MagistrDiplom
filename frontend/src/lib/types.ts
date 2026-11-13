@@ -305,6 +305,8 @@ export interface TestFull {
   maxAttempts: number | null;
   questionsPerAttempt: number | null;
   showCorrectAnswers: ShowAnswersMode;
+  /** Adaptive question selection; null = course default. */
+  adaptive?: boolean | null;
   /** Questions in one attempt (subset + bank rules). */
   questionCount: number;
   questions: Question[];
@@ -986,4 +988,75 @@ export interface CourseAnalytics {
     flags: RiskFlag[];
   }[];
   weekly: { weekStart: string; lessons: number; tests: number; submissions: number }[];
+}
+
+// ===== Adaptive learning =====
+export type MasteryLevel = 'unknown' | 'weak' | 'progress' | 'mastered';
+export type RecommendationType = 'REVIEW' | 'RETRY_TEST' | 'NEXT' | 'SKIP_AHEAD' | 'CHALLENGE' | 'DEADLINE';
+export type AdaptiveGroup = 'ADAPTIVE' | 'CONTROL';
+
+export interface AdaptiveRecommendation {
+  key: string;
+  type: RecommendationType;
+  sectionId: number;
+  lessonId?: number;
+  testId?: number;
+  assignmentId?: number;
+  priority: number;
+  reason: 'review' | 'retry' | 'next' | 'skip' | 'challenge' | 'deadline';
+  params: Record<string, string | number>;
+  /** Dashboard only. */
+  courseId?: number;
+  courseTitle?: string;
+}
+
+export interface AdaptiveSectionMastery {
+  id: number;
+  title: string;
+  mastery: number;
+  evidence: number;
+  level: MasteryLevel;
+}
+
+export interface AdaptiveMe {
+  enabled: boolean;
+  adaptive: boolean;
+  group: AdaptiveGroup | null;
+  thresholds: { masteryThreshold: number; accelerationThreshold: number };
+  ability: { theta: number; answers: number } | null;
+  sections: AdaptiveSectionMastery[];
+  recommendations: AdaptiveRecommendation[];
+}
+
+export interface AdaptiveSettings {
+  enabled: boolean;
+  masteryThreshold: number;
+  accelerationThreshold: number;
+  adaptiveTestsDefault: boolean;
+  experimentMode: 'OFF' | 'AB_TEST';
+  experimentStartedAt: string | null;
+}
+
+export interface RecommendationStats {
+  shown: number;
+  opened: number;
+  followed: number;
+}
+
+export interface AdaptiveOverview {
+  settings: AdaptiveSettings;
+  sections: { id: number; title: string; meanMastery: number | null; weak: number; mastered: number }[];
+  students: {
+    userId: number;
+    name: string;
+    email: string;
+    group: AdaptiveGroup | null;
+    theta: number | null;
+    meanMastery: number | null;
+    weakSections: number;
+    cells: { sectionId: number; mastery: number; evidence: number; level: MasteryLevel }[];
+    recommendations: RecommendationStats;
+  }[];
+  groups: { ADAPTIVE: number; CONTROL: number };
+  recommendations: RecommendationStats & { byType: Record<string, RecommendationStats> };
 }

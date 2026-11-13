@@ -23,6 +23,7 @@ import { TestViewer } from '../../../../components/course/TestViewer';
 import { TestRunner } from '../../../../components/course/TestRunner';
 import { AssignmentViewer } from '../../../../components/course/AssignmentViewer';
 import { firstPending, flattenCourse, sameItem } from '../../../../components/course/courseItems';
+import { MasteryPanel } from '../../../../components/adaptive/MasteryPanel';
 import styles from './course.module.scss';
 
 export default function CoursePage() {
@@ -143,7 +144,13 @@ function CourseView() {
     <>
       <CourseTopBar course={course} user={user} />
       <div className={styles.layout}>
-        <div className={styles.side}>{structure}</div>
+        <div className={styles.side}>
+          {structure}
+          {!course.myRole &&
+            (course.enrollmentStatus === 'ACTIVE' || course.enrollmentStatus === 'COMPLETED') && (
+              <MasteryPanel courseId={course.id} />
+            )}
+        </div>
 
         <div className={styles.content}>
           {!current ? (

@@ -8,9 +8,15 @@ export interface CallParticipant {
   video: boolean;
 }
 
+export type CallConversationType = 'COURSE' | 'DIRECT' | 'GROUP';
+
+/** What the caller started: a video call or a voice-only call. */
+export type CallMedia = 'audio' | 'video';
+
 export interface ActiveCall {
   conversationId: number;
-  type: 'COURSE' | 'DIRECT';
+  type: CallConversationType;
+  media: CallMedia;
   initiatorId: number;
   /** Users who were rung — they get `call:ended` when the call finishes. */
   invited: number[];
@@ -52,6 +58,8 @@ function deserialize(raw: string): ActiveCall {
   const s = JSON.parse(raw) as StoredCall;
   return {
     ...s,
+    // Calls stored before audio calls existed were always video calls.
+    media: s.media ?? 'video',
     startedAt: new Date(s.startedAt),
     connectedAt: s.connectedAt ? new Date(s.connectedAt) : null,
   };

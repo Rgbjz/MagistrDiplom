@@ -52,6 +52,10 @@ export const MESSAGES = {
       'Підсумкову оцінку повернуто до автоматичної',
     'notify.gradeUpdated.body': 'Курс «{course}». Причина: {reason}',
     'notify.newMessage.title': 'Нове повідомлення від {sender}',
+    'notify.groupMessage.title':
+      'Нове повідомлення в групі «{group}» від {sender}',
+    'notify.groupAdded.title': 'Вас додали до групи «{group}»',
+    'notify.groupAdded.body': '{sender} додає вас до розмови',
     'notify.payment.title': 'Оплату курсу «{course}» підтверджено',
     'notify.payment.body': 'Сума {amount} ₴. Курс уже у вашому кабінеті.',
     'notify.certificate.title': 'Сертифікат за курс «{course}» готовий',
@@ -60,6 +64,9 @@ export const MESSAGES = {
     'call.ended': 'Відеодзвінок завершено · {duration}',
     'call.missed': 'Пропущений відеодзвінок',
     'call.declined': 'Відеодзвінок відхилено',
+    'call.audioEnded': 'Аудіодзвінок завершено · {duration}',
+    'call.audioMissed': 'Пропущений аудіодзвінок',
+    'call.audioDeclined': 'Аудіодзвінок відхилено',
     // --- email layout
     'mail.buttonFallback': 'Якщо кнопка не працює, скопіюйте посилання:',
     'mail.defaultFooter': 'Ви отримали цей лист, бо зареєстровані в LMS.',
@@ -140,6 +147,9 @@ export const MESSAGES = {
     'notify.gradeUpdated.finalReset': 'Your final grade was reset to automatic',
     'notify.gradeUpdated.body': 'Course “{course}”. Reason: {reason}',
     'notify.newMessage.title': 'New message from {sender}',
+    'notify.groupMessage.title': 'New message in «{group}» from {sender}',
+    'notify.groupAdded.title': 'You were added to the group «{group}»',
+    'notify.groupAdded.body': '{sender} added you to the conversation',
     'notify.payment.title': 'Payment for “{course}” confirmed',
     'notify.payment.body':
       'Amount: {amount} ₴. The course is now in your dashboard.',
@@ -148,6 +158,9 @@ export const MESSAGES = {
     'call.ended': 'Video call ended · {duration}',
     'call.missed': 'Missed video call',
     'call.declined': 'Video call declined',
+    'call.audioEnded': 'Audio call ended · {duration}',
+    'call.audioMissed': 'Missed audio call',
+    'call.audioDeclined': 'Audio call declined',
     'mail.buttonFallback': 'If the button doesn’t work, copy this link:',
     'mail.defaultFooter':
       'You received this email because you have an LMS account.',
@@ -230,6 +243,10 @@ export const MESSAGES = {
       'Ocena końcowa przywrócona do automatycznej',
     'notify.gradeUpdated.body': 'Kurs „{course}”. Powód: {reason}',
     'notify.newMessage.title': 'Nowa wiadomość od {sender}',
+    'notify.groupMessage.title':
+      'Nowa wiadomość w grupie «{group}» od {sender}',
+    'notify.groupAdded.title': 'Dodano cię do grupy «{group}»',
+    'notify.groupAdded.body': '{sender} dodaje cię do rozmowy',
     'notify.payment.title': 'Płatność za kurs „{course}” potwierdzona',
     'notify.payment.body': 'Kwota: {amount} ₴. Kurs jest już w Twoim panelu.',
     'notify.certificate.title': 'Certyfikat za kurs „{course}” jest gotowy',
@@ -237,6 +254,9 @@ export const MESSAGES = {
     'call.ended': 'Rozmowa wideo zakończona · {duration}',
     'call.missed': 'Nieodebrana rozmowa wideo',
     'call.declined': 'Rozmowa wideo odrzucona',
+    'call.audioEnded': 'Rozmowa głosowa zakończona · {duration}',
+    'call.audioMissed': 'Nieodebrana rozmowa głosowa',
+    'call.audioDeclined': 'Rozmowa głosowa odrzucona',
     'mail.buttonFallback': 'Jeśli przycisk nie działa, skopiuj link:',
     'mail.defaultFooter':
       'Otrzymujesz tę wiadomość, ponieważ masz konto w LMS.',

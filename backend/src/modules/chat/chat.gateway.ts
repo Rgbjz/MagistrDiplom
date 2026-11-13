@@ -17,10 +17,13 @@ import {
   CallError,
   CallService,
   callSummary,
+  declinedSummary,
   type ActiveCall,
+  type CallMedia,
+  type MediaState,
 } from './call.service';
 import type { AuthUser } from '../../common/decorators/current-user.decorator';
-import { msg, type LocalizedText } from '../../common/i18n';
+import type { LocalizedText } from '../../common/i18n';
 
 interface JwtPayload {
   id: number;
@@ -36,6 +39,25 @@ interface CallBody {
   conversationId: number;
 }
 
+/** call:start / call:join: what the client is about to send. */
+interface EnterCallBody extends CallBody {
+  /** call:start only — 'audio' starts a voice call (camera off). */
+  media?: CallMedia;
+  audio?: boolean;
+  video?: boolean;
+}
+
+function mediaOf(value: unknown): CallMedia {
+  return value === 'audio' ? 'audio' : 'video';
+}
+
+function stateOf(body: EnterCallBody): MediaState {
+  return {
+    audio: typeof body?.audio === 'boolean' ? body.audio : undefined,
+    video: typeof body?.video === 'boolean' ? body.video : undefined,
+  };
+}
+
 interface SignalBody extends CallBody {
   toUserId: number;
   data: unknown;
@@ -45,6 +67,18 @@ interface StateBody extends CallBody {
   audio?: boolean;
   video?: boolean;
   screen?: boolean;
+}
+
+/** `call:peer-joined` payload: who joined and whether their camera is on. */
+function peerJoined(call: ActiveCall, userId: number, name: string) {
+  const p = call.participants.find((x) => x.userId === userId);
+  return {
+    conversationId: call.conversationId,
+    userId,
+    name,
+    audio: p?.audio ?? true,
+    video: p?.video ?? true,
+  };
 }
 
 const userRoom = (id: number) => `user:${id}`;
@@ -165,7 +199,7 @@ export class ChatGateway
   @SubscribeMessage('call:start')
   async callStart(
     @ConnectedSocket() client: Socket,
-    @MessageBody() body: CallBody,
+    @MessageBody() body: EnterCallBody,
   ) {
     const conversationId = toId(body?.conversationId);
     if (!conversationId) return { ok: false, error: 'BAD_REQUEST' };
@@ -176,30 +210,36 @@ export class ChatGateway
         this.chat.userCard(user.id),
         this.chat.callContext(conversationId, user.id),
       ]);
-      const { created } = await this.calls.start({
+      const { call, created } = await this.calls.start({
         conversationId,
         type: ctx.type,
+        media: mediaOf(body?.media),
         user: { id: user.id, name: card.name },
         socketId: client.id,
         invited: ctx.invited,
+        state: stateOf(body),
       });
       await client.join(callRoom(conversationId));
       if (created) {
         const ring = {
           conversationId,
           type: ctx.type,
-          title: ctx.type === 'COURSE' ? ctx.courseTitle : card.name,
+          media: call.media,
+          title:
+            ctx.type === 'COURSE'
+              ? ctx.courseTitle
+              : ctx.type === 'GROUP'
+                ? ctx.groupTitle
+                : card.name,
           from: card,
         };
         for (const id of ctx.invited) {
           this.server.to(userRoom(id)).emit('call:ring', ring);
         }
       } else {
-        client.to(callRoom(conversationId)).emit('call:peer-joined', {
-          conversationId,
-          userId: user.id,
-          name: card.name,
-        });
+        client
+          .to(callRoom(conversationId))
+          .emit('call:peer-joined', peerJoined(call, user.id, card.name));
       }
       return {
         ok: true,
@@ -214,7 +254,7 @@ export class ChatGateway
   @SubscribeMessage('call:join')
   async callJoin(
     @ConnectedSocket() client: Socket,
-    @MessageBody() body: CallBody,
+    @MessageBody() body: EnterCallBody,
   ) {
     const conversationId = toId(body?.conversationId);
     if (!conversationId) return { ok: false, error: 'BAD_REQUEST' };
@@ -222,17 +262,16 @@ export class ChatGateway
     try {
       await this.chat.assertAccess(conversationId, user);
       const card = await this.chat.userCard(user.id);
-      await this.calls.join(
+      const call = await this.calls.join(
         conversationId,
         { id: user.id, name: card.name },
         client.id,
+        stateOf(body),
       );
       await client.join(callRoom(conversationId));
-      client.to(callRoom(conversationId)).emit('call:peer-joined', {
-        conversationId,
-        userId: user.id,
-        name: card.name,
-      });
+      client
+        .to(callRoom(conversationId))
+        .emit('call:peer-joined', peerJoined(call, user.id, card.name));
       // The joiner sends offers to everyone already in the call (no glare).
       return { ok: true, call: await this.calls.info(conversationId) };
     } catch (err) {
@@ -307,7 +346,7 @@ export class ChatGateway
     // A declined 1:1 call is over; in a group call the others keep ringing.
     if (call.type === 'DIRECT' && !call.connectedAt) {
       const ended = await this.calls.remove(conversationId);
-      if (ended) await this.finishCall(ended, msg('call.declined'));
+      if (ended) await this.finishCall(ended, declinedSummary(ended));
     }
     return { ok: true };
   }

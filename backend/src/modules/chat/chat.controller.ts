@@ -1,9 +1,12 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Query,
   UseGuards,
@@ -14,6 +17,7 @@ import type { AuthUser } from '../../common/decorators/current-user.decorator';
 import { ChatService } from './chat.service';
 import { CallService } from './call.service';
 import { DirectDto } from './dto/direct.dto';
+import { AddMembersDto, CreateGroupDto, RenameGroupDto } from './dto/group.dto';
 
 @Controller('chat')
 @UseGuards(JwtAuthGuard)
@@ -50,6 +54,58 @@ export class ChatController {
   @Post('conversations/direct')
   direct(@Body() dto: DirectDto, @CurrentUser('id') userId: number) {
     return this.chat.getOrCreateDirect(userId, dto.userId);
+  }
+
+  /** People the user can add to a group chat (`q` filters by name/email). */
+  @Get('contacts')
+  contacts(@CurrentUser() user: AuthUser, @Query('q') q?: string) {
+    return this.chat.contacts(user, q ?? '');
+  }
+
+  @Post('groups')
+  createGroup(@Body() dto: CreateGroupDto, @CurrentUser() user: AuthUser) {
+    return this.chat.createGroup(user, dto.title, dto.memberIds);
+  }
+
+  @Get('groups/:id')
+  group(@Param('id', ParseIntPipe) id: number, @CurrentUser() user: AuthUser) {
+    return this.chat.groupDetails(id, user);
+  }
+
+  @Patch('groups/:id')
+  renameGroup(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: RenameGroupDto,
+    @CurrentUser() user: AuthUser,
+  ) {
+    return this.chat.renameGroup(id, user, dto.title);
+  }
+
+  @Post('groups/:id/members')
+  addMembers(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: AddMembersDto,
+    @CurrentUser() user: AuthUser,
+  ) {
+    return this.chat.addMembers(id, user, dto.userIds);
+  }
+
+  @Delete('groups/:id/members/:userId')
+  removeMember(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('userId', ParseIntPipe) userId: number,
+    @CurrentUser() user: AuthUser,
+  ) {
+    return this.chat.removeMember(id, user, userId);
+  }
+
+  @Post('groups/:id/leave')
+  @HttpCode(200)
+  leaveGroup(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() user: AuthUser,
+  ) {
+    return this.chat.leaveGroup(id, user);
   }
 
   @Get('courses/:courseId/conversation')

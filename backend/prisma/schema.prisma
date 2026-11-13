@@ -55,6 +55,7 @@ enum AttemptQuestionStatus {
 enum ConversationType {
   COURSE
   DIRECT
+  GROUP
 }
 
 enum CourseLevel {
@@ -156,17 +157,17 @@ model UserProfile {
 }
 
 model Session {
-  id               Int      @id @default(autoincrement())
-  userId           Int
-  refreshTokenHash String
+  id                   Int      @id @default(autoincrement())
+  userId               Int
+  refreshTokenHash     String
   // Token replaced by the last rotation; still accepted (without another
   // rotation) so parallel refreshes from one browser don't kill the session.
   prevRefreshTokenHash String?
-  userAgent        String?
-  ip               String?
-  expiresAt        DateTime
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  userAgent            String?
+  ip                   String?
+  expiresAt            DateTime
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
@@ -524,6 +525,9 @@ model Conversation {
   id        Int              @id @default(autoincrement())
   type      ConversationType
   courseId  Int?
+  /// GROUP only: name shown in the chat list and the owner who manages members.
+  title     String?
+  ownerId   Int?
   createdAt DateTime         @default(now())
   updatedAt DateTime         @updatedAt
 

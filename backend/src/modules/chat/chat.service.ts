@@ -14,12 +14,41 @@ import {
   courseStaffIds,
   getCourseRole,
 } from '../../common/access/course-access';
+import { MAX_GROUP_MEMBERS } from './dto/group.dto';
 
 const senderSelect = {
   id: true,
   email: true,
   profile: { select: { firstName: true, lastName: true } },
 };
+
+const memberSelect = {
+  id: true,
+  email: true,
+  role: true,
+  profile: { select: { firstName: true, lastName: true, avatarUrl: true } },
+};
+
+type MemberRow = {
+  id: number;
+  email: string;
+  role: string;
+  profile: {
+    firstName: string | null;
+    lastName: string | null;
+    avatarUrl: string | null;
+  } | null;
+};
+
+function memberCard(u: MemberRow) {
+  return {
+    id: u.id,
+    name: displayName(u),
+    email: u.email,
+    role: u.role,
+    avatarUrl: u.profile?.avatarUrl ?? null,
+  };
+}
 
 @Injectable()
 export class ChatService {
@@ -205,13 +234,21 @@ export class ChatService {
       where: { id: conversationId },
       data: { updatedAt: new Date() },
     });
-    if (conversation.type === 'DIRECT') {
-      await this.notifyDirectRecipients(conversationId, sender.id, message);
+    if (conversation.type === 'DIRECT' || conversation.type === 'GROUP') {
+      await this.notifyDirectRecipients(
+        conversationId,
+        sender.id,
+        message,
+        conversation.type === 'GROUP' ? (conversation.title ?? '') : null,
+      );
     }
     return message;
   }
 
-  /** One unread notification per direct conversation, not one per message. */
+  /**
+   * One unread notification per direct or group conversation, not one per
+   * message. `group` is the group title (null for a direct chat).
+   */
   private async notifyDirectRecipients(
     conversationId: number,
     senderId: number,
@@ -222,6 +259,7 @@ export class ChatService {
         profile: { firstName: string | null; lastName: string | null } | null;
       };
     },
+    group: string | null = null,
   ) {
     const link = `/chat?c=${conversationId}`;
     const recipients = (await this.participantIds(conversationId)).filter(
@@ -234,9 +272,15 @@ export class ChatService {
       if (pending) continue;
       await this.notifications.notify(userId, {
         type: 'NEW_MESSAGE',
-        title: msg('notify.newMessage.title', {
-          sender: displayName(message.sender),
-        }),
+        title:
+          group === null
+            ? msg('notify.newMessage.title', {
+                sender: displayName(message.sender),
+              })
+            : msg('notify.groupMessage.title', {
+                sender: displayName(message.sender),
+                group,
+              }),
         body: message.content.slice(0, 140),
         link,
       });
@@ -244,8 +288,9 @@ export class ChatService {
   }
 
   /**
-   * Who gets rung for a call and how the ring is titled. DIRECT: the other
-   * participant; COURSE: the course team and ACTIVE students (minus the caller).
+   * Who gets rung for a call and how the ring is titled. DIRECT/GROUP: the
+   * other participants; COURSE: the course team and ACTIVE students (minus the
+   * caller).
    */
   async callContext(conversationId: number, callerId: number) {
     const conversation = await this.prisma.conversation.findUnique({
@@ -273,6 +318,7 @@ export class ChatService {
     return {
       type: conversation.type,
       courseTitle: conversation.course?.title ?? null,
+      groupTitle: conversation.type === 'GROUP' ? conversation.title : null,
       invited: [...new Set(invited)].filter((id) => id !== callerId),
     };
   }
@@ -325,6 +371,272 @@ export class ChatService {
     return message;
   }
 
+  // ===== Group chats =====
+
+  /**
+   * People the user may put into a group: everyone they share a course with
+   * (classmates, the course team, students of courses they teach) and people
+   * they already have a direct chat with. Admins may add anyone. Mirrors who
+   * a user meets in chats anyway, so groups don't open a new contact channel.
+   */
+  private async contactIds(user: AuthUser): Promise<Set<number> | 'all'> {
+    if (user.role === 'ADMIN') return 'all';
+    const [enrollments, taught, directs] = await Promise.all([
+      this.prisma.enrollment.findMany({
+        where: { userId: user.id, status: { in: ['ACTIVE', 'COMPLETED'] } },
+        select: { courseId: true },
+      }),
+      this.prisma.course.findMany({
+        where: {
+          OR: [
+            { teacherId: user.id },
+            { staff: { some: { userId: user.id } } },
+          ],
+        },
+        select: { id: true },
+      }),
+      this.prisma.conversationParticipant.findMany({
+        where: {
+          conversation: {
+            type: 'DIRECT',
+            participants: { some: { userId: user.id } },
+          },
+        },
+        select: { userId: true },
+      }),
+    ]);
+    const courseIds = [
+      ...new Set([
+        ...enrollments.map((e) => e.courseId),
+        ...taught.map((c) => c.id),
+      ]),
+    ];
+    const ids = new Set<number>(directs.map((d) => d.userId));
+    if (courseIds.length) {
+      const [students, courses] = await Promise.all([
+        this.prisma.enrollment.findMany({
+          where: {
+            courseId: { in: courseIds },
+            status: { in: ['ACTIVE', 'COMPLETED'] },
+          },
+          select: { userId: true },
+        }),
+        this.prisma.course.findMany({
+          where: { id: { in: courseIds } },
+          select: { id: true, teacherId: true },
+        }),
+      ]);
+      students.forEach((s) => ids.add(s.userId));
+      for (const course of courses) {
+        (await courseStaffIds(this.prisma, course)).forEach((id) =>
+          ids.add(id),
+        );
+      }
+    }
+    ids.delete(user.id);
+    return ids;
+  }
+
+  /** Contacts matching a name/email query, for the member picker. */
+  async contacts(user: AuthUser, query = '') {
+    const allowed = await this.contactIds(user);
+    const q = query.trim();
+    const users = await this.prisma.user.findMany({
+      where: {
+        blocked: false,
+        id: allowed === 'all' ? { not: user.id } : { in: [...allowed] },
+        ...(q
+          ? {
+              OR: [
+                { email: { contains: q, mode: 'insensitive' as const } },
+                {
+                  profile: {
+                    OR: [
+                      {
+                        firstName: {
+                          contains: q,
+                          mode: 'insensitive' as const,
+                        },
+                      },
+                      {
+                        lastName: { contains: q, mode: 'insensitive' as const },
+                      },
+                    ],
+                  },
+                },
+              ],
+            }
+          : {}),
+      },
+      select: memberSelect,
+      orderBy: [{ profile: { firstName: 'asc' } }, { email: 'asc' }],
+      take: 30,
+    });
+    return users.map(memberCard);
+  }
+
+  private async assertContacts(user: AuthUser, userIds: number[]) {
+    const allowed = await this.contactIds(user);
+    const existing = await this.prisma.user.findMany({
+      where: { id: { in: userIds }, blocked: false },
+      select: { id: true },
+    });
+    if (existing.length !== userIds.length) {
+      throw new NotFoundException('User not found');
+    }
+    if (allowed !== 'all' && userIds.some((id) => !allowed.has(id))) {
+      throw new ForbiddenException('You can only add people from your courses');
+    }
+  }
+
+  /** The group, if the user is in it; owner-only actions pass `ownerOnly`. */
+  private async groupFor(id: number, user: AuthUser, ownerOnly = false) {
+    const group = await this.prisma.conversation.findUnique({
+      where: { id },
+      include: { participants: { select: { userId: true } } },
+    });
+    if (!group || group.type !== 'GROUP') {
+      throw new NotFoundException('Group not found');
+    }
+    if (!group.participants.some((p) => p.userId === user.id)) {
+      throw new ForbiddenException('Not a participant');
+    }
+    if (ownerOnly && group.ownerId !== user.id) {
+      throw new ForbiddenException('Only the group owner can do this');
+    }
+    return group;
+  }
+
+  async createGroup(user: AuthUser, title: string, memberIds: number[]) {
+    const ids = [...new Set(memberIds)].filter((id) => id !== user.id);
+    if (!ids.length) throw new BadRequestException('Add at least one member');
+    if (ids.length + 1 > MAX_GROUP_MEMBERS) {
+      throw new BadRequestException(
+        `A group can have at most ${MAX_GROUP_MEMBERS} members`,
+      );
+    }
+    await this.assertContacts(user, ids);
+    const conversation = await this.prisma.conversation.create({
+      data: {
+        type: 'GROUP',
+        title: title.trim(),
+        ownerId: user.id,
+        participants: {
+          create: [{ userId: user.id }, ...ids.map((userId) => ({ userId }))],
+        },
+      },
+    });
+    await this.notifyAdded(
+      conversation.id,
+      conversation.title ?? '',
+      user,
+      ids,
+    );
+    return this.dto(conversation.id, user.id);
+  }
+
+  async groupDetails(id: number, user: AuthUser) {
+    const group = await this.groupFor(id, user);
+    const members = await this.prisma.conversationParticipant.findMany({
+      where: { conversationId: id },
+      orderBy: { createdAt: 'asc' },
+      select: { user: { select: memberSelect } },
+    });
+    return {
+      id: group.id,
+      title: group.title ?? '',
+      ownerId: group.ownerId,
+      members: members.map((m) => memberCard(m.user)),
+    };
+  }
+
+  async renameGroup(id: number, user: AuthUser, title: string) {
+    await this.groupFor(id, user, true);
+    await this.prisma.conversation.update({
+      where: { id },
+      data: { title: title.trim() },
+    });
+    return this.groupDetails(id, user);
+  }
+
+  async addMembers(id: number, user: AuthUser, userIds: number[]) {
+    const group = await this.groupFor(id, user, true);
+    const current = new Set(group.participants.map((p) => p.userId));
+    const ids = [...new Set(userIds)].filter((uid) => !current.has(uid));
+    if (!ids.length) return this.groupDetails(id, user);
+    if (current.size + ids.length > MAX_GROUP_MEMBERS) {
+      throw new BadRequestException(
+        `A group can have at most ${MAX_GROUP_MEMBERS} members`,
+      );
+    }
+    await this.assertContacts(user, ids);
+    await this.prisma.conversationParticipant.createMany({
+      data: ids.map((userId) => ({ conversationId: id, userId })),
+      skipDuplicates: true,
+    });
+    await this.notifyAdded(id, group.title ?? '', user, ids);
+    return this.groupDetails(id, user);
+  }
+
+  async removeMember(id: number, user: AuthUser, memberId: number) {
+    if (memberId === user.id) return this.leaveGroup(id, user);
+    const group = await this.groupFor(id, user, true);
+    if (!group.participants.some((p) => p.userId === memberId)) {
+      throw new NotFoundException('Not a member');
+    }
+    await this.prisma.conversationParticipant.delete({
+      where: {
+        conversationId_userId: { conversationId: id, userId: memberId },
+      },
+    });
+    return this.groupDetails(id, user);
+  }
+
+  /**
+   * Leaves the group. An owner hands the group to the longest-standing
+   * member; the last member leaving deletes the group with its messages.
+   */
+  async leaveGroup(id: number, user: AuthUser) {
+    const group = await this.groupFor(id, user);
+    await this.prisma.conversationParticipant.delete({
+      where: { conversationId_userId: { conversationId: id, userId: user.id } },
+    });
+    const next = await this.prisma.conversationParticipant.findFirst({
+      where: { conversationId: id },
+      orderBy: { createdAt: 'asc' },
+      select: { userId: true },
+    });
+    if (!next) {
+      await this.prisma.conversation.delete({ where: { id } });
+    } else if (group.ownerId === user.id) {
+      await this.prisma.conversation.update({
+        where: { id },
+        data: { ownerId: next.userId },
+      });
+    }
+    return { left: true };
+  }
+
+  private async notifyAdded(
+    conversationId: number,
+    group: string,
+    by: AuthUser,
+    userIds: number[],
+  ) {
+    const sender = await this.prisma.user.findUnique({
+      where: { id: by.id },
+      select: senderSelect,
+    });
+    await this.notifications.notifyMany(userIds, {
+      type: 'NEW_MESSAGE',
+      title: msg('notify.groupAdded.title', { group }),
+      body: msg('notify.groupAdded.body', {
+        sender: sender ? displayName(sender) : '',
+      }),
+      link: `/chat?c=${conversationId}`,
+    });
+  }
+
   /** Participant user ids (for targeted gateway broadcast if needed). */
   async participantIds(conversationId: number): Promise<number[]> {
     const ps = await this.prisma.conversationParticipant.findMany({
@@ -351,6 +663,8 @@ export class ChatService {
       id: number;
       type: string;
       courseId: number | null;
+      title?: string | null;
+      ownerId?: number | null;
       course: { id: number; title: string } | null;
       participants: {
         user: {
@@ -366,6 +680,8 @@ export class ChatService {
     let title: string;
     if (c.type === 'COURSE') {
       title = c.course ? c.course.title : 'Чат курсу';
+    } else if (c.type === 'GROUP') {
+      title = c.title ?? '';
     } else {
       const other = c.participants.find((p) => p.user.id !== viewerId)?.user;
       const prof = other?.profile;
@@ -380,6 +696,8 @@ export class ChatService {
       type: c.type,
       courseId: c.courseId,
       title,
+      memberCount: c.participants.length,
+      ownerId: c.type === 'GROUP' ? (c.ownerId ?? null) : null,
       lastMessage: last
         ? { content: last.content, createdAt: last.createdAt }
         : null,

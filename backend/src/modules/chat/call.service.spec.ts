@@ -235,3 +235,67 @@ describe('callSummary', () => {
     );
   });
 });
+
+describe('audio calls', () => {
+  let service: CallService;
+
+  beforeEach(() => {
+    jest.useFakeTimers();
+    service = makeService(null);
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it('keeps the kind of call and starts participants with the camera off', async () => {
+    const { call } = await service.start({
+      conversationId: 30,
+      type: 'GROUP',
+      media: 'audio',
+      user: teacher,
+      socketId: 's1',
+      invited: [2, 3],
+    });
+    expect(call.media).toBe('audio');
+    const joined = await service.join(30, student, 's2');
+    expect(joined.participants.map((p) => p.video)).toEqual([false, false]);
+    const info = await service.info(30);
+    expect(info?.media).toBe('audio');
+    expect(info?.type).toBe('GROUP');
+  });
+
+  it('records the media a participant actually has', async () => {
+    await service.start({
+      conversationId: 31,
+      type: 'DIRECT',
+      user: teacher,
+      socketId: 's1',
+      invited: [2],
+      state: { video: false },
+    });
+    const call = await service.join(31, student, 's2', {
+      audio: true,
+      video: true,
+    });
+    expect(call.media).toBe('video');
+    expect(call.participants.map((p) => [p.userId, p.video])).toEqual([
+      [1, false],
+      [2, true],
+    ]);
+  });
+
+  it('logs audio calls as audio calls', async () => {
+    const { call } = await service.start({
+      conversationId: 32,
+      type: 'DIRECT',
+      media: 'audio',
+      user: teacher,
+      socketId: 's1',
+      invited: [2],
+    });
+    expect(render(callSummary(call), 'uk')).toBe('Пропущений аудіодзвінок');
+    call.connectedAt = new Date(Date.now() - 65_000);
+    expect(render(callSummary(call), 'en')).toBe('Audio call ended · 01:05');
+  });
+});

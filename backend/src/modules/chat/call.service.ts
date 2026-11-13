@@ -7,11 +7,24 @@ import {
   MemoryCallStore,
   RedisCallStore,
   type ActiveCall,
+  type CallConversationType,
+  type CallMedia,
   type CallParticipant,
   type CallStore,
 } from './call.store';
 
-export type { ActiveCall, CallParticipant } from './call.store';
+export type {
+  ActiveCall,
+  CallConversationType,
+  CallMedia,
+  CallParticipant,
+} from './call.store';
+
+/** Media a participant starts with (camera may be off or missing). */
+export interface MediaState {
+  audio?: boolean;
+  video?: boolean;
+}
 
 export const MAX_CALL_PARTICIPANTS = 6;
 export const RING_TIMEOUT_MS = 45_000;
@@ -19,7 +32,8 @@ export const CALLS_QUEUE = 'calls';
 
 export interface CallInfo {
   conversationId: number;
-  type: 'COURSE' | 'DIRECT';
+  type: CallConversationType;
+  media: CallMedia;
   initiatorId: number;
   startedAt: Date;
   connectedAt: Date | null;
@@ -98,6 +112,7 @@ export class CallService implements OnModuleInit {
     return {
       conversationId,
       type: call.type,
+      media: call.media,
       initiatorId: call.initiatorId,
       startedAt: call.startedAt,
       connectedAt: call.connectedAt,
@@ -117,28 +132,36 @@ export class CallService implements OnModuleInit {
   /** Starts a call (or returns the one already running) and adds the caller. */
   async start(params: {
     conversationId: number;
-    type: 'COURSE' | 'DIRECT';
+    type: CallConversationType;
+    media?: CallMedia;
     user: { id: number; name: string };
     socketId: string;
     invited: number[];
+    state?: MediaState;
   }): Promise<{ call: ActiveCall; created: boolean }> {
     const result = await this.locked(params.conversationId, async () => {
       const existing = await this.store.get(params.conversationId);
       if (existing) {
-        this.addParticipant(existing, params.user, params.socketId);
+        this.addParticipant(
+          existing,
+          params.user,
+          params.socketId,
+          params.state,
+        );
         await this.store.save(existing);
         return { call: existing, created: false };
       }
       const call: ActiveCall = {
         conversationId: params.conversationId,
         type: params.type,
+        media: params.media ?? 'video',
         initiatorId: params.user.id,
         invited: params.invited,
         startedAt: new Date(),
         connectedAt: null,
         participants: [],
       };
-      this.addParticipant(call, params.user, params.socketId);
+      this.addParticipant(call, params.user, params.socketId, params.state);
       await this.store.save(call);
       return { call, created: true };
     });
@@ -164,11 +187,12 @@ export class CallService implements OnModuleInit {
     conversationId: number,
     user: { id: number; name: string },
     socketId: string,
+    state?: MediaState,
   ): Promise<ActiveCall> {
     const call = await this.locked(conversationId, async () => {
       const current = await this.store.get(conversationId);
       if (!current) throw new CallError('NO_CALL', 'No active call');
-      this.addParticipant(current, user, socketId);
+      this.addParticipant(current, user, socketId, state);
       await this.store.save(current);
       return current;
     });
@@ -180,11 +204,17 @@ export class CallService implements OnModuleInit {
     call: ActiveCall,
     user: { id: number; name: string },
     socketId: string,
+    state: MediaState = {},
   ) {
+    const audio = state.audio ?? true;
+    // Unless told otherwise, the camera follows the kind of call.
+    const video = state.video ?? call.media === 'video';
     const current = call.participants.find((p) => p.userId === user.id);
     if (current) {
       // Same user from another tab/reconnect: the newest socket wins.
       current.socketId = socketId;
+      current.audio = audio;
+      current.video = video;
       return;
     }
     if (call.participants.length >= MAX_CALL_PARTICIPANTS) {
@@ -194,8 +224,8 @@ export class CallService implements OnModuleInit {
       userId: user.id,
       socketId,
       name: user.name,
-      audio: true,
-      video: true,
+      audio,
+      video,
     } satisfies CallParticipant);
     if (call.participants.length >= 2 && !call.connectedAt) {
       call.connectedAt = new Date();
@@ -307,11 +337,12 @@ export class CallService implements OnModuleInit {
 }
 
 /**
- * «Відеодзвінок завершено · 05:32» or «Пропущений відеодзвінок», rendered in
+ * «Відеодзвінок завершено · 05:32» or «Пропущений аудіодзвінок», rendered in
  * the initiator's language when the service message is stored.
  */
 export function callSummary(call: ActiveCall, now = new Date()): LocalizedText {
-  if (!call.connectedAt) return msg('call.missed');
+  const audio = call.media === 'audio';
+  if (!call.connectedAt) return msg(audio ? 'call.audioMissed' : 'call.missed');
   const seconds = Math.max(
     0,
     Math.round((now.getTime() - call.connectedAt.getTime()) / 1000),
@@ -321,5 +352,10 @@ export function callSummary(call: ActiveCall, now = new Date()): LocalizedText {
   const s = seconds % 60;
   const pad = (n: number) => String(n).padStart(2, '0');
   const time = h > 0 ? `${h}:${pad(m)}:${pad(s)}` : `${pad(m)}:${pad(s)}`;
-  return msg('call.ended', { duration: time });
+  return msg(audio ? 'call.audioEnded' : 'call.ended', { duration: time });
+}
+
+/** Service message for a declined 1:1 call. */
+export function declinedSummary(call: ActiveCall): LocalizedText {
+  return msg(call.media === 'audio' ? 'call.audioDeclined' : 'call.declined');
 }

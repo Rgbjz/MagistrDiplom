@@ -39,6 +39,8 @@ services:
         sync: false
       - key: BLOB_READ_WRITE_TOKEN
         sync: false
+      - key: CLOUDINARY_URL
+        sync: false # optional; cloudinary://<key>:<secret>@<cloud> — replaces Blob
       - key: API_PUBLIC_URL
         sync: false # https://<service>.onrender.com/api — signed file links
       - key: FILES_SIGNING_SECRET

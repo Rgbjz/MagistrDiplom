@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-export type CallType = "COURSE" | "DIRECT";
+export type CallType = 'COURSE' | 'DIRECT';
 
 export interface CallParticipantInfo {
   userId: number;
@@ -27,7 +27,7 @@ export interface CallRing {
 
 /** SDP/ICE payload relayed through `call:signal`. */
 export type SignalData =
-  | { type: "offer" | "answer"; sdp: string }
+  | { type: 'offer' | 'answer'; sdp: string }
   | { candidate: RTCIceCandidateInit };
 
 export interface CallAck {
@@ -44,12 +44,12 @@ export interface CallAck {
  */
 export function iceServers(): RTCIceServer[] {
   const servers: RTCIceServer[] = [
-    { urls: ["stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302"] },
+    { urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] },
   ];
   const turn = process.env.NEXT_PUBLIC_TURN_URL;
   if (turn) {
     servers.push({
-      urls: turn.split(",").map((u) => u.trim()),
+      urls: turn.split(',').map((u) => u.trim()),
       username: process.env.NEXT_PUBLIC_TURN_USERNAME,
       credential: process.env.NEXT_PUBLIC_TURN_CREDENTIAL,
     });
@@ -58,22 +58,20 @@ export function iceServers(): RTCIceServer[] {
 }
 
 /** Key in the `call.media` messages describing a degraded media setup. */
-export type MediaNotice =
-  "notSupported" | "audioOnly" | "denied" | "unavailable";
+export type MediaNotice = 'notSupported' | 'audioOnly' | 'denied' | 'unavailable';
 export type MediaResult = { stream: MediaStream; notice: MediaNotice | null };
 
 /** Camera + mic; falls back to audio only, then to receive-only. */
 const VIDEO_CONSTRAINTS: MediaTrackConstraints = {
   width: { ideal: 1280 },
   height: { ideal: 720 },
-  facingMode: "user",
+  facingMode: 'user',
 };
 
 export async function getLocalMedia(): Promise<MediaResult> {
-  const md =
-    typeof navigator !== "undefined" ? navigator.mediaDevices : undefined;
+  const md = typeof navigator !== 'undefined' ? navigator.mediaDevices : undefined;
   if (!md?.getUserMedia) {
-    return { stream: new MediaStream(), notice: "notSupported" };
+    return { stream: new MediaStream(), notice: 'notSupported' };
   }
   try {
     const stream = await md.getUserMedia({
@@ -84,13 +82,12 @@ export async function getLocalMedia(): Promise<MediaResult> {
   } catch {
     try {
       const stream = await md.getUserMedia({ audio: true });
-      return { stream, notice: "audioOnly" };
+      return { stream, notice: 'audioOnly' };
     } catch (err) {
-      const denied =
-        err instanceof DOMException && err.name === "NotAllowedError";
+      const denied = err instanceof DOMException && err.name === 'NotAllowedError';
       return {
         stream: new MediaStream(),
-        notice: denied ? "denied" : "unavailable",
+        notice: denied ? 'denied' : 'unavailable',
       };
     }
   }
@@ -99,30 +96,23 @@ export async function getLocalMedia(): Promise<MediaResult> {
 /** Camera only — for turning the camera on mid-call after an audio-only start. */
 export async function getCamera(): Promise<
   | { track: MediaStreamTrack; error?: never }
-  | {
-      track?: never;
-      error: "cameraDenied" | "cameraNotFound" | "cameraUnavailable";
-    }
+  | { track?: never; error: 'cameraDenied' | 'cameraNotFound' | 'cameraUnavailable' }
 > {
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: VIDEO_CONSTRAINTS,
-    });
+    const stream = await navigator.mediaDevices.getUserMedia({ video: VIDEO_CONSTRAINTS });
     return { track: stream.getVideoTracks()[0] };
   } catch (err) {
-    const name = err instanceof DOMException ? err.name : "";
-    if (name === "NotAllowedError") return { error: "cameraDenied" };
+    const name = err instanceof DOMException ? err.name : '';
+    if (name === 'NotAllowedError') return { error: 'cameraDenied' };
     // No camera at all: lid closed, camera hung in the OS, USB camera unplugged.
-    if (name === "NotFoundError") return { error: "cameraNotFound" };
-    return { error: "cameraUnavailable" };
+    if (name === 'NotFoundError') return { error: 'cameraNotFound' };
+    return { error: 'cameraUnavailable' };
   }
 }
 
 export function canShareScreen(): boolean {
-  if (typeof navigator === "undefined") return false;
-  const md = navigator.mediaDevices as MediaDevices & {
-    getDisplayMedia?: unknown;
-  };
+  if (typeof navigator === 'undefined') return false;
+  const md = navigator.mediaDevices as MediaDevices & { getDisplayMedia?: unknown };
   const mobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
   return !!md?.getDisplayMedia && !mobile;
 }
@@ -132,24 +122,22 @@ export function formatDuration(ms: number): string {
   const h = Math.floor(total / 3600);
   const m = Math.floor((total % 3600) / 60);
   const s = total % 60;
-  const pad = (n: number) => String(n).padStart(2, "0");
+  const pad = (n: number) => String(n).padStart(2, '0');
   return h > 0 ? `${h}:${pad(m)}:${pad(s)}` : `${pad(m)}:${pad(s)}`;
 }
 
 /** Server error code → key in the `call.errors` messages. */
-export function callErrorKey(
-  code?: string,
-): "full" | "ended" | "forbidden" | "notFound" | "generic" {
+export function callErrorKey(code?: string): 'full' | 'ended' | 'forbidden' | 'notFound' | 'generic' {
   switch (code) {
-    case "CALL_FULL":
-      return "full";
-    case "NO_CALL":
-      return "ended";
-    case "FORBIDDEN":
-      return "forbidden";
-    case "NOT_FOUND":
-      return "notFound";
+    case 'CALL_FULL':
+      return 'full';
+    case 'NO_CALL':
+      return 'ended';
+    case 'FORBIDDEN':
+      return 'forbidden';
+    case 'NOT_FOUND':
+      return 'notFound';
     default:
-      return "generic";
+      return 'generic';
   }
 }

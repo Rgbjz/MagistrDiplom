@@ -1,7 +1,8 @@
 {
   "banner": {
     "ongoing": "Video call in progress · {count, plural, one {# participant} other {# participants}}",
-    "join": "Join the call"
+    "join": "Join the call",
+    "ongoingAudio": "Audio call in progress · {count, plural, one {# participant} other {# participants}}"
   },
   "incoming": {
     "onlineLesson": "Online lesson",
@@ -10,7 +11,11 @@
     "directCalling": "is calling you",
     "decline": "Decline",
     "accept": "Accept",
-    "videoCall": "Video call"
+    "videoCall": "Video call",
+    "audioCall": "Audio call",
+    "groupAudioCall": "Group audio call",
+    "groupVideoCall": "Group video call",
+    "groupChatInvite": "invites you to a call in «{title}»"
   },
   "onlineLesson": {
     "label": "Online lesson",
@@ -44,7 +49,9 @@
     "joinedCount": "Joined: {count}",
     "cancel": "Cancel",
     "moveSelfView": "Drag or click to move",
-    "endedWith": "Call ended · {duration}"
+    "endedWith": "Call ended · {duration}",
+    "audioLabel": "Audio call: {title}",
+    "audioCall": "Audio call"
   },
   "media": {
     "notSupported": "Your browser doesn’t support camera and microphone access",

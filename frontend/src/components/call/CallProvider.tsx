@@ -22,6 +22,7 @@ import {
   iceServers,
   type CallAck,
   type CallInfo,
+  type CallMedia,
   type CallRing,
   type CallType,
   type SignalData,
@@ -46,6 +47,8 @@ export interface CurrentCall {
   conversationId: number;
   title: string;
   type: CallType | null;
+  /** 'audio' — a voice call (anyone may still turn their camera on). */
+  media: CallMedia;
   /** 'calling' — waiting for somebody to answer; 'connected' — at least one peer. */
   phase: 'calling' | 'connected';
   connectedAt: number | null;
@@ -62,8 +65,10 @@ export interface LocalMedia {
 
 interface CallContextValue {
   current: CurrentCall | null;
-  startCall: (conversationId: number, title: string) => Promise<void>;
-  joinCall: (conversationId: number, title: string) => Promise<void>;
+  /** Starts a video call, or a voice call with `media: 'audio'` (no camera). */
+  startCall: (conversationId: number, title: string, media?: CallMedia) => Promise<void>;
+  /** Joins a running call; `media` is the call's kind (audio calls join mic-only). */
+  joinCall: (conversationId: number, title: string, media?: CallMedia) => Promise<void>;
 }
 
 const CallContext = createContext<CallContextValue>({
@@ -310,8 +315,8 @@ export function CallProvider({ children }: { children: ReactNode }) {
     [addLocalTracks, createPeer, flushIce, signal],
   );
 
-  const prepareMedia = useCallback(async () => {
-    const { stream, notice } = await getLocalMedia();
+  const prepareMedia = useCallback(async (media: CallMedia) => {
+    const { stream, notice } = await getLocalMedia(media === 'video');
     localStream.current = stream;
     cameraTrack.current = stream.getVideoTracks()[0] ?? null;
     setLocal({
@@ -327,7 +332,12 @@ export function CallProvider({ children }: { children: ReactNode }) {
 
   /** Shared tail of start/join: register existing participants and offer to them. */
   const enterCall = useCallback(
-    async (event: 'call:start' | 'call:join', conversationId: number, title: string) => {
+    async (
+      event: 'call:start' | 'call:join',
+      conversationId: number,
+      title: string,
+      media: CallMedia,
+    ) => {
       const socket = socketRef.current;
       if (!socket) {
         toast(tRef.current('errors.noServer'), 'error');
@@ -339,11 +349,18 @@ export function CallProvider({ children }: { children: ReactNode }) {
       }
       // Joining from the chat banner also answers a pending ring for this call.
       if (incomingRef.current?.conversationId === conversationId) setRing(null);
-      setCall({ conversationId, title, type: null, phase: 'calling', connectedAt: null });
-      await prepareMedia();
+      setCall({ conversationId, title, type: null, media, phase: 'calling', connectedAt: null });
+      await prepareMedia(media);
       if (!currentRef.current) return; // hung up while asking for permissions
+      const stream = localStream.current;
+      const payload = {
+        conversationId,
+        media,
+        audio: (stream?.getAudioTracks().length ?? 0) > 0,
+        video: (stream?.getVideoTracks().length ?? 0) > 0,
+      };
       const ack = await new Promise<CallAck>((resolve) => {
-        socket.timeout(10_000).emit(event, { conversationId }, (err: unknown, res: CallAck) =>
+        socket.timeout(10_000).emit(event, payload, (err: unknown, res: CallAck) =>
           resolve(err ? { ok: false, error: 'TIMEOUT' } : res),
         );
       });
@@ -358,6 +375,7 @@ export function CallProvider({ children }: { children: ReactNode }) {
         conversationId,
         title,
         type: info.type,
+        media: info.media ?? media,
         phase: others.length ? 'connected' : 'calling',
         connectedAt: others.length ? Date.now() : null,
       });
@@ -372,11 +390,13 @@ export function CallProvider({ children }: { children: ReactNode }) {
   );
 
   const startCall = useCallback(
-    (conversationId: number, title: string) => enterCall('call:start', conversationId, title),
+    (conversationId: number, title: string, media: CallMedia = 'video') =>
+      enterCall('call:start', conversationId, title, media),
     [enterCall],
   );
   const joinCall = useCallback(
-    (conversationId: number, title: string) => enterCall('call:join', conversationId, title),
+    (conversationId: number, title: string, media: CallMedia = 'video') =>
+      enterCall('call:join', conversationId, title, media),
     [enterCall],
   );
 
@@ -399,7 +419,7 @@ export function CallProvider({ children }: { children: ReactNode }) {
     const ring = incomingRef.current;
     if (!ring) return;
     setRing(null);
-    void joinCall(ring.conversationId, ring.title ?? ring.from.name);
+    void joinCall(ring.conversationId, ring.title ?? ring.from.name, ring.media ?? 'video');
   }, [joinCall, setRing]);
 
   const declineIncoming = useCallback(() => {
@@ -527,11 +547,21 @@ export function CallProvider({ children }: { children: ReactNode }) {
       queryClient.setQueryData(['call', conversationId], null);
       void queryClient.invalidateQueries({ queryKey: ['call', conversationId] });
     };
-    const onPeerJoined = (p: { conversationId: number; userId: number; name: string }) => {
+    const onPeerJoined = (p: {
+      conversationId: number;
+      userId: number;
+      name: string;
+      audio?: boolean;
+      video?: boolean;
+    }) => {
       void queryClient.invalidateQueries({ queryKey: ['call', p.conversationId] });
       if (currentRef.current?.conversationId !== p.conversationId) return;
       names.current.set(p.userId, p.name);
-      patchPeer(p.userId, { name: p.name });
+      patchPeer(p.userId, {
+        name: p.name,
+        ...(typeof p.audio === 'boolean' ? { audio: p.audio } : {}),
+        ...(typeof p.video === 'boolean' ? { video: p.video } : {}),
+      });
       markConnected();
     };
     const onPeerLeft = (p: { conversationId: number; userId: number }) => {

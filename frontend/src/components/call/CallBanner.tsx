@@ -1,7 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { Video } from 'lucide-react';
+import { Phone, Video } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { clientApi } from '../../lib/api/client';
 import type { CallInfo } from '../../lib/call/rtc';
@@ -22,20 +22,21 @@ export function CallBanner({ conversationId, title }: { conversationId: number; 
   if (!data || data.participants.length === 0) return null;
   if (current?.conversationId === conversationId) return null;
   const n = data.participants.length;
+  const audio = data.media === 'audio';
 
   return (
     <div className={styles.banner} role="status">
       <span className={styles.bannerText}>
         <span className={styles.liveDot} aria-hidden="true" />
-        {t('ongoing', { count: n })}
+        {t(audio ? 'ongoingAudio' : 'ongoing', { count: n })}
       </span>
       <button
         type="button"
         className={styles.joinBtn}
-        onClick={() => void joinCall(conversationId, title)}
+        onClick={() => void joinCall(conversationId, title, data.media ?? 'video')}
         disabled={!!current}
       >
-        <Video size={16} aria-hidden="true" />
+        {audio ? <Phone size={16} aria-hidden="true" /> : <Video size={16} aria-hidden="true" />}
         {t('join')}
       </button>
     </div>

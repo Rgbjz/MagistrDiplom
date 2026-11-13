@@ -1,7 +1,8 @@
 {
   "banner": {
     "ongoing": "Триває відеодзвінок · {count, plural, one {# учасник} few {# учасники} many {# учасників} other {# учасника}}",
-    "join": "Приєднатися до дзвінка"
+    "join": "Приєднатися до дзвінка",
+    "ongoingAudio": "Триває аудіодзвінок · {count, plural, one {# учасник} few {# учасники} many {# учасників} other {# учасника}}"
   },
   "incoming": {
     "onlineLesson": "Онлайн-заняття",
@@ -10,7 +11,11 @@
     "directCalling": "телефонує вам",
     "decline": "Відхилити",
     "accept": "Прийняти",
-    "videoCall": "Відеодзвінок"
+    "videoCall": "Відеодзвінок",
+    "audioCall": "Аудіодзвінок",
+    "groupAudioCall": "Груповий аудіодзвінок",
+    "groupVideoCall": "Груповий відеодзвінок",
+    "groupChatInvite": "запрошує до дзвінка в групі «{title}»"
   },
   "onlineLesson": {
     "label": "Онлайн-заняття",
@@ -44,7 +49,9 @@
     "joinedCount": "Приєдналося: {count}",
     "cancel": "Скасувати",
     "moveSelfView": "Перетягніть або натисніть, щоб перемістити",
-    "endedWith": "Дзвінок завершено · {duration}"
+    "endedWith": "Дзвінок завершено · {duration}",
+    "audioLabel": "Аудіодзвінок: {title}",
+    "audioCall": "Аудіодзвінок"
   },
   "media": {
     "notSupported": "Браузер не підтримує доступ до камери й мікрофона",

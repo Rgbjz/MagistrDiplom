@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { BookOpen, Search } from 'lucide-react';
+import { BookOpen, Search, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { initials } from '../../lib/format';
 import { useFormat } from '../../i18n/format';
@@ -13,10 +13,12 @@ export function ConversationList({
   conversations,
   activeId,
   onSelect,
+  onNewGroup,
 }: {
   conversations: Conversation[];
   activeId: number | null;
   onSelect: (id: number) => void;
+  onNewGroup: () => void;
 }) {
   const t = useTranslations('chat.list');
   const f = useFormat();
@@ -27,13 +29,20 @@ export function ConversationList({
   );
   const groups = [
     { key: 'course', label: t('courseChats'), items: visible.filter((c) => c.type === 'COURSE') },
+    { key: 'group', label: t('groups'), items: visible.filter((c) => c.type === 'GROUP') },
     { key: 'direct', label: t('direct'), items: visible.filter((c) => c.type === 'DIRECT') },
   ].filter((g) => g.items.length > 0);
 
   return (
     <aside className={styles.list} aria-label={t('label')}>
       <div className={styles.listHead}>
-        <h1 className={styles.listTitle}>{t('title')}</h1>
+        <div className={styles.listTitleRow}>
+          <h1 className={styles.listTitle}>{t('title')}</h1>
+          <button type="button" className={styles.newGroupBtn} onClick={onNewGroup}>
+            <Users size={16} aria-hidden="true" />
+            {t('newGroup')}
+          </button>
+        </div>
         <label className={styles.search}>
           <Search size={18} aria-hidden="true" />
           <span className="sr-only">{t('searchLabel')}</span>
@@ -64,6 +73,10 @@ export function ConversationList({
                   {c.type === 'COURSE' ? (
                     <span className={`${styles.convoAvatar} ${styles.courseAvatar}`}>
                       <BookOpen size={20} aria-hidden="true" />
+                    </span>
+                  ) : c.type === 'GROUP' ? (
+                    <span className={`${styles.convoAvatar} ${styles.groupAvatar}`}>
+                      <Users size={20} aria-hidden="true" />
                     </span>
                   ) : (
                     <span className={`${styles.convoAvatar} ${styles.personAvatar}`}>

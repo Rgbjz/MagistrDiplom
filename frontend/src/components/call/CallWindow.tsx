@@ -33,6 +33,12 @@ function useStream(stream: MediaStream | null) {
   return ref;
 }
 
+/** «Онлайн-заняття» for course calls, otherwise «Аудіодзвінок»/«Відеодзвінок». */
+function callKindKey(call: CurrentCall): 'onlineLesson' | 'audioCall' | 'videoCall' {
+  if (call.type === 'COURSE') return 'onlineLesson';
+  return call.media === 'audio' ? 'audioCall' : 'videoCall';
+}
+
 function hasVideo(stream: MediaStream | null, on: boolean) {
   return !!stream && on && stream.getVideoTracks().length > 0;
 }
@@ -234,7 +240,7 @@ function CallingScreen({
   const t = useTranslations('call.window');
   const ref = useStream(local.stream);
   const showVideo = hasVideo(local.stream, local.video);
-  const group = call.type === 'COURSE';
+  const group = call.type === 'COURSE' || call.type === 'GROUP';
   return (
     <div className={styles.calling}>
       {showVideo && (
@@ -314,7 +320,7 @@ export function CallWindow({
   const status = offline
     ? t('offline')
     : call.phase === 'calling'
-      ? call.type === 'COURSE'
+      ? call.type === 'COURSE' || call.type === 'GROUP'
         ? t('waitingParticipants')
         : t('waitingAnswer')
       : withMedia.length < peers.length || withMedia.length === 0
@@ -337,7 +343,7 @@ export function CallWindow({
         className={styles.window}
         role="dialog"
         aria-modal="true"
-        aria-label={t('label', { title: call.title })}
+        aria-label={t(call.media === 'audio' ? 'audioLabel' : 'label', { title: call.title })}
       >
         <header className={styles.head}>
           <div className={styles.headText}>
@@ -348,9 +354,11 @@ export function CallWindow({
                   {formatDuration(now - call.connectedAt)}
                 </span>
               ) : (
-                <span>{call.type === 'COURSE' ? t('onlineLesson') : t('videoCall')}</span>
+                <span>{t(callKindKey(call))}</span>
               )}
-              {call.type === 'COURSE' && <span>{t('participants', { count: peers.length + 1 })}</span>}
+              {(call.type === 'COURSE' || call.type === 'GROUP') && (
+                <span>{t('participants', { count: peers.length + 1 })}</span>
+              )}
             </span>
           </div>
           <span role="status" aria-live="polite">

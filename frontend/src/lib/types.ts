@@ -507,10 +507,30 @@ export interface ChatMessage {
 
 export interface Conversation {
   id: number;
-  type: 'COURSE' | 'DIRECT';
+  type: 'COURSE' | 'DIRECT' | 'GROUP';
   courseId: number | null;
   title: string;
+  /** Participants who opened the chat (course chats) or members (groups). */
+  memberCount?: number;
+  /** GROUP only: who can rename the group and manage its members. */
+  ownerId?: number | null;
   lastMessage: { content: string; createdAt: string } | null;
+}
+
+/** A person in the group member picker or the members list. */
+export interface ChatContact {
+  id: number;
+  name: string;
+  email: string;
+  role: Role;
+  avatarUrl: string | null;
+}
+
+export interface GroupDetails {
+  id: number;
+  title: string;
+  ownerId: number | null;
+  members: ChatContact[];
 }
 
 export interface DashboardStats {

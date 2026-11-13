@@ -219,3 +219,61 @@ test('camera turned on mid-call after an audio-only start reaches the other side
   await teacherWindow.getByRole('button', { name: 'Завершити дзвінок' }).click();
   await closeAll(teacherCtx, studentCtx);
 });
+
+test('direct audio call: no camera on either side until the callee turns it on', async ({ browser }) => {
+  const studentUser = await freshStudent('audio');
+  const conversationId = await directConversation(studentUser.id);
+  const { teacherCtx, studentCtx, teacher, student } = await openPair(browser);
+
+  // Remember what each side asks the browser for.
+  for (const page of [teacher, student]) {
+    await page.addInitScript(() => {
+      const md = navigator.mediaDevices;
+      const original = md.getUserMedia.bind(md);
+      (window as unknown as { __gum: MediaStreamConstraints[] }).__gum = [];
+      md.getUserMedia = (c?: MediaStreamConstraints) => {
+        (window as unknown as { __gum: MediaStreamConstraints[] }).__gum.push(c ?? {});
+        return original(c);
+      };
+    });
+  }
+  const cameraRequests = (page: Page) =>
+    page.evaluate(
+      () => (window as unknown as { __gum: MediaStreamConstraints[] }).__gum.filter((c) => !!c.video).length,
+    );
+
+  await login(student, studentUser);
+  await login(teacher, USERS.teacher1, `/chat?c=${conversationId}`);
+  await teacher.getByRole('button', { name: 'Аудіодзвінок', exact: true }).click();
+  const teacherWindow = teacher.getByRole('dialog', { name: /Аудіодзвінок/ });
+  await expect(teacherWindow).toBeVisible();
+
+  const ring = student.getByRole('alertdialog');
+  await expect(ring).toBeVisible({ timeout: 10_000 });
+  await expect(ring).toContainText('Аудіодзвінок');
+  await ring.getByRole('button', { name: 'Прийняти' }).click();
+  const studentWindow = student.getByRole('dialog', { name: /Аудіодзвінок/ });
+  await expect(studentWindow).toBeVisible();
+
+  // Voice is connected; both show the other's tile with the camera off.
+  await expect(teacherWindow.getByRole('img', { name: 'Камеру вимкнено' })).toBeVisible({ timeout: 20_000 });
+  expect(await cameraRequests(teacher)).toBe(0);
+  expect(await cameraRequests(student)).toBe(0);
+
+  // The student turns the camera on: the teacher starts receiving video.
+  const camera = studentWindow.getByRole('button', { name: 'Вимкнути камеру' });
+  await expect(camera).toHaveAttribute('aria-pressed', 'true');
+  await camera.click();
+  await expect(camera).toHaveAttribute('aria-pressed', 'false');
+  expect(await cameraRequests(student)).toBe(1);
+  await expectRemoteVideo(teacher);
+  await expect(teacherWindow.getByRole('img', { name: 'Камеру вимкнено' })).toHaveCount(0);
+
+  await teacherWindow.getByRole('button', { name: 'Завершити дзвінок' }).click();
+  await expect(studentWindow).toBeHidden({ timeout: 10_000 });
+  const thread = teacher.getByRole('region', { name: /Розмова:/ });
+  await expect(
+    thread.locator('[aria-live="polite"]').getByText(/Аудіодзвінок завершено · \d\d:\d\d/),
+  ).toBeVisible({ timeout: 10_000 });
+  await closeAll(teacherCtx, studentCtx);
+});

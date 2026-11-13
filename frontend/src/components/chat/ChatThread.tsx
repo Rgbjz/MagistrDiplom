@@ -4,7 +4,7 @@ import { Fragment, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
-import { ArrowLeft, Send, Video } from 'lucide-react';
+import { ArrowLeft, Phone, Send, Users, Video } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { clientApi } from '../../lib/api/client';
 import { getSocket } from '../../lib/socket';
@@ -15,6 +15,7 @@ import { Skeleton } from '../ui';
 import { conversationTitle } from './chatTitle';
 import { useCall } from '../call/CallProvider';
 import { CallBanner } from '../call/CallBanner';
+import { GroupSettingsDialog } from './GroupDialogs';
 import styles from '../../app/(app)/chat/chat.module.scss';
 
 /** Sender may carry a role if the backend includes it. */
@@ -37,9 +38,12 @@ function dayLabel(
 export function ChatThread({
   conversation,
   onBack,
+  onLeft,
 }: {
   conversation: Conversation;
   onBack: () => void;
+  /** Called after the user left this group chat. */
+  onLeft?: () => void;
 }) {
   const t = useTranslations('chat.thread');
   const ta = useTranslations('common.a11y');
@@ -52,6 +56,8 @@ export function ChatThread({
   const token = session?.accessToken;
   const me = session?.user as SessionUser | undefined;
   const { current: currentCall, startCall } = useCall();
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const isGroup = conversation.type === 'GROUP';
 
   const { data: messages, isLoading } = useQuery<ChatMessage[]>({
     queryKey: ['messages', conversationId],
@@ -113,19 +119,47 @@ export function ChatThread({
         <div className={styles.threadTitleWrap}>
           <span className={styles.threadTitle}>{title}</span>
           <span className={styles.muted}>
-            {conversation.type === 'COURSE' ? t('courseChat') : t('directChat')}
+            {conversation.type === 'COURSE'
+              ? t('courseChat')
+              : isGroup
+                ? t('groupChat', { count: conversation.memberCount ?? 0 })
+                : t('directChat')}
           </span>
         </div>
-        <button
-          type="button"
-          className={styles.callBtn}
-          onClick={() => void startCall(conversationId, title)}
-          disabled={!!currentCall}
-          aria-label={t('videoCall')}
-          title={t('videoCall')}
-        >
-          <Video size={20} aria-hidden="true" />
-        </button>
+        <div className={styles.headActions}>
+          <button
+            type="button"
+            className={styles.callBtn}
+            onClick={() => void startCall(conversationId, title, 'audio')}
+            disabled={!!currentCall}
+            aria-label={t('audioCall')}
+            title={t('audioCall')}
+          >
+            <Phone size={20} aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            className={styles.callBtn}
+            onClick={() => void startCall(conversationId, title)}
+            disabled={!!currentCall}
+            aria-label={t('videoCall')}
+            title={t('videoCall')}
+          >
+            <Video size={20} aria-hidden="true" />
+          </button>
+          {isGroup && (
+            <button
+              type="button"
+              className={styles.callBtn}
+              onClick={() => setSettingsOpen(true)}
+              aria-label={t('groupSettings')}
+              title={t('groupSettings')}
+              aria-haspopup="dialog"
+            >
+              <Users size={20} aria-hidden="true" />
+            </button>
+          )}
+        </div>
         {conversation.courseId && (
           <Link href={`/courses/${conversation.courseId}`} className={styles.toCourse}>
             {t('toCourse')}
@@ -215,6 +249,18 @@ export function ChatThread({
           <Send size={20} aria-hidden="true" />
         </button>
       </form>
+      {isGroup && (
+        <GroupSettingsDialog
+          open={settingsOpen}
+          onClose={() => setSettingsOpen(false)}
+          conversation={conversation}
+          meId={me?.id}
+          onLeft={() => {
+            setSettingsOpen(false);
+            onLeft?.();
+          }}
+        />
+      )}
     </section>
   );
 }

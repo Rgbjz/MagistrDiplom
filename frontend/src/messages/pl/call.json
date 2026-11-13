@@ -1,7 +1,8 @@
 {
   "banner": {
     "ongoing": "Trwa rozmowa wideo · {count, plural, one {# uczestnik} few {# uczestników} many {# uczestników} other {# uczestnika}}",
-    "join": "Dołącz do rozmowy"
+    "join": "Dołącz do rozmowy",
+    "ongoingAudio": "Trwa rozmowa głosowa · {count, plural, one {# uczestnik} few {# uczestników} many {# uczestników} other {# uczestnika}}"
   },
   "incoming": {
     "onlineLesson": "Zajęcia online",
@@ -10,7 +11,11 @@
     "directCalling": "dzwoni do Ciebie",
     "decline": "Odrzuć",
     "accept": "Odbierz",
-    "videoCall": "Rozmowa wideo"
+    "videoCall": "Rozmowa wideo",
+    "audioCall": "Rozmowa głosowa",
+    "groupAudioCall": "Grupowa rozmowa głosowa",
+    "groupVideoCall": "Grupowa rozmowa wideo",
+    "groupChatInvite": "zaprasza do rozmowy w grupie «{title}»"
   },
   "onlineLesson": {
     "label": "Zajęcia online",
@@ -44,7 +49,9 @@
     "joinedCount": "Dołączyło: {count}",
     "cancel": "Anuluj",
     "moveSelfView": "Przeciągnij lub kliknij, aby przenieść",
-    "endedWith": "Rozmowa zakończona · {duration}"
+    "endedWith": "Rozmowa zakończona · {duration}",
+    "audioLabel": "Rozmowa głosowa: {title}",
+    "audioCall": "Rozmowa głosowa"
   },
   "media": {
     "notSupported": "Przeglądarka nie obsługuje dostępu do kamery i mikrofonu",

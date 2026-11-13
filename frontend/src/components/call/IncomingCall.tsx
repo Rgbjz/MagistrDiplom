@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { PhoneOff, Video } from 'lucide-react';
+import { Phone, PhoneOff, Video } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { fileUrl } from '../../lib/format';
 import type { CallRing } from '../../lib/call/rtc';
@@ -34,7 +34,20 @@ export function IncomingCall({
     return () => window.removeEventListener('keydown', onKey);
   }, [onDecline]);
 
-  const group = ring.type === 'COURSE';
+  const audio = ring.media === 'audio';
+  const KindIcon = audio ? Phone : Video;
+  const kicker =
+    ring.type === 'COURSE'
+      ? t('onlineLesson')
+      : audio
+        ? t(ring.type === 'GROUP' ? 'groupAudioCall' : 'audioCall')
+        : t(ring.type === 'GROUP' ? 'groupVideoCall' : 'videoCall');
+  const sub =
+    ring.type === 'COURSE'
+      ? t('groupInvite', { title: ring.title ?? '' })
+      : ring.type === 'GROUP'
+        ? t('groupChatInvite', { title: ring.title ?? '' })
+        : t('directCalling');
   return (
     <div className={styles.incomingBackdrop}>
       <div
@@ -53,14 +66,14 @@ export function IncomingCall({
           </span>
         </div>
         <p className={styles.incomingKicker}>
-          <Video size={14} aria-hidden="true" />
-          {group ? t('onlineLesson') : t('videoCall')}
+          <KindIcon size={14} aria-hidden="true" />
+          {kicker}
         </p>
         <h2 id="incoming-call-title" className={styles.incomingName}>
           {ring.from.name}
         </h2>
         <p id="incoming-call-desc" className={styles.incomingSub}>
-          {group ? t('groupInvite', { title: ring.title ?? '' }) : t('directCalling')}
+          {sub}
         </p>
         <div className={styles.incomingActions}>
           <button type="button" className={styles.action} onClick={onDecline}>
@@ -71,7 +84,7 @@ export function IncomingCall({
           </button>
           <button type="button" ref={acceptRef} className={styles.action} onClick={onAccept}>
             <span className={`${styles.actionCircle} ${styles.acceptCircle}`}>
-              <Video size={26} aria-hidden="true" />
+              <KindIcon size={26} aria-hidden="true" />
             </span>
             {t('accept')}
           </button>

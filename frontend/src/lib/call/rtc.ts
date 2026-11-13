@@ -1,6 +1,9 @@
 'use client';
 
-export type CallType = 'COURSE' | 'DIRECT';
+export type CallType = 'COURSE' | 'DIRECT' | 'GROUP';
+
+/** Kind of call the caller started: voice only or with video. */
+export type CallMedia = 'audio' | 'video';
 
 export interface CallParticipantInfo {
   userId: number;
@@ -12,6 +15,7 @@ export interface CallParticipantInfo {
 export interface CallInfo {
   conversationId: number;
   type: CallType;
+  media: CallMedia;
   initiatorId: number;
   startedAt: string;
   connectedAt: string | null;
@@ -21,6 +25,7 @@ export interface CallInfo {
 export interface CallRing {
   conversationId: number;
   type: CallType;
+  media: CallMedia;
   title: string | null;
   from: { id: number; name: string; avatarUrl: string | null };
 }
@@ -68,14 +73,28 @@ const VIDEO_CONSTRAINTS: MediaTrackConstraints = {
   facingMode: 'user',
 };
 
-export async function getLocalMedia(): Promise<MediaResult> {
+const AUDIO_CONSTRAINTS: MediaTrackConstraints = { echoCancellation: true, noiseSuppression: true };
+
+/**
+ * Media for entering a call. `withVideo: false` (audio call) asks for the
+ * microphone only, so the browser doesn't prompt for or light the camera.
+ */
+export async function getLocalMedia(withVideo = true): Promise<MediaResult> {
   const md = typeof navigator !== 'undefined' ? navigator.mediaDevices : undefined;
   if (!md?.getUserMedia) {
     return { stream: new MediaStream(), notice: 'notSupported' };
   }
+  if (!withVideo) {
+    try {
+      return { stream: await md.getUserMedia({ audio: AUDIO_CONSTRAINTS }), notice: null };
+    } catch (err) {
+      const denied = err instanceof DOMException && err.name === 'NotAllowedError';
+      return { stream: new MediaStream(), notice: denied ? 'denied' : 'unavailable' };
+    }
+  }
   try {
     const stream = await md.getUserMedia({
-      audio: { echoCancellation: true, noiseSuppression: true },
+      audio: AUDIO_CONSTRAINTS,
       video: VIDEO_CONSTRAINTS,
     });
     return { stream, notice: null };

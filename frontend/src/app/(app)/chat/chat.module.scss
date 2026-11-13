@@ -37,6 +37,34 @@
   font-weight: 700;
 }
 
+.listTitleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.newGroupBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-primary);
+  font: inherit;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--color-primary-soft);
+  }
+}
+
 .search {
   display: flex;
   align-items: center;
@@ -117,6 +145,12 @@
   border-radius: 12px;
   background: var(--cover-1);
   color: var(--cover-1-ink);
+}
+
+.groupAvatar {
+  border-radius: 50%;
+  background: var(--cover-2);
+  color: var(--cover-2-ink);
 }
 
 .personAvatar {
@@ -237,6 +271,12 @@
     opacity: 0.5;
     cursor: not-allowed;
   }
+}
+
+.headActions {
+  display: flex;
+  gap: var(--space-2);
+  flex: 0 0 auto;
 }
 
 .toCourse {

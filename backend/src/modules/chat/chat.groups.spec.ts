@@ -211,6 +211,8 @@ describe('ChatService groups', () => {
     const added = await service.addMembers(id, as(1, 'TEACHER'), [3]);
     expect(added.members.map((m) => m.id)).toEqual([1, 2, 3]);
     const removed = await service.removeMember(id, as(1, 'TEACHER'), 2);
+    // removeMember answers { left: true } only when you remove yourself.
+    if (!('members' in removed)) throw new Error('expected group details');
     expect(removed.members.map((m) => m.id)).toEqual([1, 3]);
   });
 

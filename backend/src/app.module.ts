@@ -27,6 +27,7 @@ import { FilesModule } from './modules/files/files.module';
 import { CourseStaffModule } from './modules/course-staff/course-staff.module';
 import { CalendarModule } from './modules/calendar/calendar.module';
 import { VideosModule } from './modules/videos/videos.module';
+import { AnalyticsModule } from './modules/analytics/analytics.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -56,6 +57,7 @@ import { VideosModule } from './modules/videos/videos.module';
     CourseStaffModule,
     CalendarModule,
     VideosModule,
+    AnalyticsModule,
   ],
 })
 export class AppModule {}

@@ -89,6 +89,7 @@ describe('API routes (e2e, no DB)', () => {
     ['put', '/api/courses/1/gradebook/overrides'],
     ['delete', '/api/courses/1/gradebook/overrides?userId=1&itemKey=final'],
     ['get', '/api/courses/1/gradebook/overrides/history?userId=1'],
+    ['get', '/api/courses/1/analytics'],
     ['get', '/api/courses/1/staff'],
     ['post', '/api/courses/1/staff'],
     ['patch', '/api/courses/1/staff/2'],

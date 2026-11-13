@@ -543,3 +543,17 @@ UI: Керування → Тести → блок «Потребує перев
 Облікові дані провайдера кешуються на половину строку дії (12 год); `ttl` — скільки секунд браузер
 може тримати список. Помилка провайдера не ламає дзвінок: відповідь містить STUN (і статичний TURN, якщо є) з `ttl: 60`.
 Фронтенд (`lib/call/ice.ts`) запитує список паралельно з доступом до камери/мікрофона і чекає не довше 2,5 с.
+
+## Аналітика курсу (для команди курсу)
+
+`GET /api/courses/:id/analytics` — власник, викладач, асистент курсу або адмін (інакше 403). Один payload:
+
+- `summary`: `students`, `activeLast7Days`, `avgProgress` (%), `avgFinal` (зважений підсумок журналу, %), `passRate` (%), `awaitingGrading` (роботи SUBMITTED), `atRisk`.
+- `distribution`: `buckets[{ code, count, passing }]` за шкалою курсу (PERCENT: 0-59/60-74/75-89/90-100; FIVE_POINT: 2…5; ECTS: F…A; PASS_FAIL), від нижчої до вищої; `ungraded` — студенти без оцінок.
+- `hardQuestions[≤10]`: `{ id, text, type, testId, testTitle, lessonId, attempts, correctRate }` — частка повністю правильних відповідей. Джерело: `AttemptQuestion` (earned ≥ maxPoints, есе на перевірці не враховуються); для старих спроб — `UserAnswer` (SINGLE/MULTIPLE: обрано рівно правильні варіанти).
+- `tests[]`: `{ id, title, lessonId, attempts, students, avgScore, passRate }`.
+- `assignments[]`: `{ id, title, lessonId, maxScore, dueAt, submitted, awaiting, graded, returned, overdue, avgScore }` (`overdue` — студенти без здачі після терміну).
+- `atRisk[]`: `{ userId, name, email, avatarUrl, progress, final, scaleCode, lastActivity, overdue, flags[] }`, відсортовано за кількістю прапорців. Правила: `lowProgress` — прогрес < 30% після 14 днів на курсі; `lowGrade` — підсумок нижче порогу курсу; `inactive` — 14+ днів без активності (уроки, тести, здачі робіт, повідомлення в чаті курсу; без активності — від дати зарахування); `overdue` — прострочені роботи.
+- `weekly[12]`: `{ weekStart (понеділок, UTC), lessons, tests, submissions }`, від найстарішого тижня.
+
+Фронтенд: сторінка `/courses/:id/analytics` (кнопка «Аналітика» в шапці курсу для команди) і вкладка «Аналітика» в «Керування курсом». Графіки — HTML/CSS-стовпчики з підписами та `aria-label` для кожного стовпчика, без сторонніх бібліотек.

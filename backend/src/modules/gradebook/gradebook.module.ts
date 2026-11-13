@@ -7,5 +7,6 @@ import { GradebookService } from './gradebook.service';
   imports: [ProgressModule],
   controllers: [GradebookController],
   providers: [GradebookService],
+  exports: [GradebookService],
 })
 export class GradebookModule {}

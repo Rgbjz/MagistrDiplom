@@ -67,6 +67,27 @@ test.describe('Гість: головна сторінка', () => {
     await expect(page.getByRole('heading', { name: 'Програма курсу' })).toBeVisible();
   });
 
+  test('пошук, рекомендований курс, цифри й напрями ведуть у каталог', async ({ page }) => {
+    await page.goto('/');
+    // No fake «continue learning» dashboard for a guest.
+    await expect(page.getByText('Продовжити навчання')).toHaveCount(0);
+
+    const featured = page.getByRole('link', { name: /^Рекомендований курс:/ });
+    await expect(featured).toBeVisible();
+    await expect(page.getByRole('region', { name: 'Платформа в цифрах' })).toContainText('у каталозі');
+
+    await expect(page.getByRole('heading', { name: 'Напрями навчання' })).toBeVisible();
+    const category = page.getByRole('link', { name: 'Програмування' }).first();
+    await category.click();
+    await expect(page).toHaveURL(/\/catalog\?category=/);
+
+    await page.goto('/');
+    await page.getByRole('searchbox', { name: 'Пошук курсів' }).fill('HTML');
+    await page.getByRole('button', { name: 'Знайти' }).click();
+    await expect(page).toHaveURL(/\/catalog\?search=HTML/);
+    await expect(page.getByRole('heading', { name: 'Каталог курсів' })).toBeVisible();
+  });
+
   test('блоки «Як це працює», FAQ і посилання на реєстрацію з роллю', async ({ page }) => {
     await page.goto('/');
     await expect(page.getByRole('heading', { name: 'Як це працює' })).toBeVisible();

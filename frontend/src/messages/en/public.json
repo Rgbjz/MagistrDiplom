@@ -1,90 +1,109 @@
 {
   "welcome": {
-    "metaTitle": "LMS — courses, tests and chat with your teacher",
-    "eyebrow": "Learning management system",
-    "title": "Courses, tests and talking to your teacher — all in one place",
-    "lead": "Learn on any device, track your progress and ask your teacher questions in the course chat. Teachers build courses from lessons and tests without any technical skills.",
+    "metaTitle": "LMS — online courses with video, tests and a teacher",
+    "eyebrow": "Adaptive learning management system",
+    "title": "Learn online with a teacher, not on your own",
+    "lead": "Video lessons, tests, graded labs and video calls with your teacher — all in one place. Pick a course in the catalog and start today.",
+    "searchLabel": "Search courses",
+    "searchPlaceholder": "For example, HTML, SQL or English",
+    "searchButton": "Search",
     "startLearning": "Start learning",
-    "browseCatalog": "Browse the catalogue",
-    "previewContinue": "Continue learning",
-    "previewTest": "Test after each section · timer and instant results",
+    "browseCatalog": "Browse the catalog",
+    "featured": "Recommended",
+    "featuredAria": "Recommended course: {title}",
+    "featuredCta": "See the programme →",
+    "lessonsCount": "{count, plural, one {# lesson} other {# lessons}}",
+    "statsLabel": "The platform in numbers",
+    "stats": {
+      "courses": "{count, plural, one {course} other {courses}} in the catalog",
+      "lessons": "{count, plural, one {lesson} other {lessons}} with video and materials",
+      "enrollments": "course {count, plural, one {enrollment} other {enrollments}}",
+      "teachers": "{count, plural, one {teacher} other {teachers}}"
+    },
+    "categoriesTitle": "Subjects",
     "popularTitle": "Popular courses",
-    "allCatalog": "Full catalogue",
+    "allCatalog": "Whole catalog",
+    "featuresTitle": "What the platform offers",
+    "features": {
+      "video": {
+        "title": "Video lessons",
+        "text": "Lessons with video, notes and files; progress is saved automatically."
+      },
+      "tests": {
+        "title": "8 question types",
+        "text": "Single or multiple choice, matching, ordering, numeric, short answer, essay."
+      },
+      "labs": {
+        "title": "Lab assignments",
+        "text": "Hand in files, get a grade and teacher feedback, improve and resubmit."
+      },
+      "calls": {
+        "title": "Calls and chats",
+        "text": "Video and audio calls, screen sharing, group chats and direct messages."
+      },
+      "grades": {
+        "title": "Gradebook and certificates",
+        "text": "Grades on the course scale, a final result and a certificate at the end."
+      },
+      "languages": {
+        "title": "Three languages",
+        "text": "Ukrainian, English and Polish interface, light and dark themes."
+      }
+    },
     "howTitle": "How it works",
     "steps": {
       "choose": {
         "title": "Choose a course",
-        "text": "Find a course in the catalogue by topic, price or level and look through its syllabus."
+        "text": "Find a course by subject, level or price and look through its lessons."
       },
       "enroll": {
-        "title": "Enrol or buy",
-        "text": "Free courses open once the teacher approves you; paid courses open right after payment."
+        "title": "Enroll",
+        "text": "Free courses open at once or after the teacher approves your request."
       },
       "learn": {
-        "title": "Learn and take tests",
-        "text": "Work through lessons at your own pace, pass the tests and get a certificate."
+        "title": "Learn",
+        "text": "Watch lessons, take tests, hand in work and get a certificate."
       }
     },
     "students": {
       "title": "For students",
-      "item1": "a personal dashboard with your progress and a “Continue” block;",
-      "item2": "videos, notes and a test after every section;",
-      "item3": "chat with the teacher and the course group.",
+      "item1": "a dashboard with progress and upcoming deadlines;",
+      "item2": "tests with instant results and review;",
+      "item3": "grades and feedback on lab work;",
+      "item4": "chat and calls with the teacher and the group.",
       "cta": "Sign up as a student"
     },
     "teachers": {
       "title": "For teachers",
-      "item1": "a course builder: sections, lessons, tests;",
-      "item2": "student requests and their progress in one table;",
-      "item3": "your own course price and a public landing page.",
+      "item1": "course builder: lessons, video, tests, assignments;",
+      "item2": "gradebook with weights, scales and export;",
+      "item3": "analytics: hard questions and students at risk;",
+      "item4": "course team: co-teachers and assistants.",
       "cta": "Become a teacher"
-    },
-    "featuresTitle": "Features",
-    "features": {
-      "timer": {
-        "title": "Timed tests",
-        "text": "Several attempts and instant results."
-      },
-      "chat": {
-        "title": "Real-time chat",
-        "text": "Course chat and direct messages."
-      },
-      "progress": {
-        "title": "Progress",
-        "text": "Completion percentage for every course."
-      },
-      "dark": {
-        "title": "Dark theme",
-        "text": "Light, dark or follow the system."
-      },
-      "mobile": {
-        "title": "Mobile-friendly",
-        "text": "The interface adapts to your phone."
-      }
     },
     "faqTitle": "FAQ",
     "faq": {
       "free": {
-        "q": "Can I study for free?",
-        "a": "Yes. Some courses are free — just send a request and the teacher will approve it."
+        "q": "Can I learn for free?",
+        "a": "Yes. Most courses are free — just sign up and enroll."
       },
       "attempts": {
         "q": "How many times can I take a test?",
-        "a": "There’s no limit on attempts; the latest one counts."
+        "a": "The teacher decides: attempts can be limited or unlimited."
       },
       "teacher": {
         "q": "How do I become a teacher?",
-        "a": "Choose the “Teacher” role when signing up — the course builder opens once you confirm your email."
+        "a": "Choose the «Teacher» role when signing up — the course builder opens after you confirm your email."
       },
       "mobile": {
-        "q": "Does the platform work on a phone?",
-        "a": "Yes, every page is adapted for mobile devices."
+        "q": "Does it work on a phone?",
+        "a": "Yes, all pages, tests and calls work on mobile devices."
       }
     },
     "finalTitle": "Ready to start?",
-    "finalText": "Create an account in a minute — confirm your email and start learning.",
+    "finalText": "Create an account in a minute and pick your first course.",
     "createAccount": "Create an account",
-    "login": "Sign in"
+    "login": "Log in"
   },
   "privacy": {
     "metaTitle": "Privacy",

@@ -1,88 +1,107 @@
 {
   "welcome": {
-    "metaTitle": "LMS — kursy, testy i czat z prowadzącym",
-    "eyebrow": "System zarządzania nauczaniem",
-    "title": "Kursy, testy i kontakt z prowadzącym — w jednym miejscu",
-    "lead": "Ucz się na dowolnym urządzeniu, śledź swoje postępy i zadawaj pytania prowadzącemu na czacie kursu. Prowadzący tworzą kursy z lekcji i testów bez wiedzy technicznej.",
+    "metaTitle": "LMS — kursy online z wideo, testami i wykładowcą",
+    "eyebrow": "Adaptacyjny system zarządzania nauczaniem",
+    "title": "Ucz się online z wykładowcą, a nie w pojedynkę",
+    "lead": "Lekcje wideo, testy, oceniane laboratoria i rozmowy wideo z wykładowcą — w jednym miejscu. Wybierz kurs w katalogu i zacznij już dziś.",
+    "searchLabel": "Szukaj kursów",
+    "searchPlaceholder": "Na przykład HTML, SQL lub angielski",
+    "searchButton": "Szukaj",
     "startLearning": "Zacznij naukę",
     "browseCatalog": "Przeglądaj katalog",
-    "previewContinue": "Kontynuuj naukę",
-    "previewTest": "Test po każdym dziale · licznik czasu i natychmiastowy wynik",
+    "featured": "Polecamy",
+    "featuredAria": "Polecany kurs: {title}",
+    "featuredCta": "Zobacz program →",
+    "lessonsCount": "{count, plural, one {# lekcja} few {# lekcje} many {# lekcji} other {# lekcji}}",
+    "statsLabel": "Platforma w liczbach",
+    "stats": {
+      "courses": "{count, plural, one {kurs} few {kursy} many {kursów} other {kursu}} w katalogu",
+      "lessons": "{count, plural, one {lekcja} few {lekcje} many {lekcji} other {lekcji}} z wideo i materiałami",
+      "enrollments": "{count, plural, one {zapis} few {zapisy} many {zapisów} other {zapisu}} na kursy",
+      "teachers": "{count, plural, one {wykładowca} few {wykładowców} many {wykładowców} other {wykładowcy}}"
+    },
+    "categoriesTitle": "Kierunki",
     "popularTitle": "Popularne kursy",
     "allCatalog": "Cały katalog",
+    "featuresTitle": "Co oferuje platforma",
+    "features": {
+      "video": {
+        "title": "Lekcje wideo",
+        "text": "Lekcje z wideo, notatkami i plikami; postęp zapisuje się automatycznie."
+      },
+      "tests": {
+        "title": "8 typów pytań",
+        "text": "Jednokrotny i wielokrotny wybór, dopasowanie, kolejność, liczba, krótka odpowiedź, esej."
+      },
+      "labs": {
+        "title": "Prace laboratoryjne",
+        "text": "Oddawaj pliki, otrzymuj ocenę i komentarz wykładowcy, poprawiaj."
+      },
+      "calls": {
+        "title": "Rozmowy i czaty",
+        "text": "Rozmowy wideo i audio, udostępnianie ekranu, grupy i wiadomości prywatne."
+      },
+      "grades": {
+        "title": "Dziennik i certyfikaty",
+        "text": "Oceny w skali kursu, wynik końcowy i certyfikat po ukończeniu."
+      },
+      "languages": {
+        "title": "Trzy języki",
+        "text": "Interfejs po ukraińsku, angielsku i polsku, jasny i ciemny motyw."
+      }
+    },
     "howTitle": "Jak to działa",
     "steps": {
       "choose": {
         "title": "Wybierz kurs",
-        "text": "Znajdź kurs w katalogu według tematu, ceny lub poziomu i przejrzyj jego program."
+        "text": "Znajdź kurs według tematu, poziomu lub ceny i przejrzyj program lekcji."
       },
       "enroll": {
-        "title": "Zapisz się lub kup",
-        "text": "Bezpłatny kurs — po akceptacji prowadzącego, płatny — od razu po opłaceniu."
+        "title": "Zapisz się",
+        "text": "Darmowe kursy otwierają się od razu lub po akceptacji wykładowcy."
       },
       "learn": {
-        "title": "Ucz się i rozwiązuj testy",
-        "text": "Przerabiaj lekcje we własnym tempie, zaliczaj testy i zdobądź certyfikat."
+        "title": "Ucz się",
+        "text": "Oglądaj lekcje, rozwiązuj testy, oddawaj prace i zdobądź certyfikat."
       }
     },
     "students": {
       "title": "Dla studentów",
-      "item1": "konto z postępami i blokiem „Kontynuuj”;",
-      "item2": "wideo, notatki i testy po każdym dziale;",
-      "item3": "czat z prowadzącym i grupą kursu.",
+      "item1": "panel z postępem i najbliższymi terminami;",
+      "item2": "testy z natychmiastowym wynikiem i omówieniem;",
+      "item3": "oceny i komentarze do laboratoriów;",
+      "item4": "czat i rozmowy z wykładowcą oraz grupą.",
       "cta": "Zarejestruj się jako student"
     },
     "teachers": {
-      "title": "Dla prowadzących",
-      "item1": "kreator kursu: działy, lekcje, testy;",
-      "item2": "zgłoszenia studentów i ich postępy w jednej tabeli;",
-      "item3": "własna cena kursu i publiczna strona kursu.",
-      "cta": "Zostań prowadzącym"
+      "title": "Dla wykładowców",
+      "item1": "kreator kursu: lekcje, wideo, testy, zadania;",
+      "item2": "dziennik ocen z wagami, skalami i eksportem;",
+      "item3": "analityka: trudne pytania i studenci w grupie ryzyka;",
+      "item4": "zespół kursu: współprowadzący i asystenci.",
+      "cta": "Zostań wykładowcą"
     },
-    "featuresTitle": "Możliwości",
-    "features": {
-      "timer": {
-        "title": "Testy z limitem czasu",
-        "text": "Kilka podejść i natychmiastowy wynik."
-      },
-      "chat": {
-        "title": "Czat w czasie rzeczywistym",
-        "text": "Czat kursu i wiadomości prywatne."
-      },
-      "progress": {
-        "title": "Postęp",
-        "text": "Procent ukończenia każdego kursu."
-      },
-      "dark": {
-        "title": "Ciemny motyw",
-        "text": "Jasny, ciemny lub zgodny z systemem."
-      },
-      "mobile": {
-        "title": "Wersja mobilna",
-        "text": "Interfejs dopasowuje się do telefonu."
-      }
-    },
-    "faqTitle": "Najczęstsze pytania",
+    "faqTitle": "Częste pytania",
     "faq": {
       "free": {
-        "q": "Czy mogę uczyć się za darmo?",
-        "a": "Tak. Część kursów jest bezpłatna — wystarczy wysłać zgłoszenie, a prowadzący je zaakceptuje."
+        "q": "Czy można uczyć się za darmo?",
+        "a": "Tak. Większość kursów jest darmowa — wystarczy się zarejestrować i zapisać."
       },
       "attempts": {
-        "q": "Ile razy mogę podchodzić do testu?",
-        "a": "Liczba podejść jest nieograniczona, liczy się ostatnie."
+        "q": "Ile razy można podejść do testu?",
+        "a": "Decyduje wykładowca: liczba prób może być ograniczona lub nieograniczona."
       },
       "teacher": {
-        "q": "Jak zostać prowadzącym?",
-        "a": "Podczas rejestracji wybierz rolę „Prowadzący” — po potwierdzeniu adresu e-mail otworzy się kreator kursów."
+        "q": "Jak zostać wykładowcą?",
+        "a": "Podczas rejestracji wybierz rolę «Wykładowca» — kreator kursów otworzy się po potwierdzeniu email."
       },
       "mobile": {
         "q": "Czy platforma działa na telefonie?",
-        "a": "Tak, wszystkie strony są dostosowane do urządzeń mobilnych."
+        "a": "Tak, wszystkie strony, testy i rozmowy działają na urządzeniach mobilnych."
       }
     },
     "finalTitle": "Gotowy, by zacząć?",
-    "finalText": "Załóż konto w minutę — potwierdź adres e-mail i możesz się uczyć.",
+    "finalText": "Załóż konto w minutę i wybierz pierwszy kurs.",
     "createAccount": "Załóż konto",
     "login": "Zaloguj się"
   },

@@ -8,6 +8,7 @@ import {
   Req,
   Res,
   UnauthorizedException,
+  Logger,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -37,6 +38,7 @@ import { CloudinaryService } from '../storage/cloudinary.service';
 @Controller('files')
 @SkipThrottle() // <video> seeking issues many Range requests
 export class FilesController {
+  private readonly logger = new Logger(FilesController.name);
   constructor(
     private files: FilesService,
     private jwt: JwtService,
@@ -140,6 +142,12 @@ export class FilesController {
       headers: req.headers.range ? { Range: req.headers.range } : {},
     });
     if (!upstream.ok && upstream.status !== 206) {
+      // Cloudinary explains refusals (ACL, blocked PDF delivery…) in x-cld-error.
+      const reason = upstream.headers.get('x-cld-error');
+      this.logger.warn(
+        `Upstream ${upstream.status} for ${new URL(url).host}${reason ? `: ${reason}` : ''}`,
+      );
+      if (reason) res.setHeader('X-Storage-Error', reason);
       res.status(upstream.status === 416 ? 416 : 502).end();
       return;
     }

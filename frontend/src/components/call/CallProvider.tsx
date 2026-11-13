@@ -17,6 +17,7 @@ import type { Socket } from 'socket.io-client';
 import { getSocket } from '../../lib/socket';
 import {
   callErrorKey,
+  getCamera,
   getLocalMedia,
   iceServers,
   type CallAck,
@@ -423,34 +424,73 @@ export function CallProvider({ children }: { children: ReactNode }) {
     sendState({ audio: enabled });
   }, [sendState]);
 
-  const toggleVideo = useCallback(() => {
+  /**
+   * Puts `track` (camera, screen or nothing) on the video slot of every
+   * connection. A connection that so far only received video (we joined
+   * without a camera) is switched to send as well and renegotiated.
+   */
+  const sendVideo = useCallback(
+    async (track: MediaStreamTrack | null) => {
+      for (const [userId, pc] of pcs.current) {
+        const tr = pc.getTransceivers().find((t) => t.receiver.track.kind === 'video');
+        if (!tr) continue;
+        await tr.sender.replaceTrack(track);
+        if (track && tr.direction !== 'sendrecv' && tr.direction !== 'sendonly') {
+          tr.direction = 'sendrecv';
+          const offer = await pc.createOffer();
+          await pc.setLocalDescription(offer);
+          signal(userId, { type: 'offer', sdp: offer.sdp ?? '' });
+        }
+      }
+    },
+    [signal],
+  );
+
+  const toggleVideo = useCallback(async () => {
     const track = cameraTrack.current;
-    if (!track) return;
-    track.enabled = !track.enabled;
-    setLocal((l) => ({ ...l, video: track.enabled }));
-    sendState({ video: track.enabled });
-  }, [sendState]);
+    if (track) {
+      track.enabled = !track.enabled;
+      setLocal((l) => ({ ...l, video: track.enabled }));
+      sendState({ video: track.enabled });
+      return;
+    }
+    // Started without a camera (busy, or permission not given yet): ask again.
+    const cam = await getCamera();
+    if (!cam.track) {
+      toast(tRef.current(`media.${cam.error}`), 'error');
+      return;
+    }
+    if (!currentRef.current) {
+      cam.track.stop(); // hung up while the permission prompt was open
+      return;
+    }
+    cameraTrack.current = cam.track;
+    const stream = localStream.current ?? new MediaStream();
+    stream.addTrack(cam.track);
+    localStream.current = stream;
+    if (!screenTrack.current) await sendVideo(cam.track);
+    setLocal((l) => ({
+      ...l,
+      stream: l.screen ? l.stream : new MediaStream(stream.getTracks()),
+      video: true,
+      hasVideo: true,
+    }));
+    sendState({ video: true });
+  }, [sendState, sendVideo, toast]);
 
   const stopScreenShare = useCallback(async () => {
     const screen = screenTrack.current;
     if (!screen) return;
     screenTrack.current = null;
     screen.stop();
-    for (const pc of pcs.current.values()) {
-      const sender = pc.getSenders().find((s) => s.track === screen || s.track?.kind === 'video');
-      await sender?.replaceTrack(cameraTrack.current);
-    }
+    await sendVideo(cameraTrack.current);
     setLocal((l) => ({ ...l, stream: localStream.current, screen: false }));
     sendState({ screen: false });
-  }, [sendState]);
+  }, [sendState, sendVideo]);
 
   const toggleScreen = useCallback(async () => {
     if (screenTrack.current) {
       await stopScreenShare();
-      return;
-    }
-    if (!cameraTrack.current) {
-      toast(tRef.current('errors.screenNeedsCamera'), 'error');
       return;
     }
     try {
@@ -458,17 +498,14 @@ export function CallProvider({ children }: { children: ReactNode }) {
       const track = display.getVideoTracks()[0];
       screenTrack.current = track;
       track.onended = () => void stopScreenShare();
-      for (const pc of pcs.current.values()) {
-        const sender = pc.getSenders().find((s) => s.track?.kind === 'video');
-        await sender?.replaceTrack(track);
-      }
+      await sendVideo(track);
       const preview = new MediaStream([track, ...(localStream.current?.getAudioTracks() ?? [])]);
       setLocal((l) => ({ ...l, stream: preview, screen: true }));
       sendState({ screen: true });
     } catch {
       /* the user closed the picker */
     }
-  }, [sendState, stopScreenShare, toast]);
+  }, [sendState, sendVideo, stopScreenShare]);
 
   // ----- socket listeners (app-wide)
   useEffect(() => {

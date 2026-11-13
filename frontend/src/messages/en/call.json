@@ -50,7 +50,9 @@
     "notSupported": "Your browser doesn’t support camera and microphone access",
     "audioOnly": "Camera unavailable — you’re in the call with audio only",
     "denied": "No permission for the camera and microphone — you can only see and hear others",
-    "unavailable": "Camera and microphone unavailable — you can only see and hear others"
+    "unavailable": "Camera and microphone unavailable — you can only see and hear others",
+    "cameraDenied": "The browser blocks the camera. Click the icon left of the site address, allow the camera and try again",
+    "cameraUnavailable": "Couldn't turn on the camera — another app may be using it"
   },
   "errors": {
     "full": "The call already has the maximum number of participants (6)",
@@ -59,8 +61,7 @@
     "notFound": "Conversation not found",
     "generic": "Couldn’t connect to the call",
     "noServer": "No connection to the server",
-    "alreadyInCall": "You’re already in a call",
-    "screenNeedsCamera": "Screen sharing requires the camera to be on"
+    "alreadyInCall": "You’re already in a call"
   },
   "toast": {
     "ended": "Call ended",

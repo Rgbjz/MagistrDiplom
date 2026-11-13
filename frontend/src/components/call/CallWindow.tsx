@@ -286,7 +286,7 @@ export function CallWindow({
   peers: RemotePeer[];
   myName: string;
   onToggleAudio: () => void;
-  onToggleVideo: () => void;
+  onToggleVideo: () => void | Promise<void>;
   onToggleScreen: () => void;
   onHangUp: () => void;
 }) {
@@ -405,7 +405,6 @@ export function CallWindow({
             type="button"
             className={`${styles.ctrl} ${!local.video ? styles.ctrlOff : ''}`}
             onClick={onToggleVideo}
-            disabled={!local.hasVideo}
             aria-pressed={!local.video}
             aria-label={t('muteCamera')}
             title={local.video ? t('muteCamera') : t('unmuteCamera')}
@@ -417,7 +416,6 @@ export function CallWindow({
               type="button"
               className={`${styles.ctrl} ${local.screen ? styles.ctrlActive : ''}`}
               onClick={onToggleScreen}
-              disabled={!local.hasVideo}
               aria-pressed={local.screen}
               aria-label={t('screenShare')}
               title={local.screen ? t('stopScreenShare') : t('startScreenShare')}

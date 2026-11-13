@@ -62,6 +62,12 @@ export type MediaNotice = 'notSupported' | 'audioOnly' | 'denied' | 'unavailable
 export type MediaResult = { stream: MediaStream; notice: MediaNotice | null };
 
 /** Camera + mic; falls back to audio only, then to receive-only. */
+const VIDEO_CONSTRAINTS: MediaTrackConstraints = {
+  width: { ideal: 1280 },
+  height: { ideal: 720 },
+  facingMode: 'user',
+};
+
 export async function getLocalMedia(): Promise<MediaResult> {
   const md = typeof navigator !== 'undefined' ? navigator.mediaDevices : undefined;
   if (!md?.getUserMedia) {
@@ -70,7 +76,7 @@ export async function getLocalMedia(): Promise<MediaResult> {
   try {
     const stream = await md.getUserMedia({
       audio: { echoCancellation: true, noiseSuppression: true },
-      video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: 'user' },
+      video: VIDEO_CONSTRAINTS,
     });
     return { stream, notice: null };
   } catch {
@@ -84,6 +90,19 @@ export async function getLocalMedia(): Promise<MediaResult> {
         notice: denied ? 'denied' : 'unavailable',
       };
     }
+  }
+}
+
+/** Camera only — for turning the camera on mid-call after an audio-only start. */
+export async function getCamera(): Promise<
+  { track: MediaStreamTrack; error?: never } | { track?: never; error: 'cameraDenied' | 'cameraUnavailable' }
+> {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: VIDEO_CONSTRAINTS });
+    return { track: stream.getVideoTracks()[0] };
+  } catch (err) {
+    const denied = err instanceof DOMException && err.name === 'NotAllowedError';
+    return { error: denied ? 'cameraDenied' : 'cameraUnavailable' };
   }
 }
 

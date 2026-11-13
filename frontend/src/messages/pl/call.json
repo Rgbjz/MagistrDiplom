@@ -50,7 +50,9 @@
     "notSupported": "Przeglądarka nie obsługuje dostępu do kamery i mikrofonu",
     "audioOnly": "Kamera niedostępna — uczestniczysz w rozmowie tylko głosowo",
     "denied": "Brak zgody na kamerę i mikrofon — możesz tylko widzieć i słyszeć innych",
-    "unavailable": "Kamera i mikrofon niedostępne — możesz tylko widzieć i słyszeć innych"
+    "unavailable": "Kamera i mikrofon niedostępne — możesz tylko widzieć i słyszeć innych",
+    "cameraDenied": "Przeglądarka blokuje kamerę. Kliknij ikonę po lewej stronie adresu, zezwól na kamerę i spróbuj ponownie",
+    "cameraUnavailable": "Nie udało się włączyć kamery — może używa jej inna aplikacja"
   },
   "errors": {
     "full": "W rozmowie jest już maksymalna liczba uczestników (6)",
@@ -59,8 +61,7 @@
     "notFound": "Nie znaleziono rozmowy",
     "generic": "Nie udało się połączyć z rozmową",
     "noServer": "Brak połączenia z serwerem",
-    "alreadyInCall": "Już uczestniczysz w rozmowie",
-    "screenNeedsCamera": "Udostępnianie ekranu wymaga włączonej kamery"
+    "alreadyInCall": "Już uczestniczysz w rozmowie"
   },
   "toast": {
     "ended": "Rozmowa zakończona",

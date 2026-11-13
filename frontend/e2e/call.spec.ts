@@ -174,3 +174,48 @@ test('a student sees the ongoing call banner and can join it', async ({ browser 
 
   await closeAll(teacherCtx, studentCtx);
 });
+
+test('camera turned on mid-call after an audio-only start reaches the other side', async ({ browser }) => {
+  const studentUser = await freshStudent('latecam');
+  const conversationId = await directConversation(studentUser.id);
+  const { teacherCtx, studentCtx, teacher, student } = await openPair(browser);
+
+  // The student's camera is busy when the call starts: the first request
+  // with video fails, later ones work.
+  await student.addInitScript(() => {
+    const md = navigator.mediaDevices;
+    const original = md.getUserMedia.bind(md);
+    let failed = false;
+    md.getUserMedia = (c?: MediaStreamConstraints) => {
+      if (c?.video && !failed) {
+        failed = true;
+        return Promise.reject(new DOMException('busy', 'NotReadableError'));
+      }
+      return original(c);
+    };
+  });
+
+  await login(student, studentUser);
+  await login(teacher, USERS.teacher1, `/chat?c=${conversationId}`);
+  await teacher.getByRole('button', { name: 'Відеодзвінок', exact: true }).click();
+  const teacherWindow = teacher.getByRole('dialog', { name: /Відеодзвінок/ });
+
+  const ring = student.getByRole('alertdialog');
+  await expect(ring).toBeVisible({ timeout: 10_000 });
+  await ring.getByRole('button', { name: 'Прийняти' }).click();
+  const studentWindow = student.getByRole('dialog', { name: /Відеодзвінок/ });
+  await expect(studentWindow).toBeVisible();
+  await expect(student.getByText('Камера недоступна — ви в дзвінку лише з голосом')).toBeVisible();
+  await expectRemoteVideo(student); // the teacher's camera works
+
+  // The camera button is not dead: it asks again and starts sending video.
+  const camera = studentWindow.getByRole('button', { name: 'Вимкнути камеру' });
+  await expect(camera).toBeEnabled();
+  await expect(camera).toHaveAttribute('aria-pressed', 'true');
+  await camera.click();
+  await expect(camera).toHaveAttribute('aria-pressed', 'false');
+  await expectRemoteVideo(teacher);
+
+  await teacherWindow.getByRole('button', { name: 'Завершити дзвінок' }).click();
+  await closeAll(teacherCtx, studentCtx);
+});

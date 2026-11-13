@@ -354,13 +354,13 @@ async function main() {
   });
 
   await s('language-switch', async () => {
-    const lang = page.getByRole('button', { name: /Українська|Мова/ }).first();
+    const lang = page.getByRole('button', { name: /Мова інтерфейсу/ }).first();
     await lang.click();
     await qa.snap(page, 'lang-menu', { axe: false, fullPage: false });
     await page.getByRole('menuitemradio', { name: /English/ }).or(page.getByRole('menuitem', { name: /English/ })).first().click();
     await pause(1500);
     await qa.snap(page, 'dashboard-en', { axe: false });
-    await page.getByRole('button', { name: /English|Language/ }).first().click();
+    await page.getByRole('button', { name: /Interface language/ }).first().click();
     await page.getByRole('menuitemradio', { name: /Українська/ }).or(page.getByRole('menuitem', { name: /Українська/ })).first().click();
     await pause(1500);
   });

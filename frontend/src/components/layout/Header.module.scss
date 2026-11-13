@@ -225,58 +225,134 @@
 }
 
 .language {
-  position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  min-height: 44px;
-  padding: 0 4px 0 10px;
-  border-radius: 10px;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
   color: var(--color-header-muted);
+  font: inherit;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
 
   &:hover,
-  &:focus-within {
+  &[aria-expanded='true'] {
     color: #ffffff;
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.28);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    cursor: progress;
+    opacity: 0.7;
   }
 }
 
-.languageSelect {
-  appearance: none;
+.languageCode {
+  letter-spacing: 0.04em;
+}
+
+.languageChevron {
+  transition: transform 0.15s;
+
+  &[data-open='true'] {
+    transform: rotate(180deg);
+  }
+}
+
+.languageMenu {
+  width: 220px;
+}
+
+.languageMenuTitle {
+  padding: 8px 12px 6px;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.languageItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   min-height: 44px;
-  max-width: 120px;
-  padding: 0 8px 0 2px;
+  padding: 0 12px;
   border: 0;
+  border-radius: 8px;
   background: transparent;
-  color: inherit;
+  color: var(--color-text);
   font: inherit;
   font-size: var(--fs-sm);
-  font-weight: 500;
+  text-align: left;
   cursor: pointer;
 
+  &:hover,
   &:focus-visible {
+    background: var(--color-surface-2);
     outline: none;
   }
 
-  option {
-    color: #0f172a;
+  &[data-active='true'] {
+    font-weight: 600;
+    color: var(--color-primary);
   }
 }
 
+.languageBadge {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 22px;
+  border-radius: 6px;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+
+  [data-active='true'] > & {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #ffffff;
+  }
+}
+
+.languageName {
+  flex: 1;
+}
+
+.languageCheck {
+  color: var(--color-primary);
+}
+
 @media (max-width: 767px) {
-  .languageSelect {
-    max-width: 44px;
-    text-overflow: clip;
-    color: transparent;
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    max-width: none;
+  .language {
+    padding: 0 8px;
+    gap: 4px;
   }
 
-  .language {
-    width: 44px;
-    justify-content: center;
-    padding: 0;
+  .languageChevron {
+    display: none;
+  }
+
+  // The button sits mid-header on phones: centre the menu under it so it
+  // never runs off the left edge.
+  .languageMenu {
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
   }
 }

@@ -20,7 +20,17 @@ async function freshUser() {
 test('guest switches the interface to English and it sticks after reload', async ({ page, context }) => {
   await page.goto('/catalog');
   await expect(page.locator('html')).toHaveAttribute('lang', 'uk');
-  await page.getByLabel('Мова інтерфейсу').selectOption('en');
+  const header0 = page.locator('header').first();
+  const langButton = header0.getByRole('button', { name: 'Мова інтерфейсу: Українська' });
+  await expect(langButton).toHaveText(/UK/);
+  await langButton.click();
+  const menu = page.getByRole('menu', { name: 'Мова інтерфейсу' });
+  await expect(menu.getByRole('menuitemradio', { name: /Українська/ })).toHaveAttribute('aria-checked', 'true');
+  // Keyboard: the current language is focused; ArrowDown moves to English.
+  await expect(menu.getByRole('menuitemradio', { name: /Українська/ })).toBeFocused();
+  await page.keyboard.press('ArrowDown');
+  await expect(menu.getByRole('menuitemradio', { name: /English/ })).toBeFocused();
+  await page.keyboard.press('Enter');
 
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
   const header = page.locator('header').first();
@@ -33,7 +43,9 @@ test('guest switches the interface to English and it sticks after reload', async
 
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
-  await expect(page.getByLabel('Interface language')).toHaveValue('en');
+  await expect(
+    page.locator('header').first().getByRole('button', { name: 'Interface language: English' }),
+  ).toHaveText(/EN/);
 });
 
 test('signed-in user picks Polski in the profile; it follows them to a new session', async ({ page, context }) => {

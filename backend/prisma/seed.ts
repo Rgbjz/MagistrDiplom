@@ -11,12 +11,13 @@
  *
  * Run: npm run db:seed
  */
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import type { NotificationType } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import { copyFileSync, existsSync, mkdirSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import { COURSES, type CourseDef } from './seed-data/courses';
+import { HTML_LABS, HTML_TESTS } from './seed-data/html-course-extras';
 
 const prisma = new PrismaClient();
 
@@ -542,6 +543,55 @@ async function createAssignment(
   });
 }
 
+/** Labs and tests of the YouTube HTML course (same data as on production). */
+async function addHtmlCourseExtras(course: SeededCourse) {
+  for (const t of HTML_TESTS) {
+    const lesson = lessonByTitle(course, t.lessonTitle);
+    await prisma.test.create({
+      data: {
+        lessonId: lesson.id,
+        title: t.title,
+        timeLimit: t.timeLimit,
+        passingScore: 60,
+        questions: {
+          create: t.questions.map((q, qi) =>
+            'answers' in q
+              ? {
+                  text: q.text,
+                  type: q.type,
+                  points: q.points ?? 1,
+                  difficulty: qi < 2 ? 1 : 2,
+                  answers: {
+                    create: q.answers.map(([text, isCorrect]) => ({
+                      text,
+                      isCorrect,
+                    })),
+                  },
+                }
+              : {
+                  text: q.text,
+                  type: q.type,
+                  points: q.points ?? 1,
+                  partialCredit: q.partialCredit ?? false,
+                  difficulty: qi < 2 ? 1 : 2,
+                  config: q.config as Prisma.InputJsonValue,
+                },
+          ),
+        },
+      },
+    });
+  }
+  for (const a of HTML_LABS) {
+    await createAssignment(lessonByTitle(course, a.lessonTitle), {
+      title: a.title,
+      description: a.description,
+      dueAt: daysAhead(a.dueInDays),
+      maxScore: a.maxScore,
+      maxFiles: a.maxFiles,
+    });
+  }
+}
+
 async function main() {
   await cleanup();
   const u = await createUsers();
@@ -1039,6 +1089,8 @@ async function main() {
     daysAgo(6, 13),
     true,
   );
+
+  await addHtmlCourseExtras(c.html);
 
   // ── Practical assignments with file hand-ins ──
 

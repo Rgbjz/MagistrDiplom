@@ -29,7 +29,8 @@
       "tests": "Test results",
       "assignments": "Assignments",
       "gradebook": "Gradebook",
-      "team": "Team"
+      "team": "Team",
+      "analytics": "Analytics"
     }
   },
   "students": {

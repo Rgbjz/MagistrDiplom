@@ -29,6 +29,7 @@ import type adminMessages from '../messages/uk/admin.json';
 import type statesMessages from '../messages/uk/states.json';
 import type calendarMessages from '../messages/uk/calendar.json';
 import type videoMessages from '../messages/uk/video.json';
+import type analyticsMessages from '../messages/uk/analytics.json';
 
 export interface Messages {
   common: typeof commonMessages;
@@ -59,6 +60,7 @@ export interface Messages {
   states: typeof statesMessages;
   calendar: typeof calendarMessages;
   video: typeof videoMessages;
+  analytics: typeof analyticsMessages;
 }
 
 declare module 'next-intl' {

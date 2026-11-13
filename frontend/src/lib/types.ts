@@ -916,3 +916,74 @@ export interface CalendarResponse {
   courses: { id: number; title: string }[];
   canCreateIn: { id: number; title: string; published?: boolean; updatedAt?: string | null }[];
 }
+
+// ───────────────────────────── course analytics ─────────────────────────────
+
+export type RiskFlag = 'lowProgress' | 'lowGrade' | 'inactive' | 'overdue';
+
+export interface CourseAnalytics {
+  course: {
+    id: number;
+    title: string;
+    gradingScale: GradingScaleKind;
+    gradePassThreshold: number;
+  };
+  summary: {
+    students: number;
+    activeLast7Days: number;
+    avgProgress: number | null;
+    avgFinal: number | null;
+    passRate: number | null;
+    awaitingGrading: number;
+    atRisk: number;
+  };
+  distribution: {
+    buckets: { code: string; count: number; passing: boolean }[];
+    ungraded: number;
+  };
+  hardQuestions: {
+    id: number;
+    text: string;
+    type: string;
+    testId: number;
+    testTitle: string;
+    lessonId: number;
+    attempts: number;
+    correctRate: number;
+  }[];
+  tests: {
+    id: number;
+    title: string;
+    lessonId: number;
+    attempts: number;
+    students: number;
+    avgScore: number | null;
+    passRate: number | null;
+  }[];
+  assignments: {
+    id: number;
+    title: string;
+    lessonId: number;
+    maxScore: number;
+    dueAt: string | null;
+    submitted: number;
+    awaiting: number;
+    graded: number;
+    returned: number;
+    overdue: number;
+    avgScore: number | null;
+  }[];
+  atRisk: {
+    userId: number;
+    name: string;
+    email: string;
+    avatarUrl: string | null;
+    progress: number;
+    final: number | null;
+    scaleCode: string | null;
+    lastActivity: string | null;
+    overdue: number;
+    flags: RiskFlag[];
+  }[];
+  weekly: { weekStart: string; lessons: number; tests: number; submissions: number }[];
+}

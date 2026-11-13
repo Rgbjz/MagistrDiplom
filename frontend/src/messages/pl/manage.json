@@ -29,7 +29,8 @@
       "tests": "Wyniki testów",
       "assignments": "Zadania",
       "gradebook": "Dziennik ocen",
-      "team": "Zespół"
+      "team": "Zespół",
+      "analytics": "Analityka"
     }
   },
   "students": {

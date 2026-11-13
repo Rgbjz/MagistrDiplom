@@ -1,0 +1,86 @@
+{
+  "title": "Analityka kursu",
+  "subtitle": "Wyniki, trudne pytania i studenci, którzy potrzebują uwagi.",
+  "back": "Do zarządzania kursem",
+  "forbidden": "Analityka jest dostępna tylko dla zespołu kursu.",
+  "empty": "Na kursie nie ma jeszcze studentów",
+  "emptyText": "Analityka pojawi się, gdy studenci zaczną naukę.",
+  "summary": {
+    "label": "Podsumowanie kursu",
+    "students": "Studentów",
+    "active": "Aktywni w ciągu 7 dni",
+    "avgProgress": "Średni postęp",
+    "avgFinal": "Średnia ocena końcowa",
+    "passRate": "Zaliczają kurs",
+    "awaiting": "Prace czekają na ocenę",
+    "atRisk": "Wymagają uwagi"
+  },
+  "distribution": {
+    "title": "Rozkład ocen końcowych",
+    "hint": "Skala kursu; na zielono oceny zaliczające.",
+    "bucket": "{label}: {count, plural, one {# student} few {# studentów} many {# studentów} other {# studenta}}",
+    "ungraded": "Jeszcze bez ocen: {count}",
+    "noData": "Brak ocen."
+  },
+  "weekly": {
+    "title": "Aktywność tygodniowa",
+    "hint": "Ostatnie 12 tygodni.",
+    "lessons": "Ukończone lekcje",
+    "tests": "Podejścia do testów",
+    "submissions": "Oddane prace",
+    "week": "Tydzień od {date}",
+    "weekBar": "Tydzień od {date}: lekcje {lessons}, testy {tests}, prace {submissions}",
+    "noData": "Brak aktywności w tym okresie."
+  },
+  "hard": {
+    "title": "Najtrudniejsze pytania",
+    "hint": "Pytania testowe z najmniejszym odsetkiem poprawnych odpowiedzi.",
+    "question": "Pytanie",
+    "test": "Test",
+    "type": "Typ",
+    "attempts": "Odpowiedzi",
+    "correct": "Poprawnie",
+    "noData": "Nikt jeszcze nie rozwiązywał testów.",
+    "edit": "Otwórz w kreatorze"
+  },
+  "tests": {
+    "title": "Testy",
+    "name": "Test",
+    "attempts": "Podejść",
+    "students": "Studentów",
+    "avg": "Średni wynik",
+    "passRate": "Zaliczyli",
+    "none": "W kursie nie ma testów."
+  },
+  "labs": {
+    "title": "Zadania i laboratoria",
+    "name": "Zadanie",
+    "due": "Termin",
+    "submitted": "Oddane",
+    "awaiting": "Czekają na ocenę",
+    "graded": "Ocenione",
+    "returned": "Do poprawy",
+    "overdue": "Po terminie",
+    "avg": "Średni wynik",
+    "none": "W kursie nie ma zadań.",
+    "noDue": "bez terminu"
+  },
+  "risk": {
+    "title": "Studenci, którzy potrzebują uwagi",
+    "hint": "Postęp poniżej 30% po dwóch tygodniach, ocena poniżej progu, brak aktywności przez 14+ dni lub zaległe prace.",
+    "student": "Student",
+    "reasons": "Powody",
+    "progress": "Postęp",
+    "final": "Ocena końcowa",
+    "lastActivity": "Ostatnia aktywność",
+    "never": "jeszcze brak",
+    "none": "Wszyscy studenci radzą sobie dobrze — nikt nie został oznaczony.",
+    "flag": {
+      "lowProgress": "Niski postęp",
+      "lowGrade": "Poniżej progu zaliczenia",
+      "inactive": "Dawno nieaktywny",
+      "overdue": "Prace po terminie: {count}"
+    }
+  },
+  "tabLink": "Analityka"
+}

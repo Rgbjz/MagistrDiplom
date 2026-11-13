@@ -1,0 +1,86 @@
+{
+  "title": "Course analytics",
+  "subtitle": "Performance, hard questions and students who need attention.",
+  "back": "Back to course management",
+  "forbidden": "Analytics is available to the course team only.",
+  "empty": "No students in this course yet",
+  "emptyText": "Analytics will appear once students start learning.",
+  "summary": {
+    "label": "Course summary",
+    "students": "Students",
+    "active": "Active in the last 7 days",
+    "avgProgress": "Average progress",
+    "avgFinal": "Average final grade",
+    "passRate": "Passing the course",
+    "awaiting": "Submissions awaiting grading",
+    "atRisk": "Need attention"
+  },
+  "distribution": {
+    "title": "Final grade distribution",
+    "hint": "Course scale; passing grades in green.",
+    "bucket": "{label}: {count, plural, one {# student} other {# students}}",
+    "ungraded": "Not graded yet: {count}",
+    "noData": "No grades yet."
+  },
+  "weekly": {
+    "title": "Weekly activity",
+    "hint": "Last 12 weeks.",
+    "lessons": "Lessons completed",
+    "tests": "Test attempts",
+    "submissions": "Submissions",
+    "week": "Week of {date}",
+    "weekBar": "Week of {date}: lessons {lessons}, tests {tests}, submissions {submissions}",
+    "noData": "No activity in this period."
+  },
+  "hard": {
+    "title": "Hardest questions",
+    "hint": "Test questions with the lowest share of correct answers.",
+    "question": "Question",
+    "test": "Test",
+    "type": "Type",
+    "attempts": "Answers",
+    "correct": "Correct",
+    "noData": "Nobody has taken the tests yet.",
+    "edit": "Open in the builder"
+  },
+  "tests": {
+    "title": "Tests",
+    "name": "Test",
+    "attempts": "Attempts",
+    "students": "Students",
+    "avg": "Average score",
+    "passRate": "Passed",
+    "none": "This course has no tests."
+  },
+  "labs": {
+    "title": "Assignments and labs",
+    "name": "Assignment",
+    "due": "Due",
+    "submitted": "Submitted",
+    "awaiting": "Awaiting grading",
+    "graded": "Graded",
+    "returned": "Returned",
+    "overdue": "Overdue",
+    "avg": "Average score",
+    "none": "This course has no assignments.",
+    "noDue": "no deadline"
+  },
+  "risk": {
+    "title": "Students who need attention",
+    "hint": "Progress below 30% after two weeks, grade below the pass mark, no activity for 14+ days or overdue work.",
+    "student": "Student",
+    "reasons": "Reasons",
+    "progress": "Progress",
+    "final": "Final",
+    "lastActivity": "Last activity",
+    "never": "none yet",
+    "none": "All students are on track — nobody flagged.",
+    "flag": {
+      "lowProgress": "Low progress",
+      "lowGrade": "Below pass mark",
+      "inactive": "Inactive for a while",
+      "overdue": "Overdue work: {count}"
+    }
+  },
+  "tabLink": "Analytics"
+}

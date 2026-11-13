@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { ChevronLeft, GraduationCap, Settings } from 'lucide-react';
+import { BarChart3, ChevronLeft, GraduationCap, Settings } from 'lucide-react';
 import type { CourseDetail, SessionUser } from '../../lib/types';
 import { CourseChatButton } from './CourseChatButton';
 import { OnlineLessonButton } from '../call/OnlineLessonButton';
@@ -55,6 +55,16 @@ export function CourseTopBar({ course, user }: { course: CourseDetail; user: Ses
             >
               <GraduationCap size={18} aria-hidden="true" />
               <span className={styles.backText}>{t('myGrades')}</span>
+            </Link>
+          )}
+          {isOwner && (
+            <Link
+              href={`/courses/${course.id}/analytics`}
+              className={styles.chatBtn}
+              aria-label={t('analytics')}
+            >
+              <BarChart3 size={18} aria-hidden="true" />
+              <span className={styles.backText}>{t('analytics')}</span>
             </Link>
           )}
           {isOwner && (

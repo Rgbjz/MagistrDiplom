@@ -23,7 +23,8 @@
     "myCourses": "My courses",
     "progress": "Course progress",
     "myGrades": "My grades",
-    "manage": "Manage"
+    "manage": "Manage",
+    "analytics": "Analytics"
   },
   "chat": {
     "open": "Course chat",

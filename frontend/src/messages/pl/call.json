@@ -52,7 +52,8 @@
     "denied": "Brak zgody na kamerę i mikrofon — możesz tylko widzieć i słyszeć innych",
     "unavailable": "Kamera i mikrofon niedostępne — możesz tylko widzieć i słyszeć innych",
     "cameraDenied": "Przeglądarka blokuje kamerę. Kliknij ikonę po lewej stronie adresu, zezwól na kamerę i spróbuj ponownie",
-    "cameraUnavailable": "Nie udało się włączyć kamery — może używa jej inna aplikacja"
+    "cameraUnavailable": "Nie udało się włączyć kamery — może używa jej inna aplikacja",
+    "cameraNotFound": "Nie znaleziono kamery. Jeśli laptop jest zamknięty — otwórz pokrywę; jeśli kamera jest, uruchom ponownie komputer lub podłącz ponownie kamerę USB"
   },
   "errors": {
     "full": "W rozmowie jest już maksymalna liczba uczestników (6)",

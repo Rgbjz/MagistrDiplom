@@ -52,7 +52,8 @@
     "denied": "No permission for the camera and microphone — you can only see and hear others",
     "unavailable": "Camera and microphone unavailable — you can only see and hear others",
     "cameraDenied": "The browser blocks the camera. Click the icon left of the site address, allow the camera and try again",
-    "cameraUnavailable": "Couldn't turn on the camera — another app may be using it"
+    "cameraUnavailable": "Couldn't turn on the camera — another app may be using it",
+    "cameraNotFound": "No camera found. If the laptop lid is closed, open it; if there is a camera, restart the computer or reconnect the USB camera"
   },
   "errors": {
     "full": "The call already has the maximum number of participants (6)",

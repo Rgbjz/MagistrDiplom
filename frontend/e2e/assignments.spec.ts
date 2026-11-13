@@ -115,9 +115,9 @@ test('teacher adds an assignment to a lesson in the builder', async ({ page }) =
 
 test('the API rejects unsupported types and too many files', async () => {
   const token = await apiToken(state.student);
-  const html = new FormData();
-  html.append('files', await fileBlob('assignment-evil.html', 'text/html'), 'assignment-evil.html');
-  const r1 = await postForm(`/assignments/${state.assignmentId}/submission`, token, html);
+  const exe = new FormData();
+  exe.append('files', await fileBlob('assignment-evil.exe', 'application/octet-stream'), 'assignment-evil.exe');
+  const r1 = await postForm(`/assignments/${state.assignmentId}/submission`, token, exe);
   expect(r1.status).toBe(400);
 
   const many = new FormData();
@@ -138,7 +138,7 @@ test('student hands in files from the course page', async ({ page }) => {
 
   const input = page.getByLabel('Файли роботи');
   // Client-side checks: wrong type and the per-assignment file limit.
-  await input.setInputFiles(FIX('assignment-evil.html'));
+  await input.setInputFiles(FIX('assignment-evil.exe'));
   await expect(page.getByText(/такий тип файлу не підтримується/)).toBeVisible();
   await input.setInputFiles([FIX('assignment-styles.css'), FIX('assignment-card.css'), FIX(REPORT)]);
   await expect(page.getByText('Можна додати не більше 2 файлів')).toBeVisible();

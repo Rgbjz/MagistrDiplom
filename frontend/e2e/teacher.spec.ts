@@ -16,7 +16,8 @@ const COVER = join(FIXTURES, 'teacher-cover.png');
 const VIDEO = join(FIXTURES, 'teacher-video.mp4');
 const NOTES = join(FIXTURES, 'teacher-Конспект уроку.md');
 const CSS = join(FIXTURES, 'teacher-grid.css');
-const EVIL = join(FIXTURES, 'teacher-evil.html');
+const EVIL = join(FIXTURES, 'teacher-evil.exe');
+const HTML_FILE = join(FIXTURES, 'teacher-evil.html');
 
 // 1×1 PNG.
 const PNG_1PX = Buffer.from(
@@ -224,8 +225,19 @@ test('builder: sections, lesson, video, attachments, test, settings, publish', a
 
   // Unsupported type is rejected.
   await filesInput.setInputFiles(EVIL);
-  await expect(toast(page, /teacher-evil\.html.*Такий тип файлу не підтримується/)).toBeVisible();
-  await expect(page.getByRole('link', { name: 'teacher-evil.html' })).toHaveCount(0);
+  await expect(toast(page, /teacher-evil\.exe.*Такий тип файлу не підтримується/)).toBeVisible();
+  await expect(page.getByRole('link', { name: 'teacher-evil.exe' })).toHaveCount(0);
+
+  // HTML is accepted (web courses need it) but only ever served as a download
+  // in a sandbox, so a <script> inside can't run on our origin.
+  await filesInput.setInputFiles(HTML_FILE);
+  const htmlLink = page.getByRole('link', { name: 'teacher-evil.html' }).first();
+  await expect(htmlLink).toBeVisible({ timeout: 20_000 });
+  const served = await page.request.get((await htmlLink.getAttribute('href'))!);
+  expect(served.status()).toBe(200);
+  expect(served.headers()['content-type']).toBe('application/octet-stream');
+  expect(served.headers()['content-disposition']).toMatch(/^attachment;/);
+  expect(served.headers()['content-security-policy']).toBe('sandbox');
 
   // Delete via confirm dialog.
   await page.getByRole('button', { name: 'Видалити файл teacher-grid.css' }).click();

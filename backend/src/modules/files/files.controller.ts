@@ -21,6 +21,7 @@ import { Readable } from 'stream';
 import type { ReadableStream as WebReadableStream } from 'stream/web';
 import {
   contentDisposition,
+  safeContentType,
   FILE_KINDS,
   type FileKind,
   parseRange,
@@ -58,7 +59,9 @@ export class FilesController {
       throw new BadRequestException('Unknown file kind');
     const userId = this.identify(kind as FileKind, id, q, req);
     const file = await this.files.authorize(kind as FileKind, id, userId);
-    res.setHeader('Content-Type', file.mimeType || 'application/octet-stream');
+    res.setHeader('Content-Type', safeContentType(file.mimeType));
+    // Second line of defence: even if a browser renders the file, no scripts.
+    res.setHeader('Content-Security-Policy', 'sandbox');
     res.setHeader(
       'Content-Disposition',
       contentDisposition(file.name, file.mimeType),

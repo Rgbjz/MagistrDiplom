@@ -9,6 +9,7 @@ export const ATTACHMENT_ACCEPT = [
   '.png', '.jpg', '.jpeg', '.gif', '.webp',
   '.mp3', '.mp4', '.webm',
   '.json', '.sql', '.js', '.ts', '.py', '.java', '.c', '.cpp', '.css',
+  '.html', '.htm',
 ].join(',');
 export const ATTACHMENT_MAX_BYTES = 25 * 1024 * 1024;
 

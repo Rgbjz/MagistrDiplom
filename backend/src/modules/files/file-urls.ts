@@ -120,3 +120,17 @@ export function contentDisposition(name: string, mimeType: string): string {
   const ascii = name.replace(/[^\x20-\x7E]/g, '_').replace(/["\\]/g, '');
   return `${inline ? 'inline' : 'attachment'}; filename="${ascii}"; filename*=UTF-8''${encodeURIComponent(name)}`;
 }
+
+/**
+ * Types a browser could run (HTML, SVG, XML, scripts) are sent as a plain
+ * binary download: a student's index.html must never open as a page on the
+ * API origin.
+ */
+const ACTIVE_TYPES =
+  /^(text\/html|application\/xhtml\+xml|image\/svg\+xml|text\/xml|application\/xml|text\/javascript|application\/javascript)\b/i;
+
+export function safeContentType(mimeType: string | null | undefined): string {
+  if (!mimeType || ACTIVE_TYPES.test(mimeType))
+    return 'application/octet-stream';
+  return mimeType;
+}

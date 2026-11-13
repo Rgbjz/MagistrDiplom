@@ -53,6 +53,9 @@ const ATTACHMENT_EXTENSIONS = new Set([
   '.c',
   '.cpp',
   '.css',
+  // HTML homework; served only as a download (see files/file-urls.ts).
+  '.html',
+  '.htm',
 ]);
 const VIDEO_EXTENSIONS = new Set(['.mp4', '.webm']);
 

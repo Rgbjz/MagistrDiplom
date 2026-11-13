@@ -2,6 +2,7 @@ import {
   ForbiddenException,
   Injectable,
   NotFoundException,
+  Optional,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -14,6 +15,8 @@ import {
   verifySignature,
 } from './file-urls';
 import { can, getCourseRole } from '../../common/access/course-access';
+import { parseRef } from '../storage/cloudinary-ref';
+import { CloudinaryService } from '../storage/cloudinary.service';
 
 export interface ResolvedFile {
   url: string;
@@ -30,11 +33,14 @@ const VIDEO_TYPES: Record<string, string> = {
 export class FilesService {
   private readonly secret: string;
   private readonly base: string;
+  private readonly cloudinary: CloudinaryService;
 
   constructor(
     private prisma: PrismaService,
     config: ConfigService,
+    @Optional() cloudinary?: CloudinaryService,
   ) {
+    this.cloudinary = cloudinary ?? new CloudinaryService(config);
     this.secret =
       config.get<string>('FILES_SIGNING_SECRET') ||
       config.get<string>('JWT_ACCESS_SECRET') ||
@@ -78,11 +84,22 @@ export class FilesService {
   ) {
     const id = obj.id as number;
     const ready = obj.status === 'READY';
-    const sign = (file: string) =>
-      userId ? this.hlsUrl(id, userId, file) : null;
-    obj.hlsUrl = ready && obj.hlsPrefix ? sign('master.m3u8') : null;
-    obj.posterUrl = obj.hasPoster && obj.hlsPrefix ? sign('poster.jpg') : null;
-    obj.mp4FallbackUrl = ready && obj.mp4Url ? sign('source.mp4') : null;
+    const ref = parseRef(obj.hlsPrefix as string | null);
+    if (ref) {
+      // Cloudinary streams the video itself (see CloudinaryService.uploadVideo).
+      const show = !!userId && this.cloudinary.enabled;
+      obj.hlsUrl = show && ready ? this.cloudinary.hlsUrl(ref) : null;
+      obj.posterUrl =
+        show && obj.hasPoster ? this.cloudinary.posterUrl(ref) : null;
+      obj.mp4FallbackUrl = show && ready ? this.cloudinary.mp4Url(ref) : null;
+    } else {
+      const sign = (file: string) =>
+        userId ? this.hlsUrl(id, userId, file) : null;
+      obj.hlsUrl = ready && obj.hlsPrefix ? sign('master.m3u8') : null;
+      obj.posterUrl =
+        obj.hasPoster && obj.hlsPrefix ? sign('poster.jpg') : null;
+      obj.mp4FallbackUrl = ready && obj.mp4Url ? sign('source.mp4') : null;
+    }
     obj.qualities =
       typeof obj.renditions === 'string' && obj.renditions
         ? obj.renditions.split(',').map(Number)

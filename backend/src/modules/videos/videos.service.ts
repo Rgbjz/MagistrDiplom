@@ -5,6 +5,7 @@ import {
   Logger,
   NotFoundException,
   OnApplicationBootstrap,
+  PayloadTooLargeException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { LessonVideo } from '@prisma/client';
@@ -101,6 +102,13 @@ export class VideosService implements OnApplicationBootstrap {
       throw new BadRequestException('Unsupported video type');
     if (input.size > MAX_VIDEO_BYTES)
       throw new BadRequestException('File too large');
+    const cloudLimit = this.files.cloudinaryMode
+      ? this.files.cloudinary.maxVideoBytes
+      : null;
+    if (cloudLimit && input.size > cloudLimit)
+      throw new PayloadTooLargeException(
+        `Video is too large for the file storage (max ${Math.round(cloudLimit / 1024 / 1024)} MB)`,
+      );
     if (this.files.blobMode) {
       return {
         mode: 'blob',
@@ -266,8 +274,14 @@ export class VideosService implements OnApplicationBootstrap {
 
   private async removeOutputs(video: LessonVideo) {
     await this.files.removeHls(video.hlsPrefix);
-    await this.files.removeFile(video.sourceUrl);
-    if (video.mp4Url && video.mp4Url !== video.sourceUrl)
+    if (video.sourceUrl !== video.hlsPrefix)
+      await this.files.removeFile(video.sourceUrl);
+    // On Cloudinary the HLS prefix and the MP4 are the same asset.
+    if (
+      video.mp4Url &&
+      video.mp4Url !== video.sourceUrl &&
+      video.mp4Url !== video.hlsPrefix
+    )
       await this.files.removeFile(video.mp4Url);
   }
 

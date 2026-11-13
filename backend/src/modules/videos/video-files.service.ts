@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Optional } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { del, list, put } from '@vercel/blob';
 import { randomBytes } from 'crypto';
@@ -9,6 +9,16 @@ import { join } from 'path';
 import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
 import type { ReadableStream as WebReadableStream } from 'stream/web';
+import {
+  CLOUDINARY_ROOT,
+  type CloudinaryRef,
+  formatRef,
+  parseRef,
+} from '../storage/cloudinary-ref';
+import {
+  CloudinaryService,
+  type UploadedVideo,
+} from '../storage/cloudinary.service';
 
 const CONTENT_TYPES: Record<string, string> = {
   m3u8: 'application/vnd.apple.mpegurl',
@@ -33,19 +43,69 @@ export type FileLocation =
  * Video sources and HLS outputs. Locally they live under ./private (never
  * served statically — only through signed /api/files/hls routes); with
  * BLOB_READ_WRITE_TOKEN they go to Vercel Blob under unguessable prefixes.
+ * With CLOUDINARY_URL (takes precedence) the source is uploaded to
+ * Cloudinary, which builds and serves the HLS renditions itself; the
+ * record then keeps `cloudinary://video/upload/<public id>` as its prefix.
  */
 @Injectable()
 export class VideoFilesService {
   private readonly logger = new Logger(VideoFilesService.name);
   readonly blobToken: string | undefined;
   readonly root = join(process.cwd(), 'private');
+  readonly cloudinary: CloudinaryService;
+  /** Waits between readiness checks of Cloudinary's HLS (replaced in tests). */
+  sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-  constructor(config: ConfigService) {
+  constructor(
+    config: ConfigService,
+    @Optional() cloudinary?: CloudinaryService,
+  ) {
     this.blobToken = config.get<string>('BLOB_READ_WRITE_TOKEN') || undefined;
+    this.cloudinary = cloudinary ?? new CloudinaryService(config);
   }
 
+  get cloudinaryMode(): boolean {
+    return this.cloudinary.enabled;
+  }
+
+  /** Browser uploads straight to Blob (not when Cloudinary is in use). */
   get blobMode(): boolean {
-    return !!this.blobToken;
+    return !!this.blobToken && !this.cloudinaryMode;
+  }
+
+  /** Uploads a local source to Cloudinary under an unguessable public id. */
+  async uploadToCloudinary(
+    videoId: number,
+    path: string,
+  ): Promise<UploadedVideo & { prefix: string }> {
+    const publicId = `${CLOUDINARY_ROOT}/videos/${videoId}-${randomBytes(12).toString('hex')}`;
+    const uploaded = await this.cloudinary.uploadVideo(path, publicId);
+    return { ...uploaded, prefix: formatRef(uploaded.ref) };
+  }
+
+  /**
+   * Polls the HLS master playlist on Cloudinary's CDN until the background
+   * (eager) renditions are ready. `onWait` gets the share of time used.
+   */
+  async waitForCloudinaryHls(
+    ref: CloudinaryRef,
+    onWait?: (fraction: number) => void,
+    timeoutMs = 30 * 60 * 1000,
+    intervalMs = 10_000,
+  ): Promise<void> {
+    const url = this.cloudinary.hlsUrl(ref);
+    const started = Date.now();
+    for (;;) {
+      const res = await fetch(url, { method: 'HEAD' }).catch(() => null);
+      if (res?.ok) return;
+      const spent = Date.now() - started;
+      if (spent >= timeoutMs)
+        throw new Error(
+          'Cloudinary did not finish preparing the video in time',
+        );
+      onWait?.(spent / timeoutMs);
+      await this.sleep(intervalMs);
+    }
   }
 
   /** Blob store id from the token: vercel_blob_rw_<storeId>_<secret>. */
@@ -148,6 +208,11 @@ export class VideoFilesService {
   async removeHls(prefix: string | null | undefined): Promise<void> {
     if (!prefix) return;
     try {
+      const ref = parseRef(prefix);
+      if (ref) {
+        if (this.cloudinaryMode) await this.cloudinary.destroy(ref);
+        return;
+      }
       if (/^https?:\/\//.test(prefix)) {
         if (!this.blobToken) return;
         const pathname = new URL(prefix).pathname.slice(1);
@@ -174,6 +239,11 @@ export class VideoFilesService {
   async removeFile(url: string | null | undefined): Promise<void> {
     if (!url) return;
     try {
+      const ref = parseRef(url);
+      if (ref) {
+        if (this.cloudinaryMode) await this.cloudinary.destroy(ref);
+        return;
+      }
       const loc = this.locate(url);
       if (!loc) return;
       if (loc.kind === 'local') await unlink(loc.path);

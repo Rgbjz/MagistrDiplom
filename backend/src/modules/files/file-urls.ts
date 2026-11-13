@@ -1,4 +1,5 @@
 import { createHmac, timingSafeEqual } from 'crypto';
+import { parseRef, refFolder } from '../storage/cloudinary-ref';
 
 /** Protected file kinds served by GET /api/files/:kind/:id. */
 export type FileKind =
@@ -18,14 +19,22 @@ export type ProtectedFolder = 'lessons' | 'videos' | 'submissions';
 
 const MAX_TTL_S = 2 * 60 * 60;
 
+const PROTECTED: ProtectedFolder[] = ['lessons', 'videos', 'submissions'];
+
 /**
  * Folder of a file stored by StorageService, if it is one of the protected
- * ones: local `/public/<folder>/<name>` or a Vercel Blob URL `/<folder>/…`.
+ * ones: local `/public/<folder>/<name>`, a Vercel Blob URL `/<folder>/…` or a
+ * Cloudinary reference `cloudinary://…/lms/<folder>/…`.
  */
 export function protectedFolder(
   url: string | null | undefined,
 ): ProtectedFolder | null {
   if (!url) return null;
+  const ref = parseRef(url);
+  if (ref) {
+    const folder = refFolder(ref) as ProtectedFolder | null;
+    return folder && PROTECTED.includes(folder) ? folder : null;
+  }
   const local = /^\/public\/(lessons|videos|submissions)\/[\w.-]+$/.exec(url);
   if (local) return local[1] as ProtectedFolder;
   try {

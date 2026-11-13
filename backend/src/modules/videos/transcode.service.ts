@@ -4,6 +4,7 @@ import { spawn } from 'child_process';
 import { mkdir, writeFile } from 'fs/promises';
 import { join } from 'path';
 import { PrismaService } from '../../prisma/prisma.service';
+import { parseRef } from '../storage/cloudinary-ref';
 import { QueueService } from '../../common/queue/queue.service';
 import {
   hlsArgs,
@@ -97,6 +98,8 @@ export class TranscodeService implements OnModuleInit {
 
     const work = await this.files.workDir(videoId);
     const out = join(work, 'out');
+    // Where the source lives now (Cloudinary mode moves it during the job).
+    let jobSource = sourceUrl;
     let lastSaved = -1;
     const setProgress = async (value: number) => {
       const p = Math.max(0, Math.min(99, Math.floor(value)));
@@ -117,6 +120,18 @@ export class TranscodeService implements OnModuleInit {
           error: null,
         },
       });
+      if (this.files.cloudinaryMode) {
+        await this.publishToCloudinary(
+          videoId,
+          sourceUrl,
+          work,
+          setProgress,
+          (moved) => {
+            jobSource = moved;
+          },
+        );
+        return;
+      }
       await mkdir(out, { recursive: true });
       const input = await this.files.localCopy(sourceUrl, work);
 
@@ -196,7 +211,7 @@ export class TranscodeService implements OnModuleInit {
       const latest = await this.prisma.lessonVideo.findUnique({
         where: { id: videoId },
       });
-      if (latest && (latest.sourceUrl ?? latest.mp4Url) === sourceUrl) {
+      if (latest && (latest.sourceUrl ?? latest.mp4Url) === jobSource) {
         // A legacy MP4 stays playable progressively even if HLS failed.
         await this.prisma.lessonVideo.update({
           where: { id: videoId },
@@ -211,7 +226,86 @@ export class TranscodeService implements OnModuleInit {
       await this.files.removeDir(work);
     }
   }
+  /**
+   * Cloudinary mode: no ffmpeg here — the source goes to Cloudinary, which
+   * builds the HLS renditions in the background; we wait until the playlist
+   * is served, then mark the video READY. A source that is already on
+   * Cloudinary (retry, restart) only gets its renditions requested again.
+   */
+  private async publishToCloudinary(
+    videoId: number,
+    sourceUrl: string,
+    work: string,
+    setProgress: (value: number) => Promise<void>,
+    onMoved: (url: string) => void,
+  ) {
+    const existing = parseRef(sourceUrl);
+    let prefix: string;
+    let meta: {
+      durationSec: number | null;
+      width: number | null;
+      height: number | null;
+    } = { durationSec: null, width: null, height: null };
+    if (existing) {
+      await this.files.cloudinary.requestHls(existing);
+      prefix = sourceUrl;
+    } else {
+      const input = await this.files.localCopy(sourceUrl, work);
+      await setProgress(5);
+      const uploaded = await this.files.uploadToCloudinary(videoId, input);
+      prefix = uploaded.prefix;
+      meta = uploaded;
+      // Point the record at the uploaded copy right away: the local file
+      // may vanish (ephemeral disk) and a retry must not need it.
+      await this.prisma.lessonVideo.updateMany({
+        where: { id: videoId, sourceUrl },
+        data: { sourceUrl: prefix },
+      });
+      onMoved(prefix);
+      await this.files.removeFile(sourceUrl);
+    }
+    await setProgress(50);
+    await this.files.waitForCloudinaryHls(parseRef(prefix)!, (f) => {
+      void setProgress(50 + f * 45);
+    });
+
+    const latest = await this.prisma.lessonVideo.findUnique({
+      where: { id: videoId },
+    });
+    if (!latest || (latest.sourceUrl ?? latest.mp4Url) !== prefix) {
+      // Replaced or deleted while Cloudinary was working.
+      if (latest?.hlsPrefix !== prefix && latest?.mp4Url !== prefix)
+        await this.files.removeHls(prefix);
+      return;
+    }
+    const height = meta.height ?? latest.height;
+    await this.prisma.lessonVideo.update({
+      where: { id: videoId },
+      data: {
+        status: 'READY',
+        progress: 100,
+        hlsPrefix: prefix,
+        // Cloudinary also serves the video as one MP4 for old browsers.
+        mp4Url: prefix,
+        sourceUrl: null,
+        renditions: height
+          ? CLOUDINARY_HEIGHTS.filter((h) => h <= height).join(',') ||
+            String(height)
+          : null,
+        hasPoster: true,
+        durationSec: meta.durationSec ?? latest.durationSec,
+        width: meta.width ?? latest.width,
+        height,
+        error: null,
+      },
+    });
+    if (latest.hlsPrefix && latest.hlsPrefix !== prefix)
+      await this.files.removeHls(latest.hlsPrefix);
+  }
 }
+
+/** Heights of Cloudinary's "hd" streaming profile, for the quality list. */
+const CLOUDINARY_HEIGHTS = [1080, 720, 540, 360, 270, 240];
 
 function lastLine(stderr: string): string {
   const lines = stderr.trim().split('\n');

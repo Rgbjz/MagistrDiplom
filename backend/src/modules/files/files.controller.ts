@@ -26,6 +26,8 @@ import {
   protectedFolder,
 } from './file-urls';
 import { FilesService, type ResolvedFile } from './files.service';
+import { parseRef } from '../storage/cloudinary-ref';
+import { CloudinaryService } from '../storage/cloudinary.service';
 
 /**
  * Protected downloads/streaming of lesson files, uploaded lesson videos and
@@ -39,6 +41,7 @@ export class FilesController {
     private files: FilesService,
     private jwt: JwtService,
     private config: ConfigService,
+    private cloudinary: CloudinaryService,
   ) {}
 
   @Get(':kind/:id')
@@ -60,8 +63,17 @@ export class FilesController {
     );
     res.setHeader('Cache-Control', 'private, max-age=3600');
     res.setHeader('Accept-Ranges', 'bytes');
-    if (file.url.startsWith('/public/')) await this.sendLocal(file, req, res);
-    else await this.proxyBlob(file, req, res);
+    if (file.url.startsWith('/public/')) {
+      await this.sendLocal(file, req, res);
+      return;
+    }
+    // Cloudinary: a signed delivery URL built here and never shown to users.
+    const ref = parseRef(file.url);
+    if (ref && !this.cloudinary.enabled) {
+      res.status(404).json({ message: 'File not found' });
+      return;
+    }
+    await this.proxy(ref ? this.cloudinary.url(ref) : file.url, req, res);
   }
 
   private identify(
@@ -123,8 +135,8 @@ export class FilesController {
     }
   }
 
-  private async proxyBlob(file: ResolvedFile, req: Request, res: Response) {
-    const upstream = await fetch(file.url, {
+  private async proxy(url: string, req: Request, res: Response) {
+    const upstream = await fetch(url, {
       headers: req.headers.range ? { Range: req.headers.range } : {},
     });
     if (!upstream.ok && upstream.status !== 206) {

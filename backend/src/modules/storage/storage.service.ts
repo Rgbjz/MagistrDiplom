@@ -1,9 +1,21 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  Optional,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { del, put } from '@vercel/blob';
 import { randomBytes } from 'crypto';
 import { mkdir, unlink, writeFile } from 'fs/promises';
 import { extname, join } from 'path';
+import {
+  CLOUDINARY_ROOT,
+  formatRef,
+  parseRef,
+  resourceTypeFor,
+} from './cloudinary-ref';
+import { CloudinaryService } from './cloudinary.service';
 
 export type UploadFolder =
   | 'avatars'
@@ -12,17 +24,29 @@ export type UploadFolder =
   | 'videos'
   | 'submissions';
 
+/** Avatars and course covers are shown to everyone; the rest is private. */
+const PUBLIC_FOLDERS: UploadFolder[] = ['avatars', 'courses'];
+
 /**
- * Stores uploaded files. With BLOB_READ_WRITE_TOKEN they go to Vercel Blob
- * (absolute URL); otherwise to ./public/<folder> served at /public/<folder>.
+ * Stores uploaded files, in this order of preference:
+ * - CLOUDINARY_URL: Cloudinary. Public images get their https URL, private
+ *   files a `cloudinary://…` reference (see cloudinary-ref) and are only
+ *   delivered through signed URLs built by the API;
+ * - BLOB_READ_WRITE_TOKEN: Vercel Blob (absolute URL);
+ * - otherwise ./public/<folder>, served at /public/<folder>.
  */
 @Injectable()
 export class StorageService {
   private readonly logger = new Logger(StorageService.name);
   private readonly blobToken: string | undefined;
+  private readonly cloudinary: CloudinaryService;
 
-  constructor(config: ConfigService) {
+  constructor(
+    config: ConfigService,
+    @Optional() cloudinary?: CloudinaryService,
+  ) {
     this.blobToken = config.get<string>('BLOB_READ_WRITE_TOKEN') || undefined;
+    this.cloudinary = cloudinary ?? new CloudinaryService(config);
   }
 
   async save(file: Express.Multer.File, folder: UploadFolder): Promise<string> {
@@ -37,6 +61,25 @@ export class StorageService {
     }
     const ext = extname(file.originalname).toLowerCase() || '.bin';
     const name = `${folder}-${Date.now()}-${randomBytes(4).toString('hex')}${ext}`;
+
+    if (this.cloudinary.enabled) {
+      const isPublic = PUBLIC_FOLDERS.includes(folder);
+      const resourceType = isPublic ? 'image' : resourceTypeFor(file.mimetype);
+      // Raw files keep their extension in the id; Cloudinary adds a format
+      // to images and videos itself.
+      const id = resourceType === 'raw' ? name : name.slice(0, -ext.length);
+      const res = await this.cloudinary.uploadBuffer(file.buffer, {
+        publicId: `${CLOUDINARY_ROOT}/${folder}/${id}`,
+        resourceType,
+        type: isPublic ? 'upload' : 'authenticated',
+      });
+      if (isPublic) return res.secure_url;
+      return formatRef({
+        resourceType,
+        type: 'authenticated',
+        publicId: res.public_id,
+      });
+    }
 
     if (this.blobToken) {
       const blob = await put(`${folder}/${name}`, file.buffer, {
@@ -59,6 +102,11 @@ export class StorageService {
   async remove(url: string | null | undefined): Promise<void> {
     if (!url) return;
     try {
+      const ref = parseRef(url) ?? this.cloudinary.refFromUrl(url);
+      if (ref) {
+        if (this.cloudinary.enabled) await this.cloudinary.destroy(ref);
+        return;
+      }
       if (/^https?:\/\//.test(url)) {
         if (this.blobToken && url.includes('.blob.vercel-storage.com/')) {
           await del(url, { token: this.blobToken });
@@ -81,7 +129,10 @@ export class StorageService {
   isStored(url: string | null | undefined): boolean {
     if (!url) return false;
     return (
-      url.startsWith('/public/') || url.includes('.blob.vercel-storage.com/')
+      url.startsWith('/public/') ||
+      url.includes('.blob.vercel-storage.com/') ||
+      !!parseRef(url) ||
+      !!this.cloudinary.refFromUrl(url)
     );
   }
 }

@@ -3,6 +3,7 @@ import {
   ForbiddenException,
   Injectable,
   NotFoundException,
+  Optional,
 } from '@nestjs/common';
 import type { Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -35,6 +36,7 @@ import {
   type QuestionLike,
 } from './question-types';
 import { drawAttempt, type Rng } from './draw';
+import { AdaptiveService } from '../adaptive/adaptive.service';
 
 export interface TestSettingsInput {
   title?: string;
@@ -45,6 +47,8 @@ export interface TestSettingsInput {
   maxAttempts?: number | null;
   questionsPerAttempt?: number | null;
   showCorrectAnswers?: 'NEVER' | 'AFTER_SUBMIT' | 'AFTER_PASS' | 'AFTER_CLOSE';
+  /** Adaptive question selection; null = course default. */
+  adaptive?: boolean | null;
 }
 
 export interface QuestionInput {
@@ -110,6 +114,7 @@ export class TestsService {
   constructor(
     private prisma: PrismaService,
     private notifications: NotificationsService,
+    @Optional() private adaptive?: AdaptiveService,
   ) {}
 
   // ===== ACCESS =====
@@ -235,6 +240,7 @@ export class TestsService {
       maxAttempts: test.maxAttempts,
       questionsPerAttempt: test.questionsPerAttempt,
       showCorrectAnswers: test.showCorrectAnswers,
+      adaptive: test.adaptive,
       questionCount: this.expectedCount(test),
     };
     if (can(role, 'view')) {
@@ -315,6 +321,7 @@ export class TestsService {
           : null;
     if (data.showCorrectAnswers !== undefined)
       patch.showCorrectAnswers = data.showCorrectAnswers;
+    if (data.adaptive !== undefined) patch.adaptive = data.adaptive;
     return this.prisma.test.update({ where: { id }, data: patch });
   }
 
@@ -615,6 +622,46 @@ export class TestsService {
     };
   }
 
+  /**
+   * Adaptive attempt: the pool is the test's playable questions plus its
+   * bank categories; the module picks as many as a usual attempt has.
+   */
+  private async adaptivePlan(
+    test: NonNullable<Awaited<ReturnType<TestsService['loadTest']>>>,
+    userId: number,
+  ): Promise<{ questions: QuestionLike[]; target: number } | null> {
+    if (!this.adaptive) return null;
+    const lesson = await this.prisma.lesson.findUnique({
+      where: { id: test.lessonId },
+      select: { sectionId: true, section: { select: { courseId: true } } },
+    });
+    if (!lesson) return null;
+    const rows = [
+      ...test.questions,
+      ...test.randomRules.flatMap((r) => r.category.questions),
+    ];
+    const byId = new Map<number, (typeof rows)[number]>();
+    for (const q of rows) if (isPlayable(asLike(q))) byId.set(q.id, q);
+    const plan = await this.adaptive.planAttempt({
+      userId,
+      testId: test.id,
+      testAdaptive: test.adaptive,
+      courseId: lesson.section.courseId,
+      sectionId: lesson.sectionId,
+      pool: [...byId.values()].map((q) => ({
+        id: q.id,
+        difficulty: q.difficulty,
+        calibratedDifficulty: q.calibratedDifficulty,
+      })),
+      count: this.expectedCount(test),
+    });
+    if (!plan || !plan.ids.length) return null;
+    return {
+      questions: plan.ids.map((id) => asLike(byId.get(id)!)),
+      target: plan.target,
+    };
+  }
+
   getMyAttempts(userId: number, testId: number) {
     return this.prisma.testResult.findMany({
       where: { userId, testId },
@@ -645,19 +692,33 @@ export class TestsService {
       throw new BadRequestException('No attempts left');
     }
 
-    const drawn = drawAttempt(
-      test.questions.map(asLike),
-      test.randomRules.map((r) => ({
-        count: r.count,
-        questions: r.category.questions.map(asLike),
-      })),
-      {
-        shuffleQuestions: test.shuffleQuestions,
-        shuffleAnswers: test.shuffleAnswers,
-        questionsPerAttempt: test.questionsPerAttempt,
-      },
-      this.rng,
-    );
+    // Adaptation module: questions matched to the student's ability, or
+    // the usual draw (control group, adaptive tests off).
+    const plan = await this.adaptivePlan(test, userId);
+    const drawn = plan
+      ? drawAttempt(
+          plan.questions,
+          [],
+          {
+            shuffleQuestions: test.shuffleQuestions,
+            shuffleAnswers: test.shuffleAnswers,
+            questionsPerAttempt: null,
+          },
+          this.rng,
+        )
+      : drawAttempt(
+          test.questions.map(asLike),
+          test.randomRules.map((r) => ({
+            count: r.count,
+            questions: r.category.questions.map(asLike),
+          })),
+          {
+            shuffleQuestions: test.shuffleQuestions,
+            shuffleAnswers: test.shuffleAnswers,
+            questionsPerAttempt: test.questionsPerAttempt,
+          },
+          this.rng,
+        );
     if (drawn.length === 0) {
       throw new BadRequestException('Test has no questions');
     }
@@ -668,6 +729,8 @@ export class TestsService {
         userId,
         attempt: attempts + 1,
         startedAt: new Date(),
+        strategy: plan ? 'ADAPTIVE' : 'FIXED',
+        targetDifficulty: plan?.target ?? null,
         questions: {
           create: drawn.map((d) => ({
             questionId: d.question.id,
@@ -806,6 +869,7 @@ export class TestsService {
         data: { finishedAt, score, passed, pendingReview: pending },
       }),
     ]);
+    await this.adaptive?.onTestSubmitted(testResultId);
 
     const course = testResult.test.lesson.section.course;
     const link = `/courses/${course.id}/tests/${testResult.testId}/result`;
@@ -962,6 +1026,7 @@ export class TestsService {
         gradedById: user.id,
       },
     });
+    await this.adaptive?.onEssayGraded(aq.id);
 
     const all = await this.prisma.attemptQuestion.findMany({
       where: { testResultId: aq.testResultId },

@@ -557,3 +557,21 @@ UI: Керування → Тести → блок «Потребує перев
 - `weekly[12]`: `{ weekStart (понеділок, UTC), lessons, tests, submissions }`, від найстарішого тижня.
 
 Фронтенд: сторінка `/courses/:id/analytics` (кнопка «Аналітика» в шапці курсу для команди) і вкладка «Аналітика» в «Керування курсом». Графіки — HTML/CSS-стовпчики з підписами та `aria-label` для кожного стовпчика, без сторонніх бібліотек.
+
+## Адаптивне навчання (модуль адаптації)
+
+Модель студента (засвоєння тем m, рівень θ, калібрування питань b), рекомендації, адаптивні тести й A/B-експеримент. Формули й параметри — `docs/adaptive-learning.md`.
+
+| Метод | Шлях | Хто | Відповідь |
+|---|---|---|---|
+| GET | `/api/courses/:id/adaptive/me` | студент курсу (ACTIVE/COMPLETED) | `{ enabled, adaptive, group, thresholds, ability, sections[{ id, title, mastery, evidence, level }], recommendations[] }` |
+| GET | `/api/adaptive/recommendations` | студент | top-3 рекомендацій з усіх курсів (+ `courseId`, `courseTitle`), без NEXT |
+| POST | `/api/adaptive/recommendations/:key/opened` | студент; body `{ courseId }` | `{ ok: true }`, подія RECOMMENDATION_OPENED |
+| GET | `/api/courses/:id/adaptive/overview` | команда курсу (`view`) | налаштування, середні по темах, теплова карта студенти × теми, групи, статистика показано/відкрито/виконано (+ за типами) |
+| PATCH | `/api/courses/:id/adaptive/settings` | `manage`; `{ enabled?, masteryThreshold? (0,3–0,9), accelerationThreshold? (0,5–1), adaptiveTestsDefault?, experimentMode?: 'OFF'|'AB_TEST' }` | налаштування; перехід у AB_TEST розподіляє активних студентів порівну |
+| POST | `/api/courses/:id/adaptive/recompute` | `manage` | `{ students, sections, events }` — перерахунок моделі з історії |
+| GET | `/api/courses/:id/adaptive/experiment/export` | `view` | CSV (UTF-8 BOM), рядок на студента: group, pre/post score, gain, mastery, θ, рекомендації |
+
+Рекомендація: `{ key: 'TYPE:id', type: REVIEW|RETRY_TEST|NEXT|SKIP_AHEAD|CHALLENGE|DEADLINE, sectionId, lessonId?, testId?, assignmentId?, priority, reason, params }`.
+
+Тест: `PATCH /api/tests/:id` приймає `adaptive: boolean | null` (null — як у курсі); `GET /api/tests/:id` повертає `adaptive`. Спроба зберігає `strategy` (ADAPTIVE/FIXED) і `targetDifficulty`. Контрольна група експерименту отримує фіксовані тести й порожні рекомендації (перевірка на сервері).

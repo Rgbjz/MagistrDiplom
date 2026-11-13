@@ -18,6 +18,7 @@ import { copyFileSync, existsSync, mkdirSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import { COURSES, type CourseDef } from './seed-data/courses';
 import { HTML_LABS, HTML_TESTS } from './seed-data/html-course-extras';
+import { AdaptiveService } from '../src/modules/adaptive/adaptive.service';
 
 const prisma = new PrismaClient();
 
@@ -389,6 +390,23 @@ async function takeTest(
     }));
   });
   await prisma.userAnswer.createMany({ data: answers });
+  // Per-attempt rows, as the app stores them (review, adaptation history).
+  await prisma.attemptQuestion.createMany({
+    data: test.questions.map((q, i) => ({
+      testResultId: result.id,
+      questionId: q.id,
+      position: i,
+      response: {
+        answerIds: (i < right
+          ? q.answers.filter((a) => a.isCorrect)
+          : [q.answers.find((a) => !a.isCorrect) ?? q.answers[0]]
+        ).map((a) => a.id),
+      },
+      earned: i < right ? q.points : 0,
+      maxPoints: q.points,
+      status: 'AUTO' as const,
+    })),
+  });
   return result;
 }
 
@@ -1295,6 +1313,21 @@ async function main() {
 
   // ── Summary ──
 
+  // ── Adaptation module: demo settings and the learner model from history ──
+  // HTML course: the first test draws 4 of its 6 questions by ability.
+  const htmlFirstTest = testsOf(c.html)[0];
+  if (htmlFirstTest) {
+    await prisma.test.update({
+      where: { id: htmlFirstTest.id },
+      data: { adaptive: true, questionsPerAttempt: 4 },
+    });
+  }
+  await prisma.courseAdaptiveSettings.create({
+    data: { courseId: web.id, enabled: true, adaptiveTestsDefault: true },
+  });
+  const adaptive = new AdaptiveService(prisma as never);
+  for (const course of Object.values(c)) await adaptive.recompute(course.id);
+
   const counts = {
     users: await prisma.user.count(),
     courses: await prisma.course.count(),
@@ -1309,6 +1342,7 @@ async function main() {
     messages: await prisma.message.count(),
     assignments: await prisma.assignment.count(),
     submissions: await prisma.submission.count(),
+    learnerMastery: await prisma.learnerSectionMastery.count(),
   };
   console.log('Seed complete.', counts);
   console.log(`

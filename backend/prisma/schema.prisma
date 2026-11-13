@@ -134,6 +134,9 @@ model User {
   courseEvents         CourseEvent[]             @relation("CourseEventAuthor")
   gradeOverrides       GradeOverride[]
   gradeOverrideHistory GradeOverrideHistory[]
+  sectionMasteries     LearnerSectionMastery[]
+  abilities            LearnerAbility[]
+  adaptiveEvents       AdaptiveEvent[]
 }
 
 model UserProfile {
@@ -193,7 +196,7 @@ model Course {
   createdAt          DateTime     @default(now())
   updatedAt          DateTime     @updatedAt
 
-  teacher              User                   @relation("TeacherCourses", fields: [teacherId], references: [id])
+  teacher              User                    @relation("TeacherCourses", fields: [teacherId], references: [id])
   sections             Section[]
   enrollments          Enrollment[]
   conversations        Conversation[]
@@ -204,6 +207,10 @@ model Course {
   events               CourseEvent[]
   gradeOverrides       GradeOverride[]
   gradeOverrideHistory GradeOverrideHistory[]
+  adaptiveSettings     CourseAdaptiveSettings?
+  sectionMasteries     LearnerSectionMastery[]
+  abilities            LearnerAbility[]
+  adaptiveEvents       AdaptiveEvent[]
 }
 
 model CourseStaff {
@@ -228,8 +235,9 @@ model Section {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  course  Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  lessons Lesson[]
+  course    Course                  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessons   Lesson[]
+  masteries LearnerSectionMastery[]
 }
 
 model Lesson {
@@ -359,6 +367,8 @@ model Test {
   maxAttempts         Int?
   questionsPerAttempt Int?
   showCorrectAnswers  ShowAnswersMode @default(AFTER_SUBMIT)
+  // Adaptive question selection at attempt start; null = course default.
+  adaptive            Boolean?
   createdAt           DateTime        @default(now())
   updatedAt           DateTime        @updatedAt
 
@@ -370,18 +380,22 @@ model Test {
 
 // A question belongs either to a test (testId) or to the course question bank (categoryId).
 model Question {
-  id            Int          @id @default(autoincrement())
-  testId        Int?
-  categoryId    Int?
-  text          String
-  type          QuestionType @default(SINGLE)
-  difficulty    Int          @default(1)
-  points        Int          @default(1)
-  partialCredit Boolean      @default(false)
+  id                   Int          @id @default(autoincrement())
+  testId               Int?
+  categoryId           Int?
+  text                 String
+  type                 QuestionType @default(SINGLE)
+  difficulty           Int          @default(1)
+  points               Int          @default(1)
+  partialCredit        Boolean      @default(false)
+  // Online-calibrated difficulty b on the logit (Rasch/Elo) scale; null until
+  // the first graded answer (then initialised from `difficulty`).
+  calibratedDifficulty Float?
+  calibrationCount     Int          @default(0)
   // Type-specific settings: accepted answers, numeric value/tolerance, matching pairs, ordering items, essay limits.
-  config        Json?
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
+  config               Json?
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
 
   test             Test?                 @relation(fields: [testId], references: [id], onDelete: Cascade)
   category         QuestionBankCategory? @relation(fields: [categoryId], references: [id], onDelete: Cascade)
@@ -454,14 +468,16 @@ model Answer {
 }
 
 model Enrollment {
-  id          Int              @id @default(autoincrement())
-  userId      Int
-  courseId    Int
-  status      EnrollmentStatus @default(PENDING)
-  enrolledAt  DateTime         @default(now())
-  completedAt DateTime?
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
+  id            Int              @id @default(autoincrement())
+  userId        Int
+  courseId      Int
+  status        EnrollmentStatus @default(PENDING)
+  enrolledAt    DateTime         @default(now())
+  completedAt   DateTime?
+  // A/B experiment arm (null while the course runs no experiment).
+  adaptiveGroup AdaptiveGroup?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
@@ -486,18 +502,21 @@ model LessonProgress {
 }
 
 model TestResult {
-  id            Int       @id @default(autoincrement())
-  userId        Int
-  testId        Int
-  attempt       Int
-  startedAt     DateTime
-  finishedAt    DateTime?
-  score         Int?
-  passed        Boolean?
+  id               Int       @id @default(autoincrement())
+  userId           Int
+  testId           Int
+  attempt          Int
+  startedAt        DateTime
+  finishedAt       DateTime?
+  score            Int?
+  passed           Boolean?
   // An essay answer awaits manual grading; score is provisional and passed is null.
-  pendingReview Boolean   @default(false)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  pendingReview    Boolean   @default(false)
+  // How the questions were chosen: FIXED (usual draw) or ADAPTIVE (by ability).
+  strategy         String?
+  targetDifficulty Float?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
   user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   test      Test              @relation(fields: [testId], references: [id], onDelete: Cascade)
@@ -663,4 +682,87 @@ model GradeOverrideHistory {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([courseId, userId])
+}
+
+// ===== Adaptive learning =====
+
+enum AdaptiveExperimentMode {
+  OFF
+  AB_TEST
+}
+
+enum AdaptiveGroup {
+  ADAPTIVE
+  CONTROL
+}
+
+enum AdaptiveEventType {
+  RECOMMENDATION_SHOWN
+  RECOMMENDATION_OPENED
+  MASTERY_UPDATED
+  ADAPTIVE_TEST_GENERATED
+}
+
+// Per-course switches and thresholds of the adaptation module.
+model CourseAdaptiveSettings {
+  courseId              Int                    @id
+  enabled               Boolean                @default(true)
+  masteryThreshold      Float                  @default(0.6)
+  accelerationThreshold Float                  @default(0.85)
+  adaptiveTestsDefault  Boolean                @default(false)
+  experimentMode        AdaptiveExperimentMode @default(OFF)
+  experimentStartedAt   DateTime?
+  updatedAt             DateTime               @updatedAt
+
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+}
+
+// Learner model: mastery m ∈ [0,1] of one course section (topic).
+model LearnerSectionMastery {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  courseId  Int
+  sectionId Int
+  mastery   Float    @default(0.5)
+  evidence  Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course  Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  section Section @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, sectionId])
+  @@index([courseId])
+}
+
+// Learner model: ability θ on the logit scale within one course.
+model LearnerAbility {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  courseId  Int
+  theta     Float    @default(0)
+  answers   Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+}
+
+// Log of the adaptation module (recommendations shown/opened, model updates).
+model AdaptiveEvent {
+  id        Int               @id @default(autoincrement())
+  userId    Int
+  courseId  Int
+  type      AdaptiveEventType
+  key       String?
+  payload   Json?
+  createdAt DateTime          @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@index([courseId, type])
+  @@index([userId, courseId, type])
 }

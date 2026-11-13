@@ -3,12 +3,14 @@ import {
   ForbiddenException,
   Injectable,
   NotFoundException,
+  Optional,
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import type { AuthUser } from '../../common/decorators/current-user.decorator';
 import { NotificationsService } from '../notifications/notifications.service';
 import { StorageService, originalName } from '../storage/storage.service';
 import { VideosService } from '../videos/videos.service';
+import { AdaptiveService } from '../adaptive/adaptive.service';
 import { msg } from '../../common/i18n';
 import {
   assertRoleOnCourse,
@@ -25,6 +27,7 @@ export class LessonsService {
     private notifications: NotificationsService,
     private storage: StorageService,
     private videos: VideosService,
+    @Optional() private adaptive?: AdaptiveService,
   ) {}
 
   /** Loads a lesson and checks that `user` may edit its course content. */
@@ -104,6 +107,7 @@ export class LessonsService {
       where: { id: progress.id },
       data: { status: 'COMPLETED', completedAt: new Date() },
     });
+    await this.adaptive?.onLessonCompleted(user.id, lessonId);
   }
 
   async createLesson(

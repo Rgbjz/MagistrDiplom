@@ -1,11 +1,15 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Optional } from '@nestjs/common';
+import { AdaptiveService } from '../adaptive/adaptive.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { assertCourseRole } from '../../common/access/course-access';
 import type { AuthUser } from '../../common/decorators/current-user.decorator';
 
 @Injectable()
 export class ProgressService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    @Optional() private adaptive?: AdaptiveService,
+  ) {}
 
   /** A student's progress as seen by the course team. */
   async getProgressAsStaff(courseId: number, userId: number, viewer: AuthUser) {
@@ -95,10 +99,12 @@ export class ProgressService {
       throw new BadRequestException('Lesson not started');
     }
     if (progress.status !== 'COMPLETED') {
-      return this.prisma.lessonProgress.update({
+      const updated = await this.prisma.lessonProgress.update({
         where: { id: progress.id },
         data: { status: 'COMPLETED', completedAt: new Date() },
       });
+      await this.adaptive?.onLessonCompleted(userId, lessonId);
+      return updated;
     }
     return progress;
   }

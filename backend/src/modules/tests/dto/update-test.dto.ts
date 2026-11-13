@@ -49,4 +49,10 @@ export class UpdateTestDto {
   @IsOptional()
   @IsIn(['NEVER', 'AFTER_SUBMIT', 'AFTER_PASS', 'AFTER_CLOSE'])
   showCorrectAnswers?: 'NEVER' | 'AFTER_SUBMIT' | 'AFTER_PASS' | 'AFTER_CLOSE';
+
+  // null = follow the course's adaptive-tests default
+  @IsOptional()
+  @ValidateIf((_, v) => v !== null)
+  @IsBoolean()
+  adaptive?: boolean | null;
 }

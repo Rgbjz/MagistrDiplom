@@ -10,6 +10,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { StorageService, originalName } from '../storage/storage.service';
 import { RemindersService } from '../calendar/reminders.service';
+import { AdaptiveService } from '../adaptive/adaptive.service';
 import { displayName } from '../../common/utils/names';
 import type { AuthUser } from '../../common/decorators/current-user.decorator';
 import type {
@@ -60,6 +61,7 @@ export class AssignmentsService {
     private notifications: NotificationsService,
     private storage: StorageService,
     @Optional() private reminders?: RemindersService,
+    @Optional() private adaptive?: AdaptiveService,
   ) {}
 
   // ===== access helpers =====
@@ -360,6 +362,7 @@ export class AssignmentsService {
       body: msg('notify.courseBody', { course: course.title }),
       link: `/courses/${course.id}?assignment=${assignment.id}`,
     });
+    await this.adaptive?.onAssignmentGraded(id);
     return updated;
   }
 

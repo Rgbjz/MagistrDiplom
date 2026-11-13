@@ -103,7 +103,9 @@ export class AuthController {
   ) {
     const token = req.cookies?.[REFRESH_COOKIE] as string | undefined;
     const { accessToken, refreshToken } = await this.auth.refresh(token);
-    res.cookie(REFRESH_COOKIE, refreshToken, REFRESH_COOKIE_OPTS);
+    // null: the previous token was accepted and the client keeps its own.
+    if (refreshToken)
+      res.cookie(REFRESH_COOKIE, refreshToken, REFRESH_COOKIE_OPTS);
     return { accessToken };
   }
 

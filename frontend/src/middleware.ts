@@ -1,5 +1,5 @@
 import { auth } from './auth';
-import { NextResponse } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 
 const AUTH_PAGES = ['/login', '/register', '/forgot-password', '/reset-password'];
 const PUBLIC_PREFIXES = ['/welcome', '/catalog', '/c/', '/certificates/', '/confirm', '/privacy'];
@@ -20,24 +20,39 @@ const PROTECTED_PREFIXES = [
 const under = (pathname: string, prefix: string) =>
   pathname === prefix || pathname.startsWith(`${prefix}/`);
 
+function guestResponse(req: NextRequest, isPublic: boolean) {
+  const { pathname } = req.nextUrl;
+  // Guests see the marketing home at "/".
+  if (pathname === '/') {
+    return NextResponse.rewrite(new URL('/welcome', req.url));
+  }
+  if (!isPublic && PROTECTED_PREFIXES.some((p) => under(pathname, p))) {
+    const login = new URL('/login', req.url);
+    login.searchParams.set('next', pathname);
+    return NextResponse.redirect(login);
+  }
+  return NextResponse.next();
+}
+
 export default auth((req) => {
   const { pathname } = req.nextUrl;
-  const user = req.auth?.user;
+  // The backend session is gone (revoked, expired, user blocked): the access
+  // token can't be renewed, so treat the visitor as a guest and drop the
+  // stale NextAuth cookie instead of rendering pages whose API calls all 401.
+  const expired = req.auth?.error === 'RefreshAccessTokenError';
+  const user = expired ? undefined : req.auth?.user;
   const isAuthPage = AUTH_PAGES.some((p) => pathname.startsWith(p));
   const isPublic =
     isAuthPage || PUBLIC_PREFIXES.some((p) => pathname.startsWith(p));
 
   if (!user) {
-    // Guests see the marketing home at "/".
-    if (pathname === '/') {
-      return NextResponse.rewrite(new URL('/welcome', req.url));
+    const res = guestResponse(req, isPublic);
+    if (expired) {
+      for (const c of req.cookies.getAll()) {
+        if (c.name.includes('authjs.session-token')) res.cookies.delete(c.name);
+      }
     }
-    if (!isPublic && PROTECTED_PREFIXES.some((p) => under(pathname, p))) {
-      const login = new URL('/login', req.url);
-      login.searchParams.set('next', pathname);
-      return NextResponse.redirect(login);
-    }
-    return NextResponse.next();
+    return res;
   }
 
   if (isAuthPage || pathname === '/welcome') {

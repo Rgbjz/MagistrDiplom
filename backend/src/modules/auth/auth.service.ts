@@ -303,12 +303,17 @@ export class AuthService {
     const session = payload.sid
       ? await this.prisma.session.findUnique({ where: { id: payload.sid } })
       : await this.prisma.session.findFirst({
-          where: { userId: payload.id, refreshTokenHash: hash },
+          where: {
+            userId: payload.id,
+            OR: [{ refreshTokenHash: hash }, { prevRefreshTokenHash: hash }],
+          },
         });
+    const isCurrent = session?.refreshTokenHash === hash;
+    const isPrevious = !isCurrent && session?.prevRefreshTokenHash === hash;
     if (
       !session ||
       session.userId !== payload.id ||
-      session.refreshTokenHash !== hash ||
+      (!isCurrent && !isPrevious) ||
       session.expiresAt < new Date()
     ) {
       throw new UnauthorizedException('Session expired');
@@ -328,12 +333,20 @@ export class AuthService {
       sid: session.id,
     };
     const accessToken = this.signAccess(clean);
+    // A browser fires several refreshes at once with the same token; the
+    // first one rotates, the others arrive with the token it replaced. Give
+    // them an access token and keep the pair as is: rotating again would
+    // invalidate whichever refresh token the browser ended up saving.
+    if (isPrevious) {
+      return { accessToken, refreshToken: null };
+    }
     const newRefreshToken = this.signRefresh(clean);
 
     await this.prisma.session.update({
       where: { id: session.id },
       data: {
         refreshTokenHash: this.hashToken(newRefreshToken),
+        prevRefreshTokenHash: hash,
         expiresAt: new Date(Date.now() + this.refreshTtlMs()),
       },
     });
@@ -345,8 +358,11 @@ export class AuthService {
     if (!refreshToken) {
       return;
     }
+    const hash = this.hashToken(refreshToken);
     await this.prisma.session.deleteMany({
-      where: { refreshTokenHash: this.hashToken(refreshToken) },
+      where: {
+        OR: [{ refreshTokenHash: hash }, { prevRefreshTokenHash: hash }],
+      },
     });
   }
 }

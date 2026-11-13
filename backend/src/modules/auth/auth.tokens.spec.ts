@@ -92,9 +92,21 @@ describe('AuthService session-bound tokens', () => {
     expect(next.accessToken).toBeTruthy();
   });
 
-  it('a rotated refresh token cannot be reused', async () => {
+  it('parallel refreshes with the same token all get an access token', async () => {
     const a = await service.login({ email: user.email, password: 'pw' });
-    await service.refresh(a.refreshToken);
+    const first = await service.refresh(a.refreshToken);
+    const late = await service.refresh(a.refreshToken);
+    expect(late.accessToken).toBeTruthy();
+    // No second rotation: the token from the first refresh stays valid.
+    expect(late.refreshToken).toBeNull();
+    const next = await service.refresh(first.refreshToken!);
+    expect(next.refreshToken).toBeTruthy();
+  });
+
+  it('a token replaced two rotations ago is rejected', async () => {
+    const a = await service.login({ email: user.email, password: 'pw' });
+    const b = await service.refresh(a.refreshToken);
+    await service.refresh(b.refreshToken!);
     await expect(service.refresh(a.refreshToken)).rejects.toBeInstanceOf(
       UnauthorizedException,
     );

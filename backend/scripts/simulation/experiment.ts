@@ -5,7 +5,7 @@
  * then the same held-out post-test.
  */
 import {
-  ADAPTIVE_CONFIG,
+  ADAPTIVE_CONFIG_V1,
   type AdaptiveConfig,
   type Thresholds,
 } from '../../src/modules/adaptive/adaptive.algorithm';
@@ -61,6 +61,8 @@ export interface CohortResult {
   calibrationRmse: number;
   /** Corr of the system's θ with the learner's true mean ability. */
   thetaCorr: number;
+  /** System topic mastery vs true k, pooled over learners × topics, per arm. */
+  pooledCorr: { ADAPTIVE: number; CONTROL: number };
 }
 
 export interface CohortOptions {
@@ -75,12 +77,16 @@ export interface CohortOptions {
 
 export function runCohort(o: CohortOptions): CohortResult {
   const sim = o.sim ?? SIM_CONFIG;
-  const cfg = o.adaptive ?? ADAPTIVE_CONFIG;
+  const cfg = o.adaptive ?? ADAPTIVE_CONFIG_V1;
   const course = makeCourse(mulberry32(childSeed(o.seed, 1)), sim);
   const calibration: CalibrationStore = new Map();
   const rows: LearnerRow[] = [];
   const thetaTruth: number[] = [];
   const thetaSys: number[] = [];
+  const pairs = {
+    ADAPTIVE: { sys: [] as number[], truth: [] as number[] },
+    CONTROL: { sys: [] as number[], truth: [] as number[] },
+  };
 
   for (let i = 0; i < o.perArm * 2; i++) {
     const policy: Policy = i % 2 === 0 ? 'ADAPTIVE' : 'CONTROL';
@@ -113,6 +119,8 @@ export function runCohort(o: CohortOptions): CohortResult {
     const meanK = learner.k.reduce((a, b) => a + b, 0) / learner.k.length;
     thetaTruth.push(meanK);
     thetaSys.push(log.theta);
+    pairs[policy].sys.push(...sys);
+    pairs[policy].truth.push(...learner.k);
     rows.push({
       seed: o.seed,
       learner: i,
@@ -155,5 +163,9 @@ export function runCohort(o: CohortOptions): CohortResult {
         Math.max(1, estB.length),
     ),
     thetaCorr: pearson(thetaSys, thetaTruth),
+    pooledCorr: {
+      ADAPTIVE: pearson(pairs.ADAPTIVE.sys, pairs.ADAPTIVE.truth),
+      CONTROL: pearson(pairs.CONTROL.sys, pairs.CONTROL.truth),
+    },
   };
 }

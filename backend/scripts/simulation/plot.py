@@ -108,8 +108,8 @@ names = {
 fig, axes = plt.subplots(2, 3, figsize=(12, 6.5), sharey=True)
 for ax, p in zip(axes.flat, params):
     for scen, color, label in [
-        ("module (deployed)", COL["CONTROL"], "поточний модуль"),
-        ("evidence gate + soft gating", COL["ADAPTIVE"], "вдосконалений"),
+        ("v1", COL["CONTROL"], "v1"),
+        ("v2", COL["ADAPTIVE"], "v2"),
     ]:
         rows = [r for r in sens if r["param"] == p and r["scenario"] == scen]
         scale = 1000 if p.startswith("forgetting") else 1
@@ -121,7 +121,7 @@ for ax, p in zip(axes.flat, params):
 axes[0][0].set_ylabel("Cohen's d")
 axes[1][0].set_ylabel("Cohen's d")
 axes[0][0].legend(fontsize=9)
-fig.suptitle("Аналіз чутливості (8 повторів × 300 студентів на групу)")
+fig.suptitle("Аналіз чутливості: d (адаптивна − контрольна), 8 повторів × 300 студентів на групу")
 save(fig, "sensitivity.png")
 
 # 5. Action profile of the adaptive policy (what the module recommends).
@@ -140,3 +140,54 @@ ax.set_xlabel("Середня кількість дій за курс")
 ax.set_title("Дії студентів адаптивної групи (поточний модуль)")
 ax.legend(fontsize=8, loc="lower right")
 save(fig, "adaptive-actions.png")
+
+# 6. v1 vs v2 vs control on held-out seeds: post-test and completion by type.
+sub = read("v2_subgroups_heldout.csv")
+fig, axes = plt.subplots(1, 2, figsize=(11, 4.2))
+for ax, metric, ylabel in [
+    (axes[0], "postExpected", "Підсумковий тест (очікуваний бал)"),
+    (axes[1], "completed", "Частка тих, хто завершив курс"),
+]:
+    x = range(len(TYPES))
+    ctrl = [float(next(r for r in sub if r["version"] == "v2" and r["type"] == t and r["metric"] == metric)["meanC"]) for t, _ in TYPES]
+    v1 = [float(next(r for r in sub if r["version"] == "v1" and r["type"] == t and r["metric"] == metric)["meanA"]) for t, _ in TYPES]
+    v2 = [float(next(r for r in sub if r["version"] == "v2" and r["type"] == t and r["metric"] == metric)["meanA"]) for t, _ in TYPES]
+    wbar = 0.27
+    ax.bar([i - wbar for i in x], ctrl, wbar, color=COL["CONTROL"], label="контрольна")
+    ax.bar(list(x), v1, wbar, color="#93c5fd", label="адаптивна v1")
+    ax.bar([i + wbar for i in x], v2, wbar, color=COL["ADAPTIVE"], label="адаптивна v2")
+    ax.set_xticks(list(x))
+    ax.set_xticklabels([lbl for _, lbl in TYPES])
+    ax.set_ylabel(ylabel)
+    if metric == "postExpected":
+        ax.set_ylim(0.5, 0.82)
+axes[0].legend(fontsize=9, loc="upper left")
+fig.suptitle("v1 і v2 проти контрольної групи (перевірочні повтори 11–20)")
+save(fig, "v1-v2-control.png")
+
+# 7. Calibration of the learner model and effect sizes, v1 vs v2.
+import json  # noqa: E402
+
+summ = json.load(open(os.path.join(OUT, "summary.json"), encoding="utf-8"))
+cal = summ["v2"]["heldOut"]["calibration"]
+held = summ["v2"]["heldOut"]
+fig, axes = plt.subplots(1, 2, figsize=(10, 3.8))
+axes[0].bar(["v1", "v2"], [cal["v1"]["pooledCorrAdaptive"], cal["v2"]["pooledCorrAdaptive"]], color=["#93c5fd", COL["ADAPTIVE"]])
+axes[0].set_ylabel("r (оцінка засвоєння vs справжні знання)")
+axes[0].set_title("Точність моделі студента")
+for i, key in enumerate(["v1", "v2"]):
+    axes[0].text(i, cal[key]["pooledCorrAdaptive"] + 0.01, f"{cal[key]['pooledCorrAdaptive']:.2f}\nRMSE {cal[key]['rmseAdaptive']:.3f}", ha="center", fontsize=9)
+axes[0].set_ylim(0, 0.6)
+labels_m = [("postExpected", "підсумк. тест"), ("gain", "приріст"), ("completed", "завершення")]
+for j, (ver, color) in enumerate([("v1", "#93c5fd"), ("v2", COL["ADAPTIVE"])]):
+    ds = [held[ver][m]["d"] for m, _ in labels_m]
+    lo = [held[ver][m]["d"] - held[ver][m]["dLo"] for m, _ in labels_m]
+    hi = [held[ver][m]["dHi"] - held[ver][m]["d"] for m, _ in labels_m]
+    axes[1].errorbar([k + (j - 0.5) * 0.25 for k in range(3)], ds, yerr=[lo, hi], fmt="o", color=color, capsize=3, label=ver)
+axes[1].axhline(0, color="black", lw=0.8)
+axes[1].set_xticks(range(3))
+axes[1].set_xticklabels([lbl for _, lbl in labels_m])
+axes[1].set_ylabel("Cohen's d проти контролю (95 % ДІ)")
+axes[1].set_title("Ефект на перевірочних повторах")
+axes[1].legend(fontsize=9)
+save(fig, "v1-v2-calibration-effects.png")

@@ -1,0 +1,5 @@
+candidate,label,scenario,meanA,meanC,d,dLo,dHi,pWelch,d_weak,d_average,d_strong,seedsPositiveSig,seedsNegativeSig,seeds,wastedA,wastedC,completedA,completedC,modelCorrA,rmseA,pooledCorrA,selected
+C1,EWMA + rotation + spaced review,EWMA + rotation + spaced review,0.68651,0.694828,-0.106945,-0.144152,-0.06718,0,-0.222385,-0.239524,-0.235817,0,4,10,3.0474,3.587,0.4918,0.6684,-0.142339,0.192286,0.140497,false
+C2,topic Elo + rotation + spaced review,topic Elo + rotation + spaced review,0.685921,0.694828,-0.113645,-0.149106,-0.071655,0,-0.278381,-0.245787,-0.205721,0,4,10,3.4146,3.587,0.6556,0.6684,-0.172289,0.148089,0.451386,false
+C3,topic Elo + rotation,topic Elo + rotation,0.68574,0.694828,-0.116286,-0.155516,-0.078135,0,-0.272411,-0.241562,-0.259797,0,4,10,2.2602,3.587,0.666,0.6684,-0.191579,0.145029,0.467394,false
+C4,topic Elo + spaced review,topic Elo + spaced review,0.685556,0.694828,-0.118203,-0.157896,-0.078282,0,-0.290813,-0.264328,-0.203621,0,4,10,3.344,3.587,0.7282,0.6684,-0.181984,0.144859,0.467464,true

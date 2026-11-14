@@ -1,4 +1,11 @@
+import { readFileSync } from 'fs';
+import { join } from 'path';
+import {
+  ADAPTIVE_CONFIG,
+  ADAPTIVE_CONFIG_V2,
+} from '../../src/modules/adaptive/adaptive.algorithm';
 import { analyzeExport, parseExport } from './analyze-export';
+import { selectCandidate, V2_CANDIDATES } from './candidates';
 import { runCohort } from './experiment';
 import {
   makeCourse,
@@ -150,5 +157,33 @@ describe('simulation: statistics', () => {
     expect(gain.nA).toBe(2);
     expect(gain.nC).toBe(2);
     expect(gain.diff).toBeCloseTo(20, 6);
+  });
+});
+
+describe('simulation: v2 selection', () => {
+  it('the app ships exactly the candidate selected on training seeds', () => {
+    const summary = JSON.parse(
+      readFileSync(join(__dirname, 'out', 'summary.json'), 'utf8'),
+    ) as { v2: { chosen: string } };
+    const chosen = V2_CANDIDATES.find((c) => c.id === summary.v2.chosen);
+    expect(chosen).toBeDefined();
+    expect(ADAPTIVE_CONFIG_V2).toEqual(chosen!.cfg);
+    expect(ADAPTIVE_CONFIG).toBe(ADAPTIVE_CONFIG_V2);
+  });
+
+  it('selection: best d, ties within tolerance broken by calibration RMSE', () => {
+    expect(
+      selectCandidate([
+        { id: 'A', d: -0.1, rmse: 0.2 },
+        { id: 'B', d: -0.12, rmse: 0.15 },
+        { id: 'C', d: -0.3, rmse: 0.1 },
+      ]),
+    ).toBe('B');
+    expect(
+      selectCandidate([
+        { id: 'A', d: 0.2, rmse: 0.2 },
+        { id: 'B', d: 0.1, rmse: 0.1 },
+      ]),
+    ).toBe('A');
   });
 });

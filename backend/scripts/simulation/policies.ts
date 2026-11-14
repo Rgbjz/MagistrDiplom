@@ -4,7 +4,7 @@
  * system only observes answers and lesson completions, never true knowledge.
  */
 import {
-  ADAPTIVE_CONFIG,
+  ADAPTIVE_CONFIG_V1,
   assembleAdaptiveTest,
   eloUpdate,
   initialDifficulty,
@@ -161,7 +161,7 @@ function observeLesson(model: SystemModel, topic: number, cfg: AdaptiveConfig) {
 
 export function runLearner(o: RunOptions): RunLog {
   const sim = o.sim ?? SIM_CONFIG;
-  const cfg = o.adaptive ?? ADAPTIVE_CONFIG;
+  const cfg = o.adaptive ?? ADAPTIVE_CONFIG_V1;
   const t: Thresholds = o.thresholds ?? {
     masteryThreshold: cfg.masteryThreshold,
     accelerationThreshold: cfg.accelerationThreshold,

@@ -8,12 +8,13 @@
 import { mkdirSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import {
-  ADAPTIVE_CONFIG,
+  ADAPTIVE_CONFIG_V1,
   type AdaptiveConfig,
 } from '../../src/modules/adaptive/adaptive.algorithm';
 import { runCohort, type LearnerRow } from './experiment';
 import { SIM_CONFIG, type LearnerType, type SimConfig } from './model';
 import type { Variant } from './policies';
+import { SELECTION, selectCandidate, V2_CANDIDATES } from './candidates';
 import { childSeed, mulberry32 } from './prng';
 import {
   compare,
@@ -65,6 +66,7 @@ function runScenario(
   s: Scenario,
   plan: { seeds: number; perArm: number },
   tag: number,
+  range: readonly [number, number] = [0, plan.seeds],
 ) {
   const rows: LearnerRow[] = [];
   const perSeed: {
@@ -74,8 +76,10 @@ function runScenario(
     dWeak: number;
     calCorr: number;
     thetaCorr: number;
+    pooledA: number;
+    pooledC: number;
   }[] = [];
-  for (let i = 0; i < plan.seeds; i++) {
+  for (let i = range[0]; i < range[1]; i++) {
     const seed = childSeed(MASTER_SEED, tag, i);
     const res = runCohort({
       seed,
@@ -105,6 +109,8 @@ function runScenario(
       ),
       calCorr: res.calibrationCorr,
       thetaCorr: res.thetaCorr,
+      pooledA: res.pooledCorr.ADAPTIVE,
+      pooledC: res.pooledCorr.CONTROL,
     });
   }
   return { rows, perSeed };
@@ -172,7 +178,8 @@ const log = (msg: string) =>
 
 // ── 1. Primary analysis: the deployed module with default parameters ──
 log(`primary: ${PRIMARY.seeds} seeds × ${PRIMARY.perArm} learners per arm`);
-const primary = runScenario({ name: 'primary' }, PRIMARY, 1);
+const V1 = ADAPTIVE_CONFIG_V1;
+const primary = runScenario({ name: 'primary', adaptive: V1 }, PRIMARY, 1);
 writeFileSync(join(OUT, 'raw_primary.csv'), csv(primary.rows.map(flat)));
 const primaryCmp = comparisons(primary.rows, 1);
 writeFileSync(
@@ -246,7 +253,7 @@ const ablations: Scenario[] = [
   },
 ];
 const ablationRows = ablations.flatMap((s, i) => {
-  const r = i === 0 ? primary : runScenario(s, PRIMARY, 1); // same seeds → paired cohorts
+  const r = i === 0 ? primary : runScenario({ ...s, adaptive: V1 }, PRIMARY, 1); // same seeds → paired cohorts
   return summarise(s.name, r.rows, r.perSeed, 20 + i);
 });
 writeFileSync(join(OUT, 'ablations.csv'), csv(ablationRows));
@@ -293,6 +300,122 @@ function summarise(
   };
 }
 
+// ── 2b. Version 2: pre-declared candidates, selection on training seeds,
+//        evaluation on held-out seeds (docs/experiment.md, section 10) ──
+const v2Train = V2_CANDIDATES.map((c) => {
+  const r = runScenario(
+    { name: c.id, adaptive: c.cfg },
+    PRIMARY,
+    1,
+    SELECTION.trainSeeds,
+  );
+  const A = r.rows.filter((x) => x.policy === 'ADAPTIVE');
+  return {
+    candidate: c.id,
+    label: c.label,
+    ...summarise(c.label, r.rows, r.perSeed, 400 + V2_CANDIDATES.indexOf(c)),
+    rmseA: mean(A.map((x) => x.modelRmse)),
+    pooledCorrA: mean(r.perSeed.map((x) => x.pooledA)),
+  };
+});
+const chosenId = selectCandidate(
+  v2Train.map((c) => ({ id: c.candidate, d: c.d, rmse: c.rmseA })),
+);
+const chosen = V2_CANDIDATES.find((c) => c.id === chosenId)!;
+writeFileSync(
+  join(OUT, 'v2_selection.csv'),
+  csv(v2Train.map((c) => ({ ...c, selected: c.candidate === chosenId }))),
+);
+log(`v2 selection on training seeds → ${chosenId} (${chosen.label})`);
+
+const evalRange = (cfg: AdaptiveConfig, range: readonly [number, number]) =>
+  runScenario({ name: '', adaptive: cfg }, PRIMARY, 1, range);
+const v2Held = evalRange(chosen.cfg, SELECTION.heldOutSeeds);
+const v1Held = evalRange(V1, SELECTION.heldOutSeeds);
+const v2All = evalRange(chosen.cfg, [0, PRIMARY.seeds]);
+const v2HeldCmp = comparisons(v2Held.rows, 500);
+const v1HeldCmp = comparisons(v1Held.rows, 501);
+writeFileSync(
+  join(OUT, 'v2_heldout_comparisons.csv'),
+  csv(v2HeldCmp as unknown as Record<string, unknown>[]),
+);
+writeFileSync(
+  join(OUT, 'v1_heldout_comparisons.csv'),
+  csv(v1HeldCmp as unknown as Record<string, unknown>[]),
+);
+writeFileSync(
+  join(OUT, 'v2_all_comparisons.csv'),
+  csv(comparisons(v2All.rows, 502) as unknown as Record<string, unknown>[]),
+);
+// v2 vs v1 directly: the adaptive arms of the same held-out cohorts (same learners).
+const v2vsv1 = METRICS.slice(0, 6).map((m) =>
+  compare(
+    m.key,
+    v2Held.rows
+      .filter((r) => r.policy === 'ADAPTIVE')
+      .map((r) => value(r, m.key)),
+    v1Held.rows
+      .filter((r) => r.policy === 'ADAPTIVE')
+      .map((r) => value(r, m.key)),
+    mulberry32(childSeed(MASTER_SEED, 503)),
+    quick ? 200 : 1000,
+  ),
+);
+writeFileSync(
+  join(OUT, 'v2_vs_v1_heldout.csv'),
+  csv(v2vsv1 as unknown as Record<string, unknown>[]),
+);
+const v2Sub = (['v1', 'v2'] as const).flatMap((ver) =>
+  TYPES.flatMap((ty, i) =>
+    comparisons(
+      (ver === 'v1' ? v1Held : v2Held).rows.filter((r) => r.type === ty),
+      510 + i + (ver === 'v2' ? 10 : 0),
+      METRICS.filter((m) =>
+        [
+          'postExpected',
+          'gain',
+          'masteredShare',
+          'completed',
+          'wastedLessons',
+        ].includes(m.key),
+      ),
+    ).map((c) => ({ version: ver, type: ty, ...c })),
+  ),
+);
+writeFileSync(join(OUT, 'v2_subgroups_heldout.csv'), csv(v2Sub));
+const calib = (r: {
+  perSeed: { pooledA: number; pooledC: number; calCorr: number }[];
+  rows: LearnerRow[];
+}) => ({
+  pooledCorrAdaptive: mean(r.perSeed.map((x) => x.pooledA)),
+  pooledCorrControlArm: mean(r.perSeed.map((x) => x.pooledC)),
+  rmseAdaptive: mean(
+    r.rows.filter((x) => x.policy === 'ADAPTIVE').map((x) => x.modelRmse),
+  ),
+  itemDifficultyCorr: mean(r.perSeed.map((x) => x.calCorr)),
+});
+const v2Summary = {
+  candidates: V2_CANDIDATES.map((c) => ({
+    id: c.id,
+    label: c.label,
+    cfg: c.cfg,
+  })),
+  selection: SELECTION,
+  chosen: chosenId,
+  training: v2Train,
+  heldOut: {
+    v2: Object.fromEntries(v2HeldCmp.map((c) => [c.metric, c])),
+    v1: Object.fromEntries(v1HeldCmp.map((c) => [c.metric, c])),
+    v2VsV1: Object.fromEntries(v2vsv1.map((c) => [c.metric, c])),
+    calibration: { v1: calib(v1Held), v2: calib(v2Held) },
+    seedsPositiveSig: v2Held.perSeed.filter((x) => x.d > 0 && x.p < 0.05)
+      .length,
+    seedsNegativeSig: v2Held.perSeed.filter((x) => x.d < 0 && x.p < 0.05)
+      .length,
+  },
+};
+log('v2 done');
+
 // ── 3. Sensitivity: one parameter at a time around the defaults ──
 type Sens = { param: string; value: number | string; scenario: Scenario };
 const withSim = (patch: Partial<SimConfig>): SimConfig => ({
@@ -308,8 +431,7 @@ const withGain = (k: number): SimConfig => ({
     ]),
   ) as SimConfig['population'],
 });
-const withAlpha = (alpha: number) =>
-  ({ ...ADAPTIVE_CONFIG, alpha }) as unknown as AdaptiveConfig;
+const withAlpha = (alpha: number) => ({ ...ADAPTIVE_CONFIG_V1, alpha });
 const sens: Sens[] = [
   ...[0.5, 0.6, 0.7].map((v) => ({
     param: 'τ (mastery threshold)',
@@ -346,19 +468,20 @@ const sens: Sens[] = [
   })),
 ];
 const sensRows = sens.flatMap((s, i) =>
-  (['module (deployed)', 'evidence gate + soft gating'] as const).map(
-    (variantName, j) => {
-      const scenario = {
-        ...s.scenario,
-        variant: j === 0 ? undefined : { evidenceGate: true, reviewCap: 2 },
-      };
-      const r = runScenario(scenario, SECONDARY, 100 + i);
-      return summarise(variantName, r.rows, r.perSeed, 200 + i * 2 + j, {
-        param: s.param,
-        value: s.value,
-      });
-    },
-  ),
+  (['v1', 'v2'] as const).map((variantName, j) => {
+    // α is an EWMA parameter: for v2 it applies only if v2 uses EWMA.
+    const base = j === 0 ? V1 : chosen.cfg;
+    const alpha = s.scenario.adaptive?.alpha;
+    const scenario = {
+      ...s.scenario,
+      adaptive: alpha === undefined ? base : { ...base, alpha },
+    };
+    const r = runScenario(scenario, SECONDARY, 100 + i);
+    return summarise(variantName, r.rows, r.perSeed, 200 + i * 2 + j, {
+      param: s.param,
+      value: s.value,
+    });
+  }),
 );
 writeFileSync(join(OUT, 'sensitivity.csv'), csv(sensRows));
 log('sensitivity done');
@@ -369,7 +492,8 @@ const summary = {
   masterSeed: MASTER_SEED,
   plan: { primary: PRIMARY, secondary: SECONDARY },
   simConfig: SIM_CONFIG,
-  adaptiveConfig: ADAPTIVE_CONFIG,
+  adaptiveConfigV1: ADAPTIVE_CONFIG_V1,
+  v2: v2Summary,
   primary: Object.fromEntries(primaryCmp.map((c) => [c.metric, c])),
   perSeed: {
     dMean: mean(ps.map((s) => s.d)),

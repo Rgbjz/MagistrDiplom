@@ -1,0 +1,74 @@
+{
+  "page": "login",
+  "preset": "mobile",
+  "url": "https://magistr-lms.vercel.app/login",
+  "performance": 99,
+  "accessibility": 100,
+  "bestPractices": 100,
+  "seo": 90,
+  "fcpMs": 1103,
+  "lcpMs": 1853,
+  "tbtMs": 89,
+  "cls": 0,
+  "speedIndexMs": 1103,
+  "failedAudits": [
+    {
+      "id": "max-potential-fid",
+      "title": "Max Potential First Input Delay",
+      "score": 0.86,
+      "value": "140 ms"
+    },
+    {
+      "id": "render-blocking-resources",
+      "title": "Eliminate render-blocking resources",
+      "score": 0,
+      "value": "Est savings of 100 ms"
+    },
+    {
+      "id": "unused-css-rules",
+      "title": "Reduce unused CSS",
+      "score": 0,
+      "value": "Est savings of 17 KiB"
+    },
+    {
+      "id": "unused-javascript",
+      "title": "Reduce unused JavaScript",
+      "score": 0.5,
+      "value": "Est savings of 63 KiB"
+    },
+    {
+      "id": "legacy-javascript",
+      "title": "Avoid serving legacy JavaScript to modern browsers",
+      "score": 0.5,
+      "value": "Est savings of 14 KiB"
+    },
+    {
+      "id": "meta-description",
+      "title": "Document does not have a meta description",
+      "score": 0
+    },
+    {
+      "id": "bf-cache",
+      "title": "Page prevented back/forward cache restoration",
+      "score": 0,
+      "value": "2 failure reasons"
+    },
+    {
+      "id": "legacy-javascript-insight",
+      "title": "Legacy JavaScript",
+      "score": 0.5,
+      "value": "Est savings of 14 KiB"
+    },
+    {
+      "id": "network-dependency-tree-insight",
+      "title": "Network dependency tree",
+      "score": 0
+    },
+    {
+      "id": "render-blocking-insight",
+      "title": "Render blocking requests",
+      "score": 0,
+      "value": "Est savings of 100 ms"
+    }
+  ]
+}

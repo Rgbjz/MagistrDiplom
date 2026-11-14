@@ -1,0 +1,76 @@
+{
+  "api": "https://lms-backend-z43s.onrender.com/api",
+  "at": "2026-11-13T23:59:34.157Z",
+  "durationSec": 20,
+  "firstRequestMs": 136,
+  "healthWarm": {
+    "p50": 60,
+    "p95": 255
+  },
+  "scenarios": {
+    "catalog": [
+      {
+        "connections": 1,
+        "rps": 14.8,
+        "p50": 64,
+        "p90": 74,
+        "p99": 108,
+        "total": 295,
+        "errors": 0,
+        "errorRate": 0
+      },
+      {
+        "connections": 5,
+        "rps": 51.4,
+        "p50": 54,
+        "p90": 198,
+        "p99": 541,
+        "total": 1027,
+        "errors": 724,
+        "errorRate": 70.5
+      },
+      {
+        "connections": 10,
+        "rps": 144.7,
+        "p50": 52,
+        "p90": 97,
+        "p99": 383,
+        "total": 2894,
+        "errors": 2894,
+        "errorRate": 100
+      }
+    ],
+    "student": [
+      {
+        "connections": 1,
+        "rps": 6.6,
+        "p50": 99,
+        "p90": 275,
+        "p99": 495,
+        "total": 132,
+        "errors": 0,
+        "errorRate": 0
+      },
+      {
+        "connections": 5,
+        "rps": 8.3,
+        "p50": 396,
+        "p90": 1016,
+        "p99": 1381,
+        "total": 165,
+        "errors": 0,
+        "errorRate": 0
+      },
+      {
+        "connections": 10,
+        "rps": 8,
+        "p50": 765,
+        "p90": 2258,
+        "p99": 2942,
+        "total": 160,
+        "errors": 0,
+        "errorRate": 0
+      }
+    ]
+  }
+}

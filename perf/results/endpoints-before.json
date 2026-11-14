@@ -1,0 +1,106 @@
+{
+  "api": "http://localhost:5077/api",
+  "course": 1,
+  "at": "2026-11-13T23:39:31.576Z",
+  "endpoints": [
+    {
+      "name": "catalog",
+      "path": "/store/catalog?pageSize=12",
+      "responseKB": 4.3,
+      "seqP50": 10,
+      "seqP95": 14,
+      "c10Rps": 404.3,
+      "c10P50": 23,
+      "c10P99": 42,
+      "errors": 0
+    },
+    {
+      "name": "dashboard",
+      "path": "/dashboard",
+      "responseKB": 2.8,
+      "seqP50": 151,
+      "seqP95": 170,
+      "c10Rps": 17.6,
+      "c10P50": 513,
+      "c10P99": 1022,
+      "errors": 0
+    },
+    {
+      "name": "course",
+      "path": "/courses/1",
+      "responseKB": 15.6,
+      "seqP50": 16,
+      "seqP95": 71,
+      "c10Rps": 285.5,
+      "c10P50": 33,
+      "c10P99": 55,
+      "errors": 0
+    },
+    {
+      "name": "adaptiveMe",
+      "path": "/courses/1/adaptive/me",
+      "responseKB": 1.3,
+      "seqP50": 13,
+      "seqP95": 18,
+      "c10Rps": 325.8,
+      "c10P50": 29,
+      "c10P99": 54,
+      "errors": 0
+    },
+    {
+      "name": "recommendations",
+      "path": "/adaptive/recommendations",
+      "responseKB": 0.8,
+      "seqP50": 35,
+      "seqP95": 39,
+      "c10Rps": 97.8,
+      "c10P50": 99,
+      "c10P99": 139,
+      "errors": 0
+    },
+    {
+      "name": "chatMessages",
+      "path": "/chat/conversations/1/messages",
+      "responseKB": 6.8,
+      "seqP50": 7,
+      "seqP95": 16,
+      "c10Rps": 594.3,
+      "c10P50": 16,
+      "c10P99": 27,
+      "errors": 0
+    },
+    {
+      "name": "gradebook",
+      "path": "/courses/1/gradebook",
+      "responseKB": 402.4,
+      "seqP50": 1644,
+      "seqP95": 1795,
+      "c10Rps": 0,
+      "c10P50": 0,
+      "c10P99": 0,
+      "errors": 0
+    },
+    {
+      "name": "analytics",
+      "path": "/courses/1/analytics",
+      "responseKB": 78.2,
+      "seqP50": 2162,
+      "seqP95": 2434,
+      "c10Rps": 0,
+      "c10P50": 0,
+      "c10P99": 0,
+      "errors": 0
+    },
+    {
+      "name": "adaptiveOverview",
+      "path": "/courses/1/adaptive/overview",
+      "responseKB": 378.5,
+      "seqP50": 82,
+      "seqP95": 736,
+      "c10Rps": 21.3,
+      "c10P50": 461,
+      "c10P99": 668,
+      "errors": 0
+    }
+  ]
+}

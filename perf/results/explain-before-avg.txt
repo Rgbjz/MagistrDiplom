@@ -1,0 +1,7 @@
+== Q1 enrollments of the course	                             0.70 ms
+== Q2 finished attempts of the course students	              5.06 ms
+== Q3 per-question outcomes of those attempts	               34.78 ms
+== Q4 lesson progress of the course	                         3.59 ms
+== Q5 last chat message per student (analytics activity)	    1.38 ms
+== Q6 one student: last attempt per test (adaptive/me)	      1.80 ms
+== Q7 chat history page	                                     0.46 ms

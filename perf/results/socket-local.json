@@ -1,0 +1,52 @@
+{
+  "api": "http://localhost:5066/api",
+  "conversationId": 1,
+  "perSender": 20,
+  "at": "2026-11-14T00:22:12.229Z",
+  "levels": [
+    {
+      "senders": 1,
+      "messages": 20,
+      "msgPerSec": 209,
+      "ackP50": 4,
+      "ackP95": 7,
+      "deliveryP50": 4,
+      "deliveryP95": 7,
+      "deliveryP99": 8,
+      "delivered": 20
+    },
+    {
+      "senders": 10,
+      "messages": 200,
+      "msgPerSec": 657,
+      "ackP50": 14,
+      "ackP95": 22,
+      "deliveryP50": 14,
+      "deliveryP95": 21,
+      "deliveryP99": 23,
+      "delivered": 200
+    },
+    {
+      "senders": 25,
+      "messages": 500,
+      "msgPerSec": 586,
+      "ackP50": 39,
+      "ackP95": 61,
+      "deliveryP50": 39,
+      "deliveryP95": 60,
+      "deliveryP99": 80,
+      "delivered": 500
+    },
+    {
+      "senders": 50,
+      "messages": 1000,
+      "msgPerSec": 543,
+      "ackP50": 88,
+      "ackP95": 123,
+      "deliveryP50": 88,
+      "deliveryP95": 127,
+      "deliveryP99": 151,
+      "delivered": 1000
+    }
+  ]
+}

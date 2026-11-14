@@ -1,0 +1,100 @@
+{
+  "page": "catalog",
+  "preset": "desktop",
+  "url": "https://magistr-lms.vercel.app/catalog",
+  "performance": 96,
+  "accessibility": 98,
+  "bestPractices": 100,
+  "seo": 90,
+  "fcpMs": 356,
+  "lcpMs": 1390,
+  "tbtMs": 0,
+  "cls": 0.025,
+  "speedIndexMs": 611,
+  "failedAudits": [
+    {
+      "id": "largest-contentful-paint",
+      "title": "Largest Contentful Paint",
+      "score": 0.84,
+      "value": "1.4 s"
+    },
+    {
+      "id": "uses-rel-preconnect",
+      "title": "Preconnect to required origins",
+      "score": 0,
+      "value": "Est savings of 100 ms"
+    },
+    {
+      "id": "largest-contentful-paint-element",
+      "title": "Largest Contentful Paint element",
+      "score": 0,
+      "value": "1,390 ms"
+    },
+    {
+      "id": "heading-order",
+      "title": "Heading elements are not in a sequentially-descending order",
+      "score": 0
+    },
+    {
+      "id": "label-content-name-mismatch",
+      "title": "Elements with visible text labels do not have matching accessible names.",
+      "score": 0
+    },
+    {
+      "id": "uses-long-cache-ttl",
+      "title": "Serve static assets with an efficient cache policy",
+      "score": 0.5,
+      "value": "7 resources found"
+    },
+    {
+      "id": "unused-css-rules",
+      "title": "Reduce unused CSS",
+      "score": 0.5,
+      "value": "Est savings of 17 KiB"
+    },
+    {
+      "id": "modern-image-formats",
+      "title": "Serve images in next-gen formats",
+      "score": 0,
+      "value": "Est savings of 118 KiB"
+    },
+    {
+      "id": "legacy-javascript",
+      "title": "Avoid serving legacy JavaScript to modern browsers",
+      "score": 0.5,
+      "value": "Est savings of 14 KiB"
+    },
+    {
+      "id": "meta-description",
+      "title": "Document does not have a meta description",
+      "score": 0
+    },
+    {
+      "id": "bf-cache",
+      "title": "Page prevented back/forward cache restoration",
+      "score": 0,
+      "value": "2 failure reasons"
+    },
+    {
+      "id": "lcp-discovery-insight",
+      "title": "LCP request discovery",
+      "score": 0
+    },
+    {
+      "id": "legacy-javascript-insight",
+      "title": "Legacy JavaScript",
+      "score": 0.5,
+      "value": "Est savings of 14 KiB"
+    },
+    {
+      "id": "network-dependency-tree-insight",
+      "title": "Network dependency tree",
+      "score": 0
+    },
+    {
+      "id": "render-blocking-insight",
+      "title": "Render blocking requests",
+      "score": 0.5
+    }
+  ]
+}

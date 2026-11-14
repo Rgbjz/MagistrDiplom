@@ -1,0 +1,434 @@
+{
+  "api": "http://localhost:5066/api",
+  "durationSec": 15,
+  "courseId": 1,
+  "at": "2026-11-14T00:13:17.723Z",
+  "scenarios": {
+    "health": {
+      "title": "Health-check (базова лінія: Nest + БД + Redis)",
+      "requestsPerCycle": 1,
+      "levels": [
+        {
+          "connections": 1,
+          "rps": 322,
+          "p50": 2,
+          "p90": 3,
+          "p97_5": 4,
+          "p99": 5,
+          "max": 22,
+          "mean": 2.5,
+          "total": 4829,
+          "errors": 0,
+          "errorRate": 0
+        },
+        {
+          "connections": 10,
+          "rps": 1502,
+          "p50": 5,
+          "p90": 9,
+          "p97_5": 14,
+          "p99": 18,
+          "max": 54,
+          "mean": 6.2,
+          "total": 22533,
+          "errors": 0,
+          "errorRate": 0
+        },
+        {
+          "connections": 25,
+          "rps": 2053,
+          "p50": 10,
+          "p90": 16,
+          "p97_5": 24,
+          "p99": 31,
+          "max": 55,
+          "mean": 11.7,
+          "total": 30782,
+          "errors": 0,
+          "errorRate": 0
+        },
+        {
+          "connections": 50,
+          "rps": 2376,
+          "p50": 19,
+          "p90": 29,
+          "p97_5": 38,
+          "p99": 43,
+          "max": 66,
+          "mean": 20.5,
+          "total": 35639,
+          "errors": 0,
+          "errorRate": 0
+        },
+        {
+          "connections": 100,
+          "rps": 2489,
+          "p50": 37,
+          "p90": 53,
+          "p97_5": 69,
+          "p99": 83,
+          "max": 138,
+          "mean": 39.7,
+          "total": 37325,
+          "errors": 0,
+          "errorRate": 0
+        }
+      ]
+    },
+    "catalog": {
+      "title": "Публічний каталог і лендинг курсу (анонімно)",
+      "requestsPerCycle": 5,
+      "levels": [
+        {
+          "connections": 1,
+          "rps": 207,
+          "p50": 4,
+          "p90": 5,
+          "p97_5": 6,
+          "p99": 6,
+          "max": 35,
+          "mean": 4.3,
+          "total": 3112,
+          "errors": 0,
+          "errorRate": 0
+        },
+        {
+          "connections": 10,
+          "rps": 900,
+          "p50": 10,
+          "p90": 14,
+          "p97_5": 18,
+          "p99": 21,
+          "max": 68,
+          "mean": 10.6,
+          "total": 13496,
+          "errors": 0,
+          "errorRate": 0
+        },
+        {
+          "connections": 25,
+          "rps": 1220,
+          "p50": 19,
+          "p90": 27,
+          "p97_5": 33,
+          "p99": 39,
+          "max": 71,
+          "mean": 20,
+          "total": 18304,
+          "errors": 0,
+          "errorRate": 0
+        },
+        {
+          "connections": 50,
+          "rps": 1367,
+          "p50": 35,
+          "p90": 49,
+          "p97_5": 65,
+          "p99": 81,
+          "max": 143,
+          "mean": 36,
+          "total": 20509,
+          "errors": 0,
+          "errorRate": 0
+        },
+        {
+          "connections": 100,
+          "rps": 1519,
+          "p50": 66,
+          "p90": 91,
+          "p97_5": 109,
+          "p99": 119,
+          "max": 321,
+          "mean": 65.1,
+          "total": 22790,
+          "errors": 0,
+          "errorRate": 0
+        }
+      ]
+    },
+    "student": {
+      "title": "Студент: кабінет, курс, урок, адаптація",
+      "requestsPerCycle": 7,
+      "levels": [
+        {
+          "connections": 1,
+          "rps": 83,
+          "p50": 8,
+          "p90": 24,
+          "p97_5": 27,
+          "p99": 31,
+          "max": 63,
+          "mean": 11.6,
+          "total": 1240,
+          "errors": 0,
+          "errorRate": 0
+        },
+        {
+          "connections": 10,
+          "rps": 273,
+          "p50": 25,
+          "p90": 76,
+          "p97_5": 92,
+          "p99": 102,
+          "max": 139,
+          "mean": 36,
+          "total": 4102,
+          "errors": 0,
+          "errorRate": 0
+        },
+        {
+          "connections": 25,
+          "rps": 301,
+          "p50": 58,
+          "p90": 180,
+          "p97_5": 218,
+          "p99": 237,
+          "max": 289,
+          "mean": 82.4,
+          "total": 4510,
+          "errors": 0,
+          "errorRate": 0
+        },
+        {
+          "connections": 50,
+          "rps": 307,
+          "p50": 111,
+          "p90": 361,
+          "p97_5": 460,
+          "p99": 516,
+          "max": 615,
+          "mean": 161.3,
+          "total": 4603,
+          "errors": 0,
+          "errorRate": 0
+        },
+        {
+          "connections": 100,
+          "rps": 251,
+          "p50": 259,
+          "p90": 932,
+          "p97_5": 1083,
+          "p99": 1371,
+          "max": 2493,
+          "mean": 392.2,
+          "total": 3769,
+          "errors": 0,
+          "errorRate": 0
+        }
+      ]
+    },
+    "teacher": {
+      "title": "Викладач: журнал оцінок, аналітика, адаптація",
+      "requestsPerCycle": 3,
+      "levels": [
+        {
+          "connections": 1,
+          "rps": 97,
+          "p50": 8,
+          "p90": 14,
+          "p97_5": 19,
+          "p99": 22,
+          "max": 185,
+          "mean": 9.9,
+          "total": 1449,
+          "errors": 0,
+          "errorRate": 0
+        },
+        {
+          "connections": 10,
+          "rps": 274,
+          "p50": 34,
+          "p90": 52,
+          "p97_5": 61,
+          "p99": 69,
+          "max": 89,
+          "mean": 36,
+          "total": 4113,
+          "errors": 0,
+          "errorRate": 0
+        },
+        {
+          "connections": 25,
+          "rps": 234,
+          "p50": 102,
+          "p90": 148,
+          "p97_5": 176,
+          "p99": 194,
+          "max": 278,
+          "mean": 106.3,
+          "total": 3505,
+          "errors": 0,
+          "errorRate": 0
+        },
+        {
+          "connections": 50,
+          "rps": 289,
+          "p50": 162,
+          "p90": 234,
+          "p97_5": 269,
+          "p99": 320,
+          "max": 681,
+          "mean": 171.8,
+          "total": 4334,
+          "errors": 0,
+          "errorRate": 0
+        },
+        {
+          "connections": 100,
+          "rps": 299,
+          "p50": 313,
+          "p90": 454,
+          "p97_5": 496,
+          "p99": 518,
+          "max": 568,
+          "mean": 330.5,
+          "total": 4491,
+          "errors": 0,
+          "errorRate": 0
+        }
+      ]
+    },
+    "chat": {
+      "title": "Чат: список розмов і повідомлення",
+      "requestsPerCycle": 2,
+      "levels": [
+        {
+          "connections": 1,
+          "rps": 179,
+          "p50": 5,
+          "p90": 6,
+          "p97_5": 7,
+          "p99": 9,
+          "max": 193,
+          "mean": 5.1,
+          "total": 2686,
+          "errors": 0,
+          "errorRate": 0
+        },
+        {
+          "connections": 10,
+          "rps": 645,
+          "p50": 15,
+          "p90": 20,
+          "p97_5": 26,
+          "p99": 33,
+          "max": 68,
+          "mean": 15,
+          "total": 9676,
+          "errors": 0,
+          "errorRate": 0
+        },
+        {
+          "connections": 25,
+          "rps": 726,
+          "p50": 33,
+          "p90": 44,
+          "p97_5": 53,
+          "p99": 60,
+          "max": 87,
+          "mean": 33.9,
+          "total": 10887,
+          "errors": 0,
+          "errorRate": 0
+        },
+        {
+          "connections": 50,
+          "rps": 664,
+          "p50": 73,
+          "p90": 100,
+          "p97_5": 130,
+          "p99": 145,
+          "max": 231,
+          "mean": 74.6,
+          "total": 9964,
+          "errors": 0,
+          "errorRate": 0
+        },
+        {
+          "connections": 100,
+          "rps": 605,
+          "p50": 158,
+          "p90": 211,
+          "p97_5": 245,
+          "p99": 262,
+          "max": 1014,
+          "mean": 164.1,
+          "total": 9079,
+          "errors": 0,
+          "errorRate": 0
+        }
+      ]
+    },
+    "file": {
+      "title": "Завантаження файлу уроку (200 КБ) за підписаним посиланням",
+      "requestsPerCycle": 1,
+      "levels": [
+        {
+          "connections": 1,
+          "rps": 150,
+          "p50": 5,
+          "p90": 8,
+          "p97_5": 14,
+          "p99": 26,
+          "max": 78,
+          "mean": 6.2,
+          "total": 2255,
+          "errors": 0,
+          "errorRate": 0
+        },
+        {
+          "connections": 10,
+          "rps": 363,
+          "p50": 25,
+          "p90": 41,
+          "p97_5": 52,
+          "p99": 58,
+          "max": 98,
+          "mean": 27.2,
+          "total": 5451,
+          "errors": 0,
+          "errorRate": 0
+        },
+        {
+          "connections": 25,
+          "rps": 389,
+          "p50": 59,
+          "p90": 101,
+          "p97_5": 122,
+          "p99": 132,
+          "max": 171,
+          "mean": 65.2,
+          "total": 5841,
+          "errors": 0,
+          "errorRate": 0
+        },
+        {
+          "connections": 50,
+          "rps": 398,
+          "p50": 121,
+          "p90": 202,
+          "p97_5": 251,
+          "p99": 270,
+          "max": 308,
+          "mean": 132.4,
+          "total": 5974,
+          "errors": 0,
+          "errorRate": 0
+        },
+        {
+          "connections": 100,
+          "rps": 423,
+          "p50": 244,
+          "p90": 308,
+          "p97_5": 491,
+          "p99": 510,
+          "max": 570,
+          "mean": 258.1,
+          "total": 5915,
+          "errors": 0,
+          "errorRate": 0
+        }
+      ]
+    }
+  }
+}

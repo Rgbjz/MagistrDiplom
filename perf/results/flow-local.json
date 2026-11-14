@@ -1,0 +1,52 @@
+{
+  "api": "http://localhost:5066/api",
+  "courseId": 1,
+  "durationSec": 20,
+  "at": "2026-11-14T00:20:51.574Z",
+  "levels": [
+    {
+      "users": 1,
+      "flowsPerSec": 24,
+      "startP50": 15,
+      "startP95": 19,
+      "submitP50": 25,
+      "submitP95": 32,
+      "submitP99": 38,
+      "flows": 479,
+      "errors": 0
+    },
+    {
+      "users": 3,
+      "flowsPerSec": 50.4,
+      "startP50": 21,
+      "startP95": 29,
+      "submitP50": 37,
+      "submitP95": 49,
+      "submitP99": 58,
+      "flows": 1008,
+      "errors": 0
+    },
+    {
+      "users": 5,
+      "flowsPerSec": 63,
+      "startP50": 29,
+      "startP95": 39,
+      "submitP50": 48,
+      "submitP95": 64,
+      "submitP99": 78,
+      "flows": 1259,
+      "errors": 0
+    },
+    {
+      "users": 9,
+      "flowsPerSec": 78.8,
+      "startP50": 43,
+      "startP95": 64,
+      "submitP50": 68,
+      "submitP95": 90,
+      "submitP99": 100,
+      "flows": 1576,
+      "errors": 0
+    }
+  ]
+}

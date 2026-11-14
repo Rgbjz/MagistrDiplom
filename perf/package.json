@@ -1,0 +1,19 @@
+{
+  "name": "lms-perf",
+  "private": true,
+  "type": "module",
+  "description": "Load and performance tests for the LMS (autocannon, Socket.IO latency, Lighthouse).",
+  "scripts": {
+    "load": "node load.mjs",
+    "flow": "node flow.mjs",
+    "socket": "node socket-latency.mjs",
+    "prod": "PERF_API=https://lms-backend-z43s.onrender.com/api node prod.mjs",
+    "lighthouse": "node lighthouse.mjs"
+  },
+  "dependencies": {
+    "autocannon": "^8.0.0",
+    "chrome-launcher": "^1.2.3",
+    "lighthouse": "^12.8.2",
+    "socket.io-client": "^4.8.4"
+  }
+}

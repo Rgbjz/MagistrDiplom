@@ -1,0 +1,83 @@
+{
+  "note": "Before the fixes; transcribed from the first run log (seed data, same machine).",
+  "scenarios": {
+    "student": {
+      "levels": [
+        {
+          "connections": 1,
+          "rps": 58,
+          "p50": 11,
+          "p90": 34,
+          "p99": 44
+        },
+        {
+          "connections": 10,
+          "rps": 165,
+          "p50": 53,
+          "p90": 110,
+          "p99": 155
+        },
+        {
+          "connections": 25,
+          "rps": 186,
+          "p50": 91,
+          "p90": 288,
+          "p99": 378
+        },
+        {
+          "connections": 50,
+          "rps": 192,
+          "p50": 186,
+          "p90": 554,
+          "p99": 696
+        },
+        {
+          "connections": 100,
+          "rps": 201,
+          "p50": 339,
+          "p90": 1100,
+          "p99": 1448
+        }
+      ]
+    },
+    "teacher": {
+      "levels": [
+        {
+          "connections": 1,
+          "rps": 36,
+          "p50": 21,
+          "p90": 48,
+          "p99": 63
+        },
+        {
+          "connections": 10,
+          "rps": 73,
+          "p50": 130,
+          "p90": 214,
+          "p99": 254
+        },
+        {
+          "connections": 25,
+          "rps": 73,
+          "p50": 325,
+          "p90": 516,
+          "p99": 616
+        },
+        {
+          "connections": 50,
+          "rps": 73,
+          "p50": 620,
+          "p90": 1033,
+          "p99": 1171
+        },
+        {
+          "connections": 100,
+          "rps": 69,
+          "p50": 1350,
+          "p90": 2093,
+          "p99": 2519
+        }
+      ]
+    }
+  }
+}

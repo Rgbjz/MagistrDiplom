@@ -154,17 +154,15 @@ export class GradebookService {
       this.overrides(course.id, userIds),
     ]);
 
-    const students = await Promise.all(
-      enrollments.map(async (e) => ({
-        userId: e.userId,
-        name: displayName(e.user),
-        email: e.user.email,
-        avatarUrl: e.user.profile?.avatarUrl ?? null,
-        status: e.status,
-        progress: (await this.progress.getProgress(course.id, e.userId))
-          .percent,
-      })),
-    );
+    const progress = await this.progress.getProgressMany(course.id, userIds);
+    const students = enrollments.map((e) => ({
+      userId: e.userId,
+      name: displayName(e.user),
+      email: e.user.email,
+      avatarUrl: e.user.profile?.avatarUrl ?? null,
+      status: e.status,
+      progress: progress.get(e.userId) ?? 0,
+    }));
     students.sort((a, b) => a.name.localeCompare(b.name, 'uk'));
 
     return computeGradebook({

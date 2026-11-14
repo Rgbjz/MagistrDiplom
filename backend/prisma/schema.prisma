@@ -483,6 +483,8 @@ model Enrollment {
   course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@unique([userId, courseId])
+  // Students of a course (the unique key starts with userId).
+  @@index([courseId, status])
 }
 
 model LessonProgress {
@@ -499,6 +501,8 @@ model LessonProgress {
   lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 
   @@unique([userId, lessonId])
+  // Progress of a course's lessons across students (analytics).
+  @@index([lessonId])
 }
 
 model TestResult {
@@ -522,6 +526,10 @@ model TestResult {
   test      Test              @relation(fields: [testId], references: [id], onDelete: Cascade)
   answers   UserAnswer[]
   questions AttemptQuestion[]
+
+  // Attempts of a test / of one student in a test (gradebook, analytics,
+  // adaptive model); without it these were sequential scans.
+  @@index([testId, userId])
 }
 
 model UserAnswer {
@@ -577,6 +585,9 @@ model Message {
 
   conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   sender       User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  // Chat history page: newest messages of a conversation.
+  @@index([conversationId, createdAt])
 }
 
 model Payment {

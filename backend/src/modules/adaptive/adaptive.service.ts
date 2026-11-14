@@ -713,9 +713,12 @@ export class AdaptiveService {
         where: { userId, lessonId: { in: lessonIds }, status: 'COMPLETED' },
         select: { lessonId: true },
       }),
+      // Only the last finished attempt of each test is used below; loading
+      // every retake with its per-question rows grew linearly with retakes.
       this.prisma.testResult.findMany({
         where: { userId, testId: { in: testIds }, finishedAt: { not: null } },
-        orderBy: { attempt: 'desc' },
+        orderBy: [{ testId: 'asc' }, { attempt: 'desc' }],
+        distinct: ['testId'],
         select: {
           testId: true,
           score: true,

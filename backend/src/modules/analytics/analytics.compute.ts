@@ -114,18 +114,36 @@ export function choiceCorrect(chosen: number[], correct: number[]): boolean {
 }
 
 /** The `limit` questions with the lowest share of correct answers. */
-export function hardQuestions(
+export type QuestionTally = Map<number, { attempts: number; correct: number }>;
+
+/** Adds single outcomes to per-question counters. */
+export function tallyOutcomes(
   outcomes: QuestionOutcome[],
-  meta: Map<number, QuestionMeta>,
-  limit = 10,
-): HardQuestion[] {
-  const tally = new Map<number, { attempts: number; correct: number }>();
+  tally: QuestionTally = new Map(),
+): QuestionTally {
   for (const o of outcomes) {
     const t = tally.get(o.questionId) ?? { attempts: 0, correct: 0 };
     t.attempts += 1;
     if (o.correct) t.correct += 1;
     tally.set(o.questionId, t);
   }
+  return tally;
+}
+
+export function hardQuestions(
+  outcomes: QuestionOutcome[],
+  meta: Map<number, QuestionMeta>,
+  limit = 10,
+): HardQuestion[] {
+  return hardQuestionsFromTally(tallyOutcomes(outcomes), meta, limit);
+}
+
+/** Same as `hardQuestions`, from counters already aggregated (e.g. by SQL). */
+export function hardQuestionsFromTally(
+  tally: QuestionTally,
+  meta: Map<number, QuestionMeta>,
+  limit = 10,
+): HardQuestion[] {
   const rows: HardQuestion[] = [];
   for (const [id, t] of tally) {
     const m = meta.get(id);

@@ -271,7 +271,10 @@ describe('GradebookService overrides', () => {
     notifications = { notify: jest.fn().mockResolvedValue(undefined) };
     service = new GradebookService(
       prisma,
-      { getProgress: jest.fn().mockResolvedValue({ percent: 0 }) } as any,
+      {
+        getProgress: jest.fn().mockResolvedValue({ percent: 0 }),
+        getProgressMany: jest.fn().mockResolvedValue(new Map()),
+      } as any,
       notifications as any,
     );
   });

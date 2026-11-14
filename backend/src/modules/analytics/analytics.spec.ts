@@ -1,4 +1,6 @@
 import {
+  hardQuestionsFromTally,
+  tallyOutcomes,
   assignmentStats,
   choiceCorrect,
   gradeDistribution,
@@ -105,6 +107,25 @@ describe('hard questions', () => {
       [1, 100, 2],
     ]);
     expect(hardQuestions(outcomes, meta, 1)).toHaveLength(1);
+  });
+
+  it('SQL-aggregated counters give the same ranking as single outcomes', () => {
+    const outcomes = [
+      { questionId: 1, correct: true },
+      { questionId: 2, correct: false },
+      { questionId: 2, correct: true },
+    ];
+    // e.g. per-question rows aggregated in PostgreSQL + legacy outcomes on top
+    const tally = tallyOutcomes(
+      [{ questionId: 3, correct: false }],
+      new Map([
+        [1, { attempts: 1, correct: 1 }],
+        [2, { attempts: 2, correct: 1 }],
+      ]),
+    );
+    expect(hardQuestionsFromTally(tally, meta)).toEqual(
+      hardQuestions([...outcomes, { questionId: 3, correct: false }], meta),
+    );
   });
 
   it('a choice question is right only with exactly the correct options', () => {

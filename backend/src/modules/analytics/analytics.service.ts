@@ -6,14 +6,16 @@ import {
   assignmentStats,
   choiceCorrect,
   gradeDistribution,
-  hardQuestions,
+  hardQuestionsFromTally,
   latest,
   riskFlags,
+  tallyOutcomes,
   testStats,
   weeklyActivity,
   type ActivityKind,
   type QuestionMeta,
   type QuestionOutcome,
+  type QuestionTally,
   type RiskFlag,
 } from './analytics.compute';
 
@@ -133,27 +135,44 @@ export class AnalyticsService {
       ]);
 
     // ── question outcomes: graded per question when stored, else from chosen options
+    // Per-question counters are aggregated in PostgreSQL: loading every
+    // answered question of every attempt into Node grew with course size.
     const resultIds = results.map((r) => r.id);
-    const [attemptQuestions, userAnswers] = await Promise.all([
-      this.prisma.attemptQuestion.findMany({
-        where: { testResultId: { in: resultIds }, status: { not: 'PENDING' } },
-        select: {
-          testResultId: true,
-          questionId: true,
-          earned: true,
-          maxPoints: true,
-        },
-      }),
-      this.prisma.userAnswer.findMany({
-        where: { testResultId: { in: resultIds } },
-        select: { testResultId: true, questionId: true, answerId: true },
-      }),
-    ]);
-    const outcomes: QuestionOutcome[] = attemptQuestions.map((q) => ({
-      questionId: q.questionId,
-      correct: q.maxPoints > 0 && q.earned >= q.maxPoints,
-    }));
-    const graded = new Set(attemptQuestions.map((q) => q.testResultId));
+    const [aggregated, gradedRows] = resultIds.length
+      ? await Promise.all([
+          this.prisma.$queryRaw<
+            { questionId: number; attempts: number; correct: number }[]
+          >`
+            SELECT aq."questionId" AS "questionId",
+                   count(*)::int AS attempts,
+                   (count(*) FILTER (WHERE aq."maxPoints" > 0 AND aq.earned >= aq."maxPoints"))::int AS correct
+            FROM "AttemptQuestion" aq
+            WHERE aq."testResultId" = ANY(${resultIds}::int[])
+              AND aq.status <> 'PENDING'
+            GROUP BY aq."questionId"`,
+          this.prisma.$queryRaw<{ testResultId: number }[]>`
+            SELECT DISTINCT aq."testResultId" AS "testResultId"
+            FROM "AttemptQuestion" aq
+            WHERE aq."testResultId" = ANY(${resultIds}::int[])
+              AND aq.status <> 'PENDING'`,
+        ])
+      : [[], []];
+    const tally: QuestionTally = new Map(
+      aggregated.map((a) => [
+        a.questionId,
+        { attempts: a.attempts, correct: a.correct },
+      ]),
+    );
+    const graded = new Set(gradedRows.map((r) => r.testResultId));
+    // Older attempts stored only the chosen options (no per-question rows).
+    const legacyIds = resultIds.filter((id) => !graded.has(id));
+    const userAnswers = legacyIds.length
+      ? await this.prisma.userAnswer.findMany({
+          where: { testResultId: { in: legacyIds } },
+          select: { testResultId: true, questionId: true, answerId: true },
+        })
+      : [];
+    const outcomes: QuestionOutcome[] = [];
     const chosen = new Map<string, number[]>();
     for (const a of userAnswers) {
       const key = `${a.testResultId}:${a.questionId}`;
@@ -291,7 +310,10 @@ export class AnalyticsService {
         gb.course.scaleBands,
         gb.course.gradePassThreshold,
       ),
-      hardQuestions: hardQuestions(outcomes, meta),
+      hardQuestions: hardQuestionsFromTally(
+        tallyOutcomes(outcomes, tally),
+        meta,
+      ),
       tests: testStats(
         tests.map((t) => ({ id: t.id, title: t.title, lessonId: t.lessonId })),
         results,

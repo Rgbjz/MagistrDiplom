@@ -20,11 +20,86 @@
  *      b* = θ − ln(p* / (1 − p*)),  p* = 0.7
  *    i.e. the student answers correctly with probability ≈ 70 %.
  * 4. A/B experiment: balanced random assignment and the gating rule.
+ *
+ * Version 2 (ADAPTIVE_CONFIG, used by the app) fixes the flaws found by the
+ * simulation study of v1 (docs/experiment.md), v1 stays reproducible as
+ * ADAPTIVE_CONFIG_V1:
+ *  a) evidence gate — only assessed evidence (test answers, graded work)
+ *     counts towards the level; a completed lesson moves m but a topic is
+ *     never «weak» before the student was assessed on it;
+ *  b) soft gating — once all lessons of a weak topic are completed and its
+ *     test was attempted, the topic no longer blocks NEXT and its REVIEW /
+ *     RETRY suggestions move behind the next lesson («finish, then revisit»);
+ *  c) mastery from per-topic ability (optional, masteryModel = 'elo'):
+ *         θ_t = logit(m),  θ_t ← θ_t + K_t(n)·(r − σ(θ_t − b)),  m = σ(θ_t)
+ *     i.e. m is the probability of answering a reference (medium, b = 0)
+ *     item, so «70 % at your own level» is no longer read as m = 0.7.
  */
 
 // ───────────────────────────── configuration ─────────────────────────────
 
-export const ADAPTIVE_CONFIG = {
+export interface AdaptiveConfig {
+  /** 1 — the version evaluated first; 2 — the revision after the simulation. */
+  version: 1 | 2;
+  /** Topic mastery: EWMA of scores (v1) or σ of a per-topic Elo ability. */
+  masteryModel: 'ewma' | 'elo';
+  /** Only assessed evidence (answers, graded work) counts towards the level. */
+  evidenceGate: boolean;
+  /** A studied-and-tested weak topic stops blocking NEXT (review later). */
+  softGating: boolean;
+  /** REVIEW offers every lesson of a weak topic (v1: only the top two). */
+  reviewAllLessons: boolean;
+  /** After the whole course is completed, keep reviewing the weakest topic. */
+  spacedReview: boolean;
+  priorMastery: number;
+  alpha: number;
+  weights: { question: number; assignment: number; lesson: number };
+  lessonCompletionScore: number;
+  difficultyWeight: Record<number, number>;
+  difficultyLogit: Record<number, number>;
+  elo: {
+    kTheta: number;
+    kB: number;
+    decay: number;
+    thetaClamp: number;
+    bClamp: number;
+    /** Step of the per-topic ability (masteryModel = 'elo'). */
+    kTopic: number;
+    /** Expected learning from a first completed lesson, logits. */
+    lessonNudge: number;
+  };
+  targetP: number;
+  masteryThreshold: number;
+  accelerationThreshold: number;
+  minEvidence: number;
+  topN: number;
+  deadlineHorizonDays: number;
+  priority: {
+    review: number;
+    retry: number;
+    next: number;
+    skip: number;
+    challenge: number;
+    deadline: number;
+    gap: number;
+    wrongShare: number;
+    deadlineBoost: number;
+    sequence: number;
+    /** Soft gating: REVIEW/RETRY of an engaged weak topic drop below NEXT. */
+    demote: number;
+    /** Spaced review after the course is completed (lowest priority). */
+    spaced: number;
+  };
+}
+
+/** Version 1 — kept unchanged for the simulation study and the thesis. */
+export const ADAPTIVE_CONFIG_V1: AdaptiveConfig = {
+  version: 1,
+  masteryModel: 'ewma',
+  evidenceGate: false,
+  softGating: false,
+  reviewAllLessons: false,
+  spacedReview: false,
   /** Prior mastery of a topic without evidence. */
   priorMastery: 0.5,
   /** EWMA learning rate α. */
@@ -34,11 +109,19 @@ export const ADAPTIVE_CONFIG = {
   /** Score s of a completed lesson (engagement, not proof of knowledge). */
   lessonCompletionScore: 0.7,
   /** Extra weight of a question answer by its difficulty level 1..3. */
-  difficultyWeight: { 1: 0.8, 2: 1, 3: 1.2 } as Record<number, number>,
+  difficultyWeight: { 1: 0.8, 2: 1, 3: 1.2 },
   /** Initial difficulty b of a question by its level 1..3 (logits). */
-  difficultyLogit: { 1: -1, 2: 0, 3: 1 } as Record<number, number>,
+  difficultyLogit: { 1: -1, 2: 0, 3: 1 },
   /** Elo step sizes and their decay: K(n) = K₀ / (1 + λ·n). */
-  elo: { kTheta: 0.6, kB: 0.3, decay: 0.05, thetaClamp: 4, bClamp: 4 },
+  elo: {
+    kTheta: 0.6,
+    kB: 0.3,
+    decay: 0.05,
+    thetaClamp: 4,
+    bClamp: 4,
+    kTopic: 0.6,
+    lessonNudge: 0.15,
+  },
   /** Target probability of a correct answer in an adaptive test. */
   targetP: 0.7,
   /** Default thresholds (overridden per course). */
@@ -62,10 +145,27 @@ export const ADAPTIVE_CONFIG = {
     wrongShare: 0.3,
     deadlineBoost: 0.6,
     sequence: 0.2,
+    demote: 1.5,
+    spaced: 0.3,
   },
-} as const;
+};
 
-export type AdaptiveConfig = typeof ADAPTIVE_CONFIG;
+/**
+ * Version 2 — used by the app. Candidate C4 of the pre-declared set, chosen
+ * on training seeds of the simulation (docs/experiment.md, section 10).
+ */
+export const ADAPTIVE_CONFIG_V2: AdaptiveConfig = {
+  ...ADAPTIVE_CONFIG_V1,
+  version: 2,
+  masteryModel: 'elo',
+  evidenceGate: true,
+  softGating: true,
+  reviewAllLessons: false,
+  spacedReview: true,
+};
+
+/** The configuration the LMS runs. */
+export const ADAPTIVE_CONFIG: AdaptiveConfig = ADAPTIVE_CONFIG_V2;
 
 export interface Thresholds {
   masteryThreshold: number;
@@ -91,6 +191,8 @@ export interface Evidence {
   score: number;
   /** Question difficulty level 1..3 (questions only). */
   difficulty?: number;
+  /** Calibrated difficulty b (questions only, masteryModel = 'elo'); falls back to the level. */
+  b?: number;
 }
 
 export function priorMastery(
@@ -109,17 +211,49 @@ export function evidenceWeight(
   return base * (cfg.difficultyWeight[e.difficulty ?? 1] ?? 1);
 }
 
-/** m ← m + α · w · (s − m), clamped to [0,1]. */
+const logit = (p: number) => {
+  const q = clamp(p, 1e-4, 1 - 1e-4);
+  return Math.log(q / (1 - q));
+};
+
+/**
+ * One piece of evidence.
+ * - masteryModel 'ewma': m ← m + α · w · (s − m), clamped to [0,1].
+ * - masteryModel 'elo': θ_t = logit(m); an answer (or graded work, as an
+ *   item of reference difficulty b = 0) moves θ_t ← θ_t + K_t(n)·w·(s − σ(θ_t − b))
+ *   with K_t(n) = K_topic / (1 + λ·n); a completed lesson adds the expected
+ *   learning gain θ_t += nudge; m = σ(θ_t).
+ * - evidenceGate: lesson completions do not count as evidence (n), so a
+ *   topic stays «unknown» until the student was assessed on it.
+ */
 export function updateMastery(
   state: MasteryState,
   e: Evidence,
   cfg: AdaptiveConfig = ADAPTIVE_CONFIG,
 ): MasteryState {
   const s = clamp01(e.score);
+  const counts = !(cfg.evidenceGate && e.kind === 'lesson');
+  const evidence = state.evidence + (counts ? 1 : 0);
+  if (cfg.masteryModel === 'elo') {
+    let theta = logit(state.mastery);
+    if (e.kind === 'lesson') {
+      theta += cfg.elo.lessonNudge;
+    } else {
+      const b =
+        e.kind === 'question'
+          ? (e.b ?? initialDifficulty(e.difficulty ?? 2, cfg))
+          : 0;
+      const k = cfg.elo.kTopic / (1 + cfg.elo.decay * state.evidence);
+      const w = e.kind === 'question' ? 1 : cfg.weights.assignment;
+      theta += k * w * (s - sigmoid(theta - b));
+    }
+    theta = clamp(theta, -cfg.elo.thetaClamp, cfg.elo.thetaClamp);
+    return { mastery: sigmoid(theta), evidence };
+  }
   const step = clamp01(cfg.alpha * evidenceWeight(e, cfg));
   return {
     mastery: clamp01(state.mastery + step * (s - state.mastery)),
-    evidence: state.evidence + 1,
+    evidence,
   };
 }
 
@@ -423,11 +557,22 @@ export function recommend(
   const out: Recommendation[] = [];
   const pct = (m: number) => Math.round(m * 100);
 
+  /**
+   * Soft gating (v2): a weak topic whose lessons are all completed and whose
+   * test was attempted is «engaged» — it no longer blocks NEXT and its
+   * REVIEW / RETRY suggestions drop below the next lesson.
+   */
+  const engaged = (s: CourseSectionInfo) =>
+    cfg.softGating &&
+    s.lessons.every((l) => l.completed) &&
+    s.lessons.every((l) => !l.test || l.test.lastScore !== null);
+
   sections.forEach((s, si) => {
     const st = stateOf(s.id);
     const level = masteryLevel(st, t, cfg);
     const gap = Math.max(0, t.masteryThreshold - st.mastery);
     const urg = urgency(s);
+    const demote = engaged(s) ? w.demote : 0;
 
     if (level === 'weak') {
       // Review: lessons with most wrong answers first, then incomplete ones.
@@ -436,7 +581,7 @@ export function recommend(
           (b.wrongShare ?? 0) - (a.wrongShare ?? 0) ||
           Number(a.completed) - Number(b.completed),
       );
-      for (const l of lessons.slice(0, 2)) {
+      for (const l of cfg.reviewAllLessons ? lessons : lessons.slice(0, 2)) {
         out.push({
           key: `REVIEW:${l.id}`,
           type: 'REVIEW',
@@ -446,7 +591,8 @@ export function recommend(
             w.review +
             w.gap * gap +
             w.wrongShare * (l.wrongShare ?? 0) +
-            w.deadlineBoost * urg,
+            w.deadlineBoost * urg -
+            demote,
           reason: 'review',
           params: {
             section: s.title,
@@ -462,7 +608,7 @@ export function recommend(
           type: 'RETRY_TEST',
           sectionId: s.id,
           testId: test.id,
-          priority: w.retry + w.gap * gap + w.deadlineBoost * urg,
+          priority: w.retry + w.gap * gap + w.deadlineBoost * urg - demote,
           reason: 'retry',
           params: {
             section: s.title,
@@ -529,7 +675,8 @@ export function recommend(
     }
   });
 
-  // Next: the first incomplete lesson whose earlier topics are not weak.
+  // Next: the first incomplete lesson whose earlier topics are not weak
+  // (v2: or are weak but already studied and tested — soft gating).
   let blocked = false;
   for (const s of sections) {
     const lesson = s.lessons.find((l) => !l.completed);
@@ -546,7 +693,38 @@ export function recommend(
       });
       break;
     }
-    if (masteryLevel(stateOf(s.id), t, cfg) === 'weak') blocked = true;
+    if (masteryLevel(stateOf(s.id), t, cfg) === 'weak' && !engaged(s))
+      blocked = true;
+  }
+
+  // Spaced review (v2): the course is completed and nothing is weak — keep
+  // the weakest topic fresh (counteracts forgetting; lowest priority).
+  if (
+    cfg.spacedReview &&
+    all.every((l) => l.completed) &&
+    !out.some((r) => r.type === 'REVIEW' || r.type === 'RETRY_TEST')
+  ) {
+    const weakest = [...sections]
+      .filter((s) => s.lessons.length)
+      .sort((a, b) => stateOf(a.id).mastery - stateOf(b.id).mastery)[0];
+    if (weakest) {
+      const st = stateOf(weakest.id);
+      for (const l of weakest.lessons) {
+        out.push({
+          key: `REVIEW:${l.id}`,
+          type: 'REVIEW',
+          sectionId: weakest.id,
+          lessonId: l.id,
+          priority: w.spaced * (1 - st.mastery),
+          reason: 'review',
+          params: {
+            section: weakest.title,
+            lesson: l.title,
+            mastery: pct(st.mastery),
+          },
+        });
+      }
+    }
   }
 
   // One entry per key (highest priority), then by priority and course order.

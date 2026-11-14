@@ -287,8 +287,9 @@ describe('AdaptiveService', () => {
     const db = makeDb();
     await service(db).onAssignmentGraded(1);
     const m = db.mastery.find((x) => x.userId === 2 && x.sectionId === 10)!;
-    // 0.5 + 0.3·0.8·(0.3 − 0.5) = 0.452
-    expect(m.mastery).toBeCloseTo(0.452, 6);
+    // v2: θ_t = 0 + K·w·(s − σ(0 − 0)) = 0.6·0.8·(0.3 − 0.5) = −0.096; m = σ(θ_t)
+    expect(m.mastery).toBeCloseTo(1 / (1 + Math.exp(0.096)), 6);
+    expect(m.mastery).toBeLessThan(0.5);
     expect(m.evidence).toBe(1);
   });
 

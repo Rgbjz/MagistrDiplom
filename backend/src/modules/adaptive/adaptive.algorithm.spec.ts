@@ -1,5 +1,7 @@
 import {
   ADAPTIVE_CONFIG,
+  ADAPTIVE_CONFIG_V1,
+  ADAPTIVE_CONFIG_V2,
   adaptiveFor,
   assembleAdaptiveTest,
   assignGroup,
@@ -31,18 +33,20 @@ function rngFrom(seed: number) {
 }
 
 const T = { masteryThreshold: 0.6, accelerationThreshold: 0.85 };
+const V1 = ADAPTIVE_CONFIG_V1;
+const V2 = ADAPTIVE_CONFIG_V2;
 
-describe('learner model: mastery (EWMA)', () => {
+describe('learner model v1: mastery (EWMA)', () => {
   it('starts at the prior 0.5 without evidence', () => {
     expect(priorMastery()).toEqual({ mastery: 0.5, evidence: 0 });
   });
 
   it('m ← m + α·w·(s − m) for a correct medium question', () => {
-    const next = updateMastery(priorMastery(), {
-      kind: 'question',
-      score: 1,
-      difficulty: 2,
-    });
+    const next = updateMastery(
+      priorMastery(),
+      { kind: 'question', score: 1, difficulty: 2 },
+      V1,
+    );
     // α = 0.3, w = 1·1 → 0.5 + 0.3·(1 − 0.5) = 0.65
     expect(next.mastery).toBeCloseTo(0.65, 10);
     expect(next.evidence).toBe(1);
@@ -63,10 +67,10 @@ describe('learner model: mastery (EWMA)', () => {
 
   it('partial credit moves mastery proportionally and stays in [0,1]', () => {
     let st: MasteryState = priorMastery();
-    st = updateMastery(st, { kind: 'question', score: 0.5, difficulty: 2 });
+    st = updateMastery(st, { kind: 'question', score: 0.5, difficulty: 2 }, V1);
     expect(st.mastery).toBeCloseTo(0.5, 10);
     for (let i = 0; i < 200; i++)
-      st = updateMastery(st, { kind: 'question', score: 5, difficulty: 3 });
+      st = updateMastery(st, { kind: 'question', score: 5, difficulty: 3 }, V1);
     expect(st.mastery).toBeLessThanOrEqual(1);
     expect(st.mastery).toBeGreaterThan(0.99);
   });
@@ -75,11 +79,11 @@ describe('learner model: mastery (EWMA)', () => {
     let st = priorMastery();
     const rng = rngFrom(7);
     for (let i = 0; i < 400; i++)
-      st = updateMastery(st, {
-        kind: 'question',
-        score: rng() < 0.8 ? 1 : 0,
-        difficulty: 2,
-      });
+      st = updateMastery(
+        st,
+        { kind: 'question', score: rng() < 0.8 ? 1 : 0, difficulty: 2 },
+        V1,
+      );
     expect(st.mastery).toBeGreaterThan(0.55);
     expect(st.mastery).toBeLessThan(1);
   });
@@ -173,13 +177,23 @@ describe('replayHistory', () => {
       },
       { at: 2, userId: 1, sectionId: 10, kind: 'lesson' as const, score: 0.7 },
     ];
+    for (const [cfg, evidence] of [
+      [V1, 3],
+      [V2, 2], // v2: the lesson is not assessed evidence
+    ] as const) {
+      const res = replayHistory(events, cfg);
+      let st = priorMastery(cfg);
+      st = updateMastery(
+        st,
+        { kind: 'question', score: 1, difficulty: 2 },
+        cfg,
+      );
+      st = updateMastery(st, { kind: 'lesson', score: 0.7 }, cfg);
+      st = updateMastery(st, { kind: 'assignment', score: 0.4 }, cfg);
+      expect(res.mastery.get('1:10')!.mastery).toBeCloseTo(st.mastery, 10);
+      expect(res.mastery.get('1:10')!.evidence).toBe(evidence);
+    }
     const res = replayHistory(events);
-    let st = priorMastery();
-    st = updateMastery(st, { kind: 'question', score: 1, difficulty: 2 });
-    st = updateMastery(st, { kind: 'lesson', score: 0.7 });
-    st = updateMastery(st, { kind: 'assignment', score: 0.4 });
-    expect(res.mastery.get('1:10')!.mastery).toBeCloseTo(st.mastery, 10);
-    expect(res.mastery.get('1:10')!.evidence).toBe(3);
     expect(res.ability.get(1)!.answers).toBe(1);
     expect(res.calibration.get(5)!.count).toBe(1);
   });
@@ -273,7 +287,7 @@ describe('adaptive test assembly', () => {
   });
 });
 
-describe('recommendations', () => {
+describe('recommendations (v1)', () => {
   const now = Date.UTC(2026, 10, 14);
   const day = 86_400_000;
   const sections: CourseSectionInfo[] = [
@@ -308,7 +322,7 @@ describe('recommendations', () => {
 
   it('a weak topic yields REVIEW (most wrong lesson first) and RETRY_TEST on top', () => {
     const mastery = new Map([[1, { mastery: 0.3, evidence: 5 }]]);
-    const recs = recommend({ sections, mastery, thresholds: T, now });
+    const recs = recommend({ sections, mastery, thresholds: T, now }, V1);
     expect(recs[0].type).toBe('REVIEW');
     expect(recs[0].lessonId).toBe(11);
     expect(recs.map((r) => r.type)).toContain('RETRY_TEST');
@@ -318,9 +332,9 @@ describe('recommendations', () => {
 
   it('priority follows the documented formula', () => {
     const mastery = new Map([[1, { mastery: 0.3, evidence: 5 }]]);
-    const recs = recommend({ sections, mastery, thresholds: T, now });
+    const recs = recommend({ sections, mastery, thresholds: T, now }, V1);
     const review = recs.find((r) => r.key === 'REVIEW:11')!;
-    const w = ADAPTIVE_CONFIG.priority;
+    const w = V1.priority;
     // base + w_gap·(τ − m) + w_wrong·wrongShare (no deadline in section 1)
     expect(review.priority).toBeCloseTo(
       w.review + w.gap * 0.3 + w.wrongShare * 0.6,
@@ -329,12 +343,15 @@ describe('recommendations', () => {
   });
 
   it('NEXT waits until earlier weak topics are fixed', () => {
-    const weak = recommend({
-      sections,
-      mastery: new Map([[1, { mastery: 0.3, evidence: 5 }]]),
-      thresholds: T,
-      now,
-    });
+    const weak = recommend(
+      {
+        sections,
+        mastery: new Map([[1, { mastery: 0.3, evidence: 5 }]]),
+        thresholds: T,
+        now,
+      },
+      V1,
+    );
     expect(weak.find((r) => r.type === 'NEXT')).toBeUndefined();
     const ok = recommend({
       sections,
@@ -442,5 +459,118 @@ describe('A/B experiment', () => {
     expect(adaptiveFor(ab, 'ADAPTIVE')).toBe(true);
     expect(adaptiveFor(ab, 'CONTROL')).toBe(false);
     expect(adaptiveFor(ab, null)).toBe(false);
+  });
+});
+
+describe('version 2 (the app): rules from the simulation diagnosis', () => {
+  it('evidence gate: a completed lesson never makes a topic weak', () => {
+    let st = priorMastery(V2);
+    st = updateMastery(st, { kind: 'lesson', score: 0.7 }, V2);
+    expect(st.evidence).toBe(0);
+    expect(masteryLevel(st, T, V2)).toBe('unknown');
+    // v1 read the same lesson as evidence and called the topic weak.
+    const v1 = updateMastery(
+      priorMastery(V1),
+      { kind: 'lesson', score: 0.7 },
+      V1,
+    );
+    expect(masteryLevel(v1, T, V1)).toBe('weak');
+  });
+
+  it('topic mastery is σ(θ_t): the probability of a reference (b = 0) item', () => {
+    let st = priorMastery(V2);
+    st = updateMastery(st, { kind: 'question', score: 1, difficulty: 2 }, V2);
+    // θ_t = 0 + K·(1 − σ(0 − 0)) = 0.6·0.5 = 0.3
+    expect(st.mastery).toBeCloseTo(1 / (1 + Math.exp(-0.3)), 10);
+    expect(st.evidence).toBe(1);
+  });
+
+  it('acceleration can fire: answering at P≈0.7 on hard items means high mastery', () => {
+    // A strong student answers hard items (b = +1) correctly 70 % of the time.
+    // v1 (EWMA of raw scores) settles near 0.7; v2 reads θ_t ≈ 1 + logit(0.7).
+    const rng = rngFrom(3);
+    let v1 = priorMastery(V1);
+    let v2 = priorMastery(V2);
+    for (let i = 0; i < 300; i++) {
+      const e = {
+        kind: 'question' as const,
+        score: rng() < 0.7 ? 1 : 0,
+        difficulty: 3,
+      };
+      v1 = updateMastery(v1, e, V1);
+      v2 = updateMastery(v2, e, V2);
+    }
+    expect(masteryLevel(v1, T, V1)).not.toBe('mastered');
+    expect(masteryLevel(v2, T, V2)).toBe('mastered');
+  });
+
+  it('soft gating: a studied and tested weak topic no longer blocks NEXT', () => {
+    const sections: CourseSectionInfo[] = [
+      {
+        id: 1,
+        title: 'HTML',
+        lessons: [
+          { id: 11, title: 'Теги', completed: true, wrongShare: 0.6 },
+          {
+            id: 12,
+            title: 'Тест HTML',
+            completed: true,
+            test: { id: 100, lastScore: 40, passingScore: 60 },
+          },
+        ],
+      },
+      {
+        id: 2,
+        title: 'CSS',
+        lessons: [{ id: 21, title: 'Селектори', completed: false }],
+      },
+    ];
+    const mastery = new Map([[1, { mastery: 0.3, evidence: 5 }]]);
+    const v1 = recommend({ sections, mastery, thresholds: T, now: 0 }, V1);
+    expect(v1.find((r) => r.type === 'NEXT')).toBeUndefined();
+    const v2 = recommend({ sections, mastery, thresholds: T, now: 0 }, V2);
+    expect(v2[0]).toMatchObject({ type: 'NEXT', lessonId: 21 });
+    // Review stays suggested, behind the next lesson.
+    expect(v2.map((r) => r.type)).toContain('REVIEW');
+    // Not studied yet (test never attempted) → still blocks.
+    const untested = sections.map((s) =>
+      s.id === 1
+        ? {
+            ...s,
+            lessons: s.lessons.map((l) =>
+              l.test ? { ...l, test: { ...l.test, lastScore: null } } : l,
+            ),
+          }
+        : s,
+    );
+    const blocked = recommend(
+      { sections: untested, mastery, thresholds: T, now: 0 },
+      V2,
+    );
+    expect(blocked.find((r) => r.type === 'NEXT')).toBeUndefined();
+  });
+
+  it('spaced review: after the course, the weakest topic is kept fresh', () => {
+    const sections: CourseSectionInfo[] = [
+      { id: 1, title: 'A', lessons: [{ id: 11, title: 'a', completed: true }] },
+      { id: 2, title: 'B', lessons: [{ id: 21, title: 'b', completed: true }] },
+    ];
+    const mastery = new Map([
+      [1, { mastery: 0.8, evidence: 4 }],
+      [2, { mastery: 0.7, evidence: 4 }],
+    ]);
+    const recs = recommend({ sections, mastery, thresholds: T, now: 0 }, V2);
+    expect(recs[0]).toMatchObject({
+      type: 'REVIEW',
+      sectionId: 2,
+      lessonId: 21,
+    });
+    expect(recommend({ sections, mastery, thresholds: T, now: 0 }, V1)).toEqual(
+      [],
+    );
+  });
+
+  it('the app runs version 2', () => {
+    expect(ADAPTIVE_CONFIG.version).toBe(2);
   });
 });

@@ -3,6 +3,7 @@ import {
   ADAPTIVE_CONFIG_V1,
   ADAPTIVE_CONFIG_V2,
   adaptiveFor,
+  assemblePlacementTest,
   assembleAdaptiveTest,
   assignGroup,
   eloUpdate,
@@ -570,7 +571,125 @@ describe('version 2 (the app): rules from the simulation diagnosis', () => {
     );
   });
 
-  it('the app runs version 2', () => {
-    expect(ADAPTIVE_CONFIG.version).toBe(2);
+  it('the app runs version 3 (v2 + retrieval practice)', () => {
+    expect(ADAPTIVE_CONFIG.version).toBe(3);
+    expect(ADAPTIVE_CONFIG).toEqual({
+      ...V2,
+      version: 3,
+      retrievalPractice: true,
+    });
+  });
+});
+
+describe('version 3 candidates (pre-registered study)', () => {
+  const V3 = ADAPTIVE_CONFIG;
+  const studiedWeak: CourseSectionInfo[] = [
+    {
+      id: 1,
+      title: 'HTML',
+      lessons: [
+        { id: 11, title: 'Теги', completed: true, wrongShare: 0.6 },
+        {
+          id: 12,
+          title: 'Тест HTML',
+          completed: true,
+          test: { id: 100, lastScore: 40, passingScore: 60 },
+        },
+      ],
+    },
+  ];
+  const weak = new Map([[1, { mastery: 0.3, evidence: 5 }]]);
+
+  it('retrieval practice: a studied weak topic is retested before re-reading', () => {
+    const v2 = recommend(
+      { sections: studiedWeak, mastery: weak, thresholds: T, now: 0 },
+      V2,
+    );
+    expect(v2[0].type).toBe('REVIEW');
+    const v3 = recommend(
+      { sections: studiedWeak, mastery: weak, thresholds: T, now: 0 },
+      V3,
+    );
+    expect(v3[0].type).toBe('RETRY_TEST');
+    expect(v3.map((r) => r.type)).toContain('REVIEW');
+  });
+
+  it('retrieval practice does not apply before the lessons were studied', () => {
+    const unstudied = [
+      {
+        ...studiedWeak[0],
+        lessons: studiedWeak[0].lessons.map((l) => ({
+          ...l,
+          completed: l.id === 12,
+        })),
+      },
+    ];
+    const recs = recommend(
+      { sections: unstudied, mastery: weak, thresholds: T, now: 0 },
+      V3,
+    );
+    expect(recs.find((r) => r.type === 'REVIEW')!.priority).toBeGreaterThan(
+      recs.find((r) => r.type === 'RETRY_TEST')!.priority,
+    );
+  });
+
+  it('placement quiz takes the items nearest to b = 0, per section', () => {
+    const pool = [
+      { id: 1, b: -1.2, sectionId: 1 },
+      { id: 2, b: 0.1, sectionId: 1 },
+      { id: 3, b: -0.3, sectionId: 1 },
+      { id: 4, b: 1.5, sectionId: 2 },
+      { id: 5, b: 0.05, sectionId: 2 },
+    ];
+    expect(assemblePlacementTest(pool, 2)).toEqual([2, 3, 5, 4]);
+  });
+
+  it('skipping mastered topics and spaced review of all topics (candidates)', () => {
+    const cfg = { ...V2, skipMasteredInNext: true, spacedAll: true };
+    const sections: CourseSectionInfo[] = [
+      {
+        id: 1,
+        title: 'A',
+        lessons: [{ id: 11, title: 'a', completed: false }],
+      },
+      {
+        id: 2,
+        title: 'B',
+        lessons: [{ id: 21, title: 'b', completed: false }],
+      },
+    ];
+    const mastery = new Map([[1, { mastery: 0.9, evidence: 3 }]]);
+    const next = recommend(
+      { sections, mastery, thresholds: T, now: 0 },
+      cfg,
+    ).find((r) => r.type === 'NEXT');
+    expect(next?.lessonId).toBe(21);
+    const day = 86_400_000;
+    const done = sections.map((s) => ({
+      ...s,
+      lessons: s.lessons.map((l) => ({
+        ...l,
+        completed: true,
+        lastStudiedAt: 0,
+      })),
+    }));
+    const recs = recommend(
+      {
+        sections: done,
+        mastery: new Map([
+          [1, { mastery: 0.9, evidence: 3 }],
+          [2, { mastery: 0.9, evidence: 3 }],
+        ]),
+        thresholds: T,
+        now: 2 * day,
+        lastPractice: new Map([
+          [1, 2 * day - 1000],
+          [2, 0],
+        ]),
+      },
+      cfg,
+    );
+    // Topic B was practised long ago: larger predicted gap, reviewed first.
+    expect(recs[0]).toMatchObject({ type: 'REVIEW', sectionId: 2 });
   });
 });

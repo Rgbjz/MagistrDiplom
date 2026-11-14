@@ -21,7 +21,7 @@
  *    i.e. the student answers correctly with probability ≈ 70 %.
  * 4. A/B experiment: balanced random assignment and the gating rule.
  *
- * Version 2 (ADAPTIVE_CONFIG, used by the app) fixes the flaws found by the
+ * Version 2 fixes the flaws found by the
  * simulation study of v1 (docs/experiment.md), v1 stays reproducible as
  * ADAPTIVE_CONFIG_V1:
  *  a) evidence gate — only assessed evidence (test answers, graded work)
@@ -34,13 +34,16 @@
  *         θ_t = logit(m),  θ_t ← θ_t + K_t(n)·(r − σ(θ_t − b)),  m = σ(θ_t)
  *     i.e. m is the probability of answering a reference (medium, b = 0)
  *     item, so «70 % at your own level» is no longer read as m = 0.7.
+ *
+ * Version 3 (ADAPTIVE_CONFIG, used by the app) = v2 + retrieval practice:
+ * a studied weak topic is retested before its lessons are re-read.
  */
 
 // ───────────────────────────── configuration ─────────────────────────────
 
 export interface AdaptiveConfig {
-  /** 1 — the version evaluated first; 2 — the revision after the simulation. */
-  version: 1 | 2;
+  /** 1 — first version; 2, 3 — revisions after the simulation studies. */
+  version: 1 | 2 | 3;
   /** Topic mastery: EWMA of scores (v1) or σ of a per-topic Elo ability. */
   masteryModel: 'ewma' | 'elo';
   /** Only assessed evidence (answers, graded work) counts towards the level. */
@@ -51,6 +54,16 @@ export interface AdaptiveConfig {
   reviewAllLessons: boolean;
   /** After the whole course is completed, keep reviewing the weakest topic. */
   spacedReview: boolean;
+  /** v3: placement quiz — questions per topic at course start (0 = off). */
+  placementQuestions: number;
+  /** v3: NEXT skips lessons of topics already at the «mastered» level. */
+  skipMasteredInNext: boolean;
+  /** v3: a studied weak topic is practised by retesting before re-reading. */
+  retrievalPractice: boolean;
+  /** v3: after the course, review every topic by predicted forgetting × gap. */
+  spacedAll: boolean;
+  /** v3: forgetting horizon H of the spaced-review gap 1 − m·e^{−Δt/H}, ms. */
+  forgetHorizonMs: number;
   priorMastery: number;
   alpha: number;
   weights: { question: number; assignment: number; lesson: number };
@@ -100,6 +113,11 @@ export const ADAPTIVE_CONFIG_V1: AdaptiveConfig = {
   softGating: false,
   reviewAllLessons: false,
   spacedReview: false,
+  placementQuestions: 0,
+  skipMasteredInNext: false,
+  retrievalPractice: false,
+  spacedAll: false,
+  forgetHorizonMs: 86_400_000,
   /** Prior mastery of a topic without evidence. */
   priorMastery: 0.5,
   /** EWMA learning rate α. */
@@ -164,8 +182,20 @@ export const ADAPTIVE_CONFIG_V2: AdaptiveConfig = {
   spacedReview: true,
 };
 
+/**
+ * Version 3 — v2 + retrieval practice: once every lesson of a weak topic was
+ * studied, a short retest is suggested before re-reading. Candidate V3-B of
+ * the pre-registered study (docs/experiment/v3-preregistration.md), chosen on
+ * training seeds and better than v2 on fresh seeds (docs/experiment.md, 11).
+ */
+export const ADAPTIVE_CONFIG_V3: AdaptiveConfig = {
+  ...ADAPTIVE_CONFIG_V2,
+  version: 3,
+  retrievalPractice: true,
+};
+
 /** The configuration the LMS runs. */
-export const ADAPTIVE_CONFIG: AdaptiveConfig = ADAPTIVE_CONFIG_V2;
+export const ADAPTIVE_CONFIG: AdaptiveConfig = ADAPTIVE_CONFIG_V3;
 
 export interface Thresholds {
   masteryThreshold: number;
@@ -471,6 +501,31 @@ export function assembleAdaptiveTest(input: AssemblyInput): AssemblyResult {
   return { ids: picked, target };
 }
 
+/**
+ * v3 placement quiz: `perSection` questions per section with calibrated
+ * difficulty closest to the reference b = 0 (ties by id) — the same items
+ * for everyone, so the quiz measures each topic on a common scale.
+ */
+export function assemblePlacementTest(
+  pool: PoolQuestion[],
+  perSection: number,
+): number[] {
+  const bySection = new Map<number, PoolQuestion[]>();
+  for (const q of pool) {
+    const list = bySection.get(q.sectionId) ?? [];
+    list.push(q);
+    bySection.set(q.sectionId, list);
+  }
+  return [...bySection.keys()]
+    .sort((a, b) => a - b)
+    .flatMap((sectionId) =>
+      [...bySection.get(sectionId)!]
+        .sort((a, b) => Math.abs(a.b) - Math.abs(b.b) || a.id - b.id)
+        .slice(0, perSection)
+        .map((q) => q.id),
+    );
+}
+
 // ───────────────────────────── recommendations ─────────────────────────────
 
 export type RecommendationType =
@@ -491,6 +546,8 @@ export interface CourseLessonInfo {
   wrongShare?: number;
   /** Assignment attached to the lesson. */
   assignment?: { id: number; dueAt: number | null; submitted: boolean } | null;
+  /** v3: when the student last studied the lesson (ms), if known. */
+  lastStudiedAt?: number | null;
 }
 
 export interface CourseSectionInfo {
@@ -519,6 +576,8 @@ export interface RecommendInput {
   thresholds: Thresholds;
   now: number;
   topN?: number;
+  /** v3: last practice (lesson or answer) per section, ms. */
+  lastPractice?: Map<number, number>;
 }
 
 const DAY = 86_400_000;
@@ -603,12 +662,28 @@ export function recommend(
       }
       const test = s.lessons.find((l) => l.test)?.test;
       if (test) {
+        // v3 retrieval practice: once every lesson was studied, retest first.
+        const reviewTop = Math.max(
+          ...out
+            .filter((r) => r.type === 'REVIEW' && r.sectionId === s.id)
+            .map((r) => r.priority),
+        );
+        const retrieval =
+          cfg.retrievalPractice && s.lessons.every((l) => l.completed)
+            ? Math.max(
+                0,
+                reviewTop +
+                  0.05 -
+                  (w.retry + w.gap * gap + w.deadlineBoost * urg - demote),
+              )
+            : 0;
         out.push({
           key: `RETRY_TEST:${test.id}`,
           type: 'RETRY_TEST',
           sectionId: s.id,
           testId: test.id,
-          priority: w.retry + w.gap * gap + w.deadlineBoost * urg - demote,
+          priority:
+            w.retry + w.gap * gap + w.deadlineBoost * urg - demote + retrieval,
           reason: 'retry',
           params: {
             section: s.title,
@@ -678,7 +753,11 @@ export function recommend(
   // Next: the first incomplete lesson whose earlier topics are not weak
   // (v2: or are weak but already studied and tested — soft gating).
   let blocked = false;
+  const skipped = (s: CourseSectionInfo) =>
+    cfg.skipMasteredInNext &&
+    masteryLevel(stateOf(s.id), t, cfg) === 'mastered';
   for (const s of sections) {
+    if (skipped(s)) continue; // v3: a mastered topic's lessons are optional
     const lesson = s.lessons.find((l) => !l.completed);
     if (lesson && !blocked) {
       const pos = position.get(lesson.id) ?? 0;
@@ -697,9 +776,49 @@ export function recommend(
       blocked = true;
   }
 
+  // Spaced review of all topics (v3): once every lesson is done (or optional
+  // in a mastered topic), each topic offers its least recently studied lesson
+  // with priority w_spaced · (1 − m · e^{−Δt/H}) — predicted forgetting × gap.
+  const courseDone = sections.every(
+    (s) => skipped(s) || s.lessons.every((l) => l.completed),
+  );
+  if (cfg.spacedAll && courseDone) {
+    for (let i = out.length - 1; i >= 0; i--) {
+      if (out[i].type === 'REVIEW' || out[i].type === 'RETRY_TEST')
+        out.splice(i, 1);
+    }
+    for (const s of sections) {
+      if (!s.lessons.length) continue;
+      const st = stateOf(s.id);
+      const last = input.lastPractice?.get(s.id);
+      const decay =
+        last === undefined ? 1 : Math.exp(-(now - last) / cfg.forgetHorizonMs);
+      const gap = 1 - st.mastery * decay;
+      const lesson = [...s.lessons].sort(
+        (a, b) =>
+          (a.lastStudiedAt ?? -Infinity) - (b.lastStudiedAt ?? -Infinity) ||
+          a.id - b.id,
+      )[0];
+      out.push({
+        key: `REVIEW:${lesson.id}`,
+        type: 'REVIEW',
+        sectionId: s.id,
+        lessonId: lesson.id,
+        priority: w.spaced * gap,
+        reason: 'review',
+        params: {
+          section: s.title,
+          lesson: lesson.title,
+          mastery: pct(st.mastery),
+        },
+      });
+    }
+  }
+
   // Spaced review (v2): the course is completed and nothing is weak — keep
   // the weakest topic fresh (counteracts forgetting; lowest priority).
   if (
+    !cfg.spacedAll &&
     cfg.spacedReview &&
     all.every((l) => l.completed) &&
     !out.some((r) => r.type === 'REVIEW' || r.type === 'RETRY_TEST')

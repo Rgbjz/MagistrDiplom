@@ -3,9 +3,10 @@ import { join } from 'path';
 import {
   ADAPTIVE_CONFIG,
   ADAPTIVE_CONFIG_V2,
+  ADAPTIVE_CONFIG_V3,
 } from '../../src/modules/adaptive/adaptive.algorithm';
 import { analyzeExport, parseExport } from './analyze-export';
-import { selectCandidate, V2_CANDIDATES } from './candidates';
+import { selectCandidate, V2_CANDIDATES, V3_CANDIDATES } from './candidates';
 import { runCohort } from './experiment';
 import {
   makeCourse,
@@ -164,11 +165,19 @@ describe('simulation: v2 selection', () => {
   it('the app ships exactly the candidate selected on training seeds', () => {
     const summary = JSON.parse(
       readFileSync(join(__dirname, 'out', 'summary.json'), 'utf8'),
-    ) as { v2: { chosen: string } };
+    ) as {
+      v2: { chosen: string };
+      v3: { chosen: string; decision: { v3BetterThanV2: boolean } };
+    };
     const chosen = V2_CANDIDATES.find((c) => c.id === summary.v2.chosen);
     expect(chosen).toBeDefined();
     expect(ADAPTIVE_CONFIG_V2).toEqual(chosen!.cfg);
-    expect(ADAPTIVE_CONFIG).toBe(ADAPTIVE_CONFIG_V2);
+    // v3 ships only because the pre-registered rule said it beats v2.
+    const v3 = V3_CANDIDATES.find((c) => c.id === summary.v3.chosen);
+    expect(v3).toBeDefined();
+    expect(summary.v3.decision.v3BetterThanV2).toBe(true);
+    expect(ADAPTIVE_CONFIG_V3).toEqual(v3!.cfg);
+    expect(ADAPTIVE_CONFIG).toBe(ADAPTIVE_CONFIG_V3);
   });
 
   it('selection: best d, ties within tolerance broken by calibration RMSE', () => {

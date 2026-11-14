@@ -9,12 +9,20 @@ import { mkdirSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import {
   ADAPTIVE_CONFIG_V1,
+  ADAPTIVE_CONFIG_V2,
   type AdaptiveConfig,
 } from '../../src/modules/adaptive/adaptive.algorithm';
 import { runCohort, type LearnerRow } from './experiment';
 import { SIM_CONFIG, type LearnerType, type SimConfig } from './model';
 import type { Variant } from './policies';
-import { SELECTION, selectCandidate, V2_CANDIDATES } from './candidates';
+import {
+  ROBUSTNESS_SIM,
+  SELECTION,
+  selectCandidate,
+  V2_CANDIDATES,
+  V3_CANDIDATES,
+  V3_PLAN,
+} from './candidates';
 import { childSeed, mulberry32 } from './prng';
 import {
   compare,
@@ -416,6 +424,166 @@ const v2Summary = {
 };
 log('v2 done');
 
+// ── 2c. Version 3: pre-registered (docs/experiment/v3-preregistration.md) ──
+const v3Train = V3_CANDIDATES.map((c, ci) => {
+  const r = runScenario(
+    { name: c.id, adaptive: c.cfg },
+    PRIMARY,
+    1,
+    V3_PLAN.trainSeeds,
+  );
+  const A = r.rows.filter((x) => x.policy === 'ADAPTIVE');
+  return {
+    candidate: c.id,
+    label: c.label,
+    ...summarise(c.label, r.rows, r.perSeed, 600 + ci),
+    rmseA: mean(A.map((x) => x.modelRmse)),
+    pooledCorrA: mean(r.perSeed.map((x) => x.pooledA)),
+  };
+});
+const v3Id = selectCandidate(
+  v3Train.map((c) => ({ id: c.candidate, d: c.d, rmse: c.rmseA })),
+);
+const v3 = V3_CANDIDATES.find((c) => c.id === v3Id)!;
+writeFileSync(
+  join(OUT, 'v3_selection.csv'),
+  csv(v3Train.map((c) => ({ ...c, selected: c.candidate === v3Id }))),
+);
+log(`v3 selection on training seeds → ${v3Id} (${v3.label})`);
+
+/** Fresh seeds 20–39: control (in every run), v1, v2 and the selected v3. */
+function freshEval(sim: SimConfig | undefined, tagBase: number) {
+  const runs = {
+    v1: runScenario(
+      { name: 'v1', adaptive: V1, sim },
+      PRIMARY,
+      1,
+      V3_PLAN.evalSeeds,
+    ),
+    v2: runScenario(
+      { name: 'v2', adaptive: ADAPTIVE_CONFIG_V2, sim },
+      PRIMARY,
+      1,
+      V3_PLAN.evalSeeds,
+    ),
+    v3: runScenario(
+      { name: 'v3', adaptive: v3.cfg, sim },
+      PRIMARY,
+      1,
+      V3_PLAN.evalSeeds,
+    ),
+  };
+  const vsControl = (['v1', 'v2', 'v3'] as const).flatMap((ver, i) =>
+    comparisons(runs[ver].rows, tagBase + i).map((c) => ({
+      version: ver,
+      ...c,
+    })),
+  );
+  const adaptiveArm = (ver: 'v1' | 'v2' | 'v3') =>
+    runs[ver].rows.filter((r) => r.policy === 'ADAPTIVE');
+  const pair = (a: 'v2' | 'v3', b: 'v1' | 'v2', tag: number) =>
+    METRICS.slice(0, 8).map((m) => ({
+      contrast: `${a} vs ${b}`,
+      ...compare(
+        m.key,
+        adaptiveArm(a).map((r) => value(r, m.key)),
+        adaptiveArm(b).map((r) => value(r, m.key)),
+        mulberry32(childSeed(MASTER_SEED, tag)),
+        quick ? 200 : 1000,
+      ),
+    }));
+  const direct = [
+    ...pair('v3', 'v2', tagBase + 10),
+    ...pair('v3', 'v1', tagBase + 11),
+    ...pair('v2', 'v1', tagBase + 12),
+  ];
+  const subgroups = (['v1', 'v2', 'v3'] as const).flatMap((ver, vi) =>
+    TYPES.flatMap((ty, i) =>
+      comparisons(
+        runs[ver].rows.filter((r) => r.type === ty),
+        tagBase + 20 + vi * 3 + i,
+        METRICS.filter((m) =>
+          [
+            'postExpected',
+            'gain',
+            'masteredShare',
+            'completed',
+            'wastedLessons',
+          ].includes(m.key),
+        ),
+      ).map((c) => ({ version: ver, type: ty, ...c })),
+    ),
+  );
+  const calibration = Object.fromEntries(
+    (['v1', 'v2', 'v3'] as const).map((ver) => [
+      ver,
+      {
+        pooledCorrAdaptive: mean(runs[ver].perSeed.map((x) => x.pooledA)),
+        rmseAdaptive: mean(adaptiveArm(ver).map((x) => x.modelRmse)),
+        itemDifficultyCorr: mean(runs[ver].perSeed.map((x) => x.calCorr)),
+        seedsPositiveSig: runs[ver].perSeed.filter((x) => x.d > 0 && x.p < 0.05)
+          .length,
+        seedsNegativeSig: runs[ver].perSeed.filter((x) => x.d < 0 && x.p < 0.05)
+          .length,
+      },
+    ]),
+  );
+  const actions = (['v1', 'v2', 'v3'] as const).map((ver) => ({
+    version: ver,
+    ...Object.fromEntries(
+      [...ACTIONS, 'PLACEMENT'].map((a) => [
+        a,
+        mean(adaptiveArm(ver).map((r) => r.actions[a] ?? 0)),
+      ]),
+    ),
+  }));
+  return { vsControl, direct, subgroups, calibration, actions };
+}
+
+const v3Eval = freshEval(undefined, 700);
+writeFileSync(join(OUT, 'v3_eval_vs_control.csv'), csv(v3Eval.vsControl));
+writeFileSync(join(OUT, 'v3_eval_direct.csv'), csv(v3Eval.direct));
+writeFileSync(join(OUT, 'v3_eval_subgroups.csv'), csv(v3Eval.subgroups));
+writeFileSync(join(OUT, 'v3_eval_actions.csv'), csv(v3Eval.actions));
+log('v3 fresh-seed evaluation done');
+const v3Robust = freshEval(ROBUSTNESS_SIM, 800);
+writeFileSync(
+  join(OUT, 'v3_robustness_vs_control.csv'),
+  csv(v3Robust.vsControl),
+);
+writeFileSync(join(OUT, 'v3_robustness_direct.csv'), csv(v3Robust.direct));
+writeFileSync(
+  join(OUT, 'v3_robustness_subgroups.csv'),
+  csv(v3Robust.subgroups),
+);
+log('v3 robustness done');
+
+const v3vsv2 = v3Eval.direct.find(
+  (c) => c.contrast === 'v3 vs v2' && c.metric === 'postExpected',
+)!;
+const v3Summary = {
+  candidates: V3_CANDIDATES.map((c) => ({
+    id: c.id,
+    label: c.label,
+    cfg: c.cfg,
+  })),
+  plan: V3_PLAN,
+  chosen: v3Id,
+  training: v3Train,
+  decision: {
+    rule: 'v3 better than v2 iff d(v3 vs v2, post-test) > 0 and its 95 % CI excludes 0 on seeds 20–39',
+    d: v3vsv2.d,
+    dLo: v3vsv2.dLo,
+    dHi: v3vsv2.dHi,
+    v3BetterThanV2: v3vsv2.d > 0 && v3vsv2.dLo > 0,
+  },
+  calibration: v3Eval.calibration,
+  robustnessCalibration: v3Robust.calibration,
+};
+log(
+  `decision: v3 better than v2 = ${v3Summary.decision.v3BetterThanV2} (d = ${v3vsv2.d.toFixed(3)} [${v3vsv2.dLo.toFixed(3)}; ${v3vsv2.dHi.toFixed(3)}])`,
+);
+
 // ── 3. Sensitivity: one parameter at a time around the defaults ──
 type Sens = { param: string; value: number | string; scenario: Scenario };
 const withSim = (patch: Partial<SimConfig>): SimConfig => ({
@@ -468,16 +636,16 @@ const sens: Sens[] = [
   })),
 ];
 const sensRows = sens.flatMap((s, i) =>
-  (['v1', 'v2'] as const).map((variantName, j) => {
-    // α is an EWMA parameter: for v2 it applies only if v2 uses EWMA.
-    const base = j === 0 ? V1 : chosen.cfg;
+  (['v1', 'v2', 'v3'] as const).map((variantName, j) => {
+    // α is an EWMA parameter: for v2/v3 it applies only if they use EWMA.
+    const base = j === 0 ? V1 : j === 1 ? chosen.cfg : v3.cfg;
     const alpha = s.scenario.adaptive?.alpha;
     const scenario = {
       ...s.scenario,
       adaptive: alpha === undefined ? base : { ...base, alpha },
     };
     const r = runScenario(scenario, SECONDARY, 100 + i);
-    return summarise(variantName, r.rows, r.perSeed, 200 + i * 2 + j, {
+    return summarise(variantName, r.rows, r.perSeed, 200 + i * 3 + j, {
       param: s.param,
       value: s.value,
     });
@@ -494,6 +662,7 @@ const summary = {
   simConfig: SIM_CONFIG,
   adaptiveConfigV1: ADAPTIVE_CONFIG_V1,
   v2: v2Summary,
+  v3: v3Summary,
   primary: Object.fromEntries(primaryCmp.map((c) => [c.metric, c])),
   perSeed: {
     dMean: mean(ps.map((s) => s.d)),

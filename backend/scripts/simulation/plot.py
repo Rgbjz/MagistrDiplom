@@ -109,7 +109,8 @@ fig, axes = plt.subplots(2, 3, figsize=(12, 6.5), sharey=True)
 for ax, p in zip(axes.flat, params):
     for scen, color, label in [
         ("v1", COL["CONTROL"], "v1"),
-        ("v2", COL["ADAPTIVE"], "v2"),
+        ("v2", "#93c5fd", "v2"),
+        ("v3", COL["ADAPTIVE"], "v3"),
     ]:
         rows = [r for r in sens if r["param"] == p and r["scenario"] == scen]
         scale = 1000 if p.startswith("forgetting") else 1
@@ -191,3 +192,38 @@ axes[1].set_ylabel("Cohen's d проти контролю (95 % ДІ)")
 axes[1].set_title("Ефект на перевірочних повторах")
 axes[1].legend(fontsize=9)
 save(fig, "v1-v2-calibration-effects.png")
+
+
+# 8. v1 / v2 / v3 vs control on the fresh seeds 20–39 and in the robustness model.
+def effects(name):
+    rows = read(name)
+    out = {}
+    for ver in ["v1", "v2", "v3"]:
+        for m in ["postExpected", "gain", "completed"]:
+            r = next(x for x in rows if x["version"] == ver and x["metric"] == m)
+            out[(ver, m)] = (float(r["d"]), float(r["dLo"]), float(r["dHi"]))
+    return out
+
+
+fig, axes = plt.subplots(1, 2, figsize=(11, 4), sharey=True)
+mets = [("postExpected", "підсумк. тест"), ("gain", "приріст"), ("completed", "завершення")]
+vcol = {"v1": "#cbd5e1", "v2": "#93c5fd", "v3": COL["ADAPTIVE"]}
+for ax, (name, title) in zip(
+    axes,
+    [("v3_eval_vs_control.csv", "Основна модель (повтори 20–39)"),
+     ("v3_robustness_vs_control.csv", "Альтернативна модель (стійкість)")],
+):
+    eff = effects(name)
+    for j, ver in enumerate(["v1", "v2", "v3"]):
+        xs = [k + (j - 1) * 0.25 for k in range(3)]
+        ds = [eff[(ver, m)][0] for m, _ in mets]
+        lo = [eff[(ver, m)][0] - eff[(ver, m)][1] for m, _ in mets]
+        hi = [eff[(ver, m)][2] - eff[(ver, m)][0] for m, _ in mets]
+        ax.errorbar(xs, ds, yerr=[lo, hi], fmt="o", color=vcol[ver], capsize=3, label=ver)
+    ax.axhline(0, color="black", lw=0.8)
+    ax.set_xticks(range(3))
+    ax.set_xticklabels([lbl for _, lbl in mets])
+    ax.set_title(title)
+axes[0].set_ylabel("Cohen's d проти контролю (95 % ДІ)")
+axes[0].legend(fontsize=9)
+save(fig, "v3-fresh-and-robustness.png")

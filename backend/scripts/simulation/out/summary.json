@@ -78,6 +78,11 @@
     "softGating": false,
     "reviewAllLessons": false,
     "spacedReview": false,
+    "placementQuestions": 0,
+    "skipMasteredInNext": false,
+    "retrievalPractice": false,
+    "spacedAll": false,
+    "forgetHorizonMs": 86400000,
     "priorMastery": 0.5,
     "alpha": 0.3,
     "weights": {
@@ -138,6 +143,11 @@
           "softGating": true,
           "reviewAllLessons": true,
           "spacedReview": true,
+          "placementQuestions": 0,
+          "skipMasteredInNext": false,
+          "retrievalPractice": false,
+          "spacedAll": false,
+          "forgetHorizonMs": 86400000,
           "priorMastery": 0.5,
           "alpha": 0.3,
           "weights": {
@@ -197,6 +207,11 @@
           "softGating": true,
           "reviewAllLessons": true,
           "spacedReview": true,
+          "placementQuestions": 0,
+          "skipMasteredInNext": false,
+          "retrievalPractice": false,
+          "spacedAll": false,
+          "forgetHorizonMs": 86400000,
           "priorMastery": 0.5,
           "alpha": 0.3,
           "weights": {
@@ -256,6 +271,11 @@
           "softGating": true,
           "reviewAllLessons": true,
           "spacedReview": false,
+          "placementQuestions": 0,
+          "skipMasteredInNext": false,
+          "retrievalPractice": false,
+          "spacedAll": false,
+          "forgetHorizonMs": 86400000,
           "priorMastery": 0.5,
           "alpha": 0.3,
           "weights": {
@@ -315,6 +335,11 @@
           "softGating": true,
           "reviewAllLessons": false,
           "spacedReview": true,
+          "placementQuestions": 0,
+          "skipMasteredInNext": false,
+          "retrievalPractice": false,
+          "spacedAll": false,
+          "forgetHorizonMs": 86400000,
           "priorMastery": 0.5,
           "alpha": 0.3,
           "weights": {
@@ -1070,6 +1095,428 @@
       "seedsNegativeSig": 3
     }
   },
+  "v3": {
+    "candidates": [
+      {
+        "id": "V3-A",
+        "label": "placement quiz",
+        "cfg": {
+          "version": 3,
+          "masteryModel": "elo",
+          "evidenceGate": true,
+          "softGating": true,
+          "reviewAllLessons": false,
+          "spacedReview": true,
+          "placementQuestions": 3,
+          "skipMasteredInNext": true,
+          "retrievalPractice": false,
+          "spacedAll": false,
+          "forgetHorizonMs": 86400000,
+          "priorMastery": 0.5,
+          "alpha": 0.3,
+          "weights": {
+            "question": 1,
+            "assignment": 0.8,
+            "lesson": 0.25
+          },
+          "lessonCompletionScore": 0.7,
+          "difficultyWeight": {
+            "1": 0.8,
+            "2": 1,
+            "3": 1.2
+          },
+          "difficultyLogit": {
+            "1": -1,
+            "2": 0,
+            "3": 1
+          },
+          "elo": {
+            "kTheta": 0.6,
+            "kB": 0.3,
+            "decay": 0.05,
+            "thetaClamp": 4,
+            "bClamp": 4,
+            "kTopic": 0.6,
+            "lessonNudge": 0.15
+          },
+          "targetP": 0.7,
+          "masteryThreshold": 0.6,
+          "accelerationThreshold": 0.85,
+          "minEvidence": 3,
+          "topN": 5,
+          "deadlineHorizonDays": 7,
+          "priority": {
+            "review": 1,
+            "retry": 0.9,
+            "next": 0.8,
+            "skip": 0.6,
+            "challenge": 0.4,
+            "deadline": 1.1,
+            "gap": 2,
+            "wrongShare": 0.3,
+            "deadlineBoost": 0.6,
+            "sequence": 0.2,
+            "demote": 1.5,
+            "spaced": 0.3
+          }
+        }
+      },
+      {
+        "id": "V3-B",
+        "label": "retrieval practice",
+        "cfg": {
+          "version": 3,
+          "masteryModel": "elo",
+          "evidenceGate": true,
+          "softGating": true,
+          "reviewAllLessons": false,
+          "spacedReview": true,
+          "placementQuestions": 0,
+          "skipMasteredInNext": false,
+          "retrievalPractice": true,
+          "spacedAll": false,
+          "forgetHorizonMs": 86400000,
+          "priorMastery": 0.5,
+          "alpha": 0.3,
+          "weights": {
+            "question": 1,
+            "assignment": 0.8,
+            "lesson": 0.25
+          },
+          "lessonCompletionScore": 0.7,
+          "difficultyWeight": {
+            "1": 0.8,
+            "2": 1,
+            "3": 1.2
+          },
+          "difficultyLogit": {
+            "1": -1,
+            "2": 0,
+            "3": 1
+          },
+          "elo": {
+            "kTheta": 0.6,
+            "kB": 0.3,
+            "decay": 0.05,
+            "thetaClamp": 4,
+            "bClamp": 4,
+            "kTopic": 0.6,
+            "lessonNudge": 0.15
+          },
+          "targetP": 0.7,
+          "masteryThreshold": 0.6,
+          "accelerationThreshold": 0.85,
+          "minEvidence": 3,
+          "topN": 5,
+          "deadlineHorizonDays": 7,
+          "priority": {
+            "review": 1,
+            "retry": 0.9,
+            "next": 0.8,
+            "skip": 0.6,
+            "challenge": 0.4,
+            "deadline": 1.1,
+            "gap": 2,
+            "wrongShare": 0.3,
+            "deadlineBoost": 0.6,
+            "sequence": 0.2,
+            "demote": 1.5,
+            "spaced": 0.3
+          }
+        }
+      },
+      {
+        "id": "V3-C",
+        "label": "spaced review of all topics",
+        "cfg": {
+          "version": 3,
+          "masteryModel": "elo",
+          "evidenceGate": true,
+          "softGating": true,
+          "reviewAllLessons": false,
+          "spacedReview": true,
+          "placementQuestions": 0,
+          "skipMasteredInNext": false,
+          "retrievalPractice": false,
+          "spacedAll": true,
+          "forgetHorizonMs": 86400000,
+          "priorMastery": 0.5,
+          "alpha": 0.3,
+          "weights": {
+            "question": 1,
+            "assignment": 0.8,
+            "lesson": 0.25
+          },
+          "lessonCompletionScore": 0.7,
+          "difficultyWeight": {
+            "1": 0.8,
+            "2": 1,
+            "3": 1.2
+          },
+          "difficultyLogit": {
+            "1": -1,
+            "2": 0,
+            "3": 1
+          },
+          "elo": {
+            "kTheta": 0.6,
+            "kB": 0.3,
+            "decay": 0.05,
+            "thetaClamp": 4,
+            "bClamp": 4,
+            "kTopic": 0.6,
+            "lessonNudge": 0.15
+          },
+          "targetP": 0.7,
+          "masteryThreshold": 0.6,
+          "accelerationThreshold": 0.85,
+          "minEvidence": 3,
+          "topN": 5,
+          "deadlineHorizonDays": 7,
+          "priority": {
+            "review": 1,
+            "retry": 0.9,
+            "next": 0.8,
+            "skip": 0.6,
+            "challenge": 0.4,
+            "deadline": 1.1,
+            "gap": 2,
+            "wrongShare": 0.3,
+            "deadlineBoost": 0.6,
+            "sequence": 0.2,
+            "demote": 1.5,
+            "spaced": 0.3
+          }
+        }
+      },
+      {
+        "id": "V3-D",
+        "label": "placement + spaced review of all topics",
+        "cfg": {
+          "version": 3,
+          "masteryModel": "elo",
+          "evidenceGate": true,
+          "softGating": true,
+          "reviewAllLessons": false,
+          "spacedReview": true,
+          "placementQuestions": 3,
+          "skipMasteredInNext": true,
+          "retrievalPractice": false,
+          "spacedAll": true,
+          "forgetHorizonMs": 86400000,
+          "priorMastery": 0.5,
+          "alpha": 0.3,
+          "weights": {
+            "question": 1,
+            "assignment": 0.8,
+            "lesson": 0.25
+          },
+          "lessonCompletionScore": 0.7,
+          "difficultyWeight": {
+            "1": 0.8,
+            "2": 1,
+            "3": 1.2
+          },
+          "difficultyLogit": {
+            "1": -1,
+            "2": 0,
+            "3": 1
+          },
+          "elo": {
+            "kTheta": 0.6,
+            "kB": 0.3,
+            "decay": 0.05,
+            "thetaClamp": 4,
+            "bClamp": 4,
+            "kTopic": 0.6,
+            "lessonNudge": 0.15
+          },
+          "targetP": 0.7,
+          "masteryThreshold": 0.6,
+          "accelerationThreshold": 0.85,
+          "minEvidence": 3,
+          "topN": 5,
+          "deadlineHorizonDays": 7,
+          "priority": {
+            "review": 1,
+            "retry": 0.9,
+            "next": 0.8,
+            "skip": 0.6,
+            "challenge": 0.4,
+            "deadline": 1.1,
+            "gap": 2,
+            "wrongShare": 0.3,
+            "deadlineBoost": 0.6,
+            "sequence": 0.2,
+            "demote": 1.5,
+            "spaced": 0.3
+          }
+        }
+      }
+    ],
+    "plan": {
+      "trainSeeds": [
+        0,
+        10
+      ],
+      "evalSeeds": [
+        20,
+        40
+      ]
+    },
+    "chosen": "V3-B",
+    "training": [
+      {
+        "candidate": "V3-A",
+        "label": "placement quiz",
+        "scenario": "placement quiz",
+        "meanA": 0.6852111152745873,
+        "meanC": 0.6948278878369926,
+        "d": -0.12333585461790263,
+        "dLo": -0.15994462695114678,
+        "dHi": -0.08446489283268122,
+        "pWelch": 7.238807801503112e-10,
+        "d_weak": -0.2692260379154437,
+        "d_average": -0.29617427278844416,
+        "d_strong": -0.24392568792058825,
+        "seedsPositiveSig": 0,
+        "seedsNegativeSig": 4,
+        "seeds": 10,
+        "wastedA": 2.5976,
+        "wastedC": 3.587,
+        "completedA": 0.6402,
+        "completedC": 0.6684,
+        "modelCorrA": -0.06379732483398202,
+        "rmseA": 0.1388536314476266,
+        "pooledCorrA": 0.5120304818518878
+      },
+      {
+        "candidate": "V3-B",
+        "label": "retrieval practice",
+        "scenario": "retrieval practice",
+        "meanA": 0.6905114335467405,
+        "meanC": 0.6948278878369926,
+        "d": -0.0572780742353051,
+        "dLo": -0.09750684068750429,
+        "dHi": -0.019802859549175447,
+        "pWelch": 0.004193270304579854,
+        "d_weak": 0.09014605119840387,
+        "d_average": -0.2169349191744399,
+        "d_strong": -0.20116850360927263,
+        "seedsPositiveSig": 0,
+        "seedsNegativeSig": 1,
+        "seeds": 10,
+        "wastedA": 3.139,
+        "wastedC": 3.587,
+        "completedA": 0.9684,
+        "completedC": 0.6684,
+        "modelCorrA": -0.18708889202169177,
+        "rmseA": 0.13949678237596067,
+        "pooledCorrA": 0.4586740198608939
+      },
+      {
+        "candidate": "V3-C",
+        "label": "spaced review of all topics",
+        "scenario": "spaced review of all topics",
+        "meanA": 0.6925805095038959,
+        "meanC": 0.6948278878369926,
+        "d": -0.02860408892780803,
+        "dLo": -0.06991948936528697,
+        "dHi": 0.011697135234440137,
+        "pWelch": 0.15268967981469672,
+        "d_weak": -0.12936650219804285,
+        "d_average": -0.006345039288607122,
+        "d_strong": 0.09609218199092717,
+        "seedsPositiveSig": 0,
+        "seedsNegativeSig": 0,
+        "seeds": 10,
+        "wastedA": 3.6878,
+        "wastedC": 3.587,
+        "completedA": 0.1756,
+        "completedC": 0.6684,
+        "modelCorrA": -0.058527383819003305,
+        "rmseA": 0.1601539567921681,
+        "pooledCorrA": 0.4115549509006546
+      },
+      {
+        "candidate": "V3-D",
+        "label": "placement + spaced review of all topics",
+        "scenario": "placement + spaced review of all topics",
+        "meanA": 0.6902236787698728,
+        "meanC": 0.6948278878369926,
+        "d": -0.05886149685179605,
+        "dLo": -0.09723123042979863,
+        "dHi": -0.0212611175986376,
+        "pWelch": 0.0032571801205144597,
+        "d_weak": -0.16434394950985662,
+        "d_average": -0.10632748210538866,
+        "d_strong": -0.017694663076601207,
+        "seedsPositiveSig": 0,
+        "seedsNegativeSig": 1,
+        "seeds": 10,
+        "wastedA": 2.9322,
+        "wastedC": 3.587,
+        "completedA": 0.2192,
+        "completedC": 0.6684,
+        "modelCorrA": -0.011225819221362048,
+        "rmseA": 0.15549240555199112,
+        "pooledCorrA": 0.45615003684738936
+      }
+    ],
+    "decision": {
+      "rule": "v3 better than v2 iff d(v3 vs v2, post-test) > 0 and its 95 % CI excludes 0 on seeds 20–39",
+      "d": 0.06351583120291884,
+      "dLo": 0.03619752826727568,
+      "dHi": 0.09036560150415014,
+      "v3BetterThanV2": true
+    },
+    "calibration": {
+      "v1": {
+        "pooledCorrAdaptive": 0.3167138359436672,
+        "rmseAdaptive": 0.19905373001594331,
+        "itemDifficultyCorr": 0.952640923997313,
+        "seedsPositiveSig": 0,
+        "seedsNegativeSig": 16
+      },
+      "v2": {
+        "pooledCorrAdaptive": 0.45977901608996374,
+        "rmseAdaptive": 0.14544179926016979,
+        "itemDifficultyCorr": 0.9653214472069948,
+        "seedsPositiveSig": 0,
+        "seedsNegativeSig": 11
+      },
+      "v3": {
+        "pooledCorrAdaptive": 0.45382378878009666,
+        "rmseAdaptive": 0.1394677327085165,
+        "itemDifficultyCorr": 0.9715775317944837,
+        "seedsPositiveSig": 0,
+        "seedsNegativeSig": 6
+      }
+    },
+    "robustnessCalibration": {
+      "v1": {
+        "pooledCorrAdaptive": 0.30623985044731067,
+        "rmseAdaptive": 0.19758191416989354,
+        "itemDifficultyCorr": 0.9513446542848689,
+        "seedsPositiveSig": 0,
+        "seedsNegativeSig": 7
+      },
+      "v2": {
+        "pooledCorrAdaptive": 0.4302708381744626,
+        "rmseAdaptive": 0.15458773918039645,
+        "itemDifficultyCorr": 0.9687213128589066,
+        "seedsPositiveSig": 0,
+        "seedsNegativeSig": 7
+      },
+      "v3": {
+        "pooledCorrAdaptive": 0.5439970133394031,
+        "rmseAdaptive": 0.14768861832820865,
+        "itemDifficultyCorr": 0.9711347506535466,
+        "seedsPositiveSig": 0,
+        "seedsNegativeSig": 18
+      }
+    }
+  },
   "primary": {
     "postExpected": {
       "metric": "postExpected",
@@ -1435,5 +1882,5 @@
       "modelCorrA": -0.13126855868284415
     }
   ],
-  "runtimeSec": 268.136
+  "runtimeSec": 978.434
 }

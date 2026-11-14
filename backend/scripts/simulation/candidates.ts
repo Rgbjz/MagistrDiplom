@@ -8,8 +8,10 @@
  */
 import {
   ADAPTIVE_CONFIG_V1,
+  ADAPTIVE_CONFIG_V2,
   type AdaptiveConfig,
 } from '../../src/modules/adaptive/adaptive.algorithm';
+import { SIM_CONFIG, type SimConfig } from './model';
 
 const base = (patch: Partial<AdaptiveConfig>): AdaptiveConfig => ({
   ...ADAPTIVE_CONFIG_V1,
@@ -89,3 +91,53 @@ export function selectCandidate(scores: CandidateScore[]): string {
   const tied = scores.filter((s) => best - s.d <= SELECTION.dTolerance);
   return [...tied].sort((a, b) => a.rmse - b.rmse)[0].id;
 }
+
+// ───────────────────────── v3 (docs/experiment/v3-preregistration.md) ─────────────────────────
+
+const v3 = (patch: Partial<AdaptiveConfig>): AdaptiveConfig => ({
+  ...ADAPTIVE_CONFIG_V2,
+  version: 3,
+  ...patch,
+});
+
+const PLACEMENT: Partial<AdaptiveConfig> = {
+  placementQuestions: 3,
+  skipMasteredInNext: true,
+};
+
+export const V3_CANDIDATES: Candidate[] = [
+  { id: 'V3-A', label: 'placement quiz', cfg: v3(PLACEMENT) },
+  {
+    id: 'V3-B',
+    label: 'retrieval practice',
+    cfg: v3({ retrievalPractice: true }),
+  },
+  {
+    id: 'V3-C',
+    label: 'spaced review of all topics',
+    cfg: v3({ spacedAll: true }),
+  },
+  {
+    id: 'V3-D',
+    label: 'placement + spaced review of all topics',
+    cfg: v3({ ...PLACEMENT, spacedAll: true }),
+  },
+];
+
+/** Pre-registered seeds: selection on [0, 10), final evaluation on fresh [20, 40). */
+export const V3_PLAN = {
+  trainSeeds: [0, 10] as const,
+  evalSeeds: [20, 40] as const,
+};
+
+/** Pre-registered alternative learner model for the robustness check. */
+export const ROBUSTNESS_SIM: SimConfig = {
+  ...SIM_CONFIG,
+  repetition: 0.85,
+  testingGain: 0.005,
+  population: {
+    weak: { ...SIM_CONFIG.population.weak, share: 0.5 },
+    average: { ...SIM_CONFIG.population.average, share: 0.3 },
+    strong: { ...SIM_CONFIG.population.strong, share: 0.2 },
+  },
+};

@@ -1,0 +1,5 @@
+candidate,label,scenario,meanA,meanC,d,dLo,dHi,pWelch,d_weak,d_average,d_strong,seedsPositiveSig,seedsNegativeSig,seeds,wastedA,wastedC,completedA,completedC,modelCorrA,rmseA,pooledCorrA,selected
+V3-A,placement quiz,placement quiz,0.685211,0.694828,-0.123336,-0.159945,-0.084465,0,-0.269226,-0.296174,-0.243926,0,4,10,2.5976,3.587,0.6402,0.6684,-0.063797,0.138854,0.51203,false
+V3-B,retrieval practice,retrieval practice,0.690511,0.694828,-0.057278,-0.097507,-0.019803,0.004193,0.090146,-0.216935,-0.201169,0,1,10,3.139,3.587,0.9684,0.6684,-0.187089,0.139497,0.458674,true
+V3-C,spaced review of all topics,spaced review of all topics,0.692581,0.694828,-0.028604,-0.069919,0.011697,0.15269,-0.129367,-0.006345,0.096092,0,0,10,3.6878,3.587,0.1756,0.6684,-0.058527,0.160154,0.411555,false
+V3-D,placement + spaced review of all topics,placement + spaced review of all topics,0.690224,0.694828,-0.058861,-0.097231,-0.021261,0.003257,-0.164344,-0.106327,-0.017695,0,1,10,2.9322,3.587,0.2192,0.6684,-0.011226,0.155492,0.45615,false

@@ -6,6 +6,7 @@
 import {
   ADAPTIVE_CONFIG_V1,
   assembleAdaptiveTest,
+  assemblePlacementTest,
   eloUpdate,
   initialDifficulty,
   masteryLevel,
@@ -197,6 +198,10 @@ export function runLearner(o: RunOptions): RunLog {
   };
   const completed = new Set<number>();
   const passed = new Set<number>();
+  /** What the LMS knows about timing (ms on the simulated clock). */
+  const MS = 60_000;
+  const lastStudied = new Map<number, number>();
+  const lastPractice = new Map<number, number>();
   const lastScore: (number | null)[] = Array(topics).fill(null) as (
     | number
     | null
@@ -227,6 +232,8 @@ export function runLearner(o: RunOptions): RunLog {
   const study = (lesson: SimLesson) => {
     if (l.k[lesson.topic] >= sim.masteredAt) log.wastedLessons++;
     studyLesson(l, lesson, sim);
+    lastStudied.set(lesson.id, l.clock * MS);
+    lastPractice.set(lesson.topic + 1, l.clock * MS);
     log.lessonsStudied++;
     if (!completed.has(lesson.id)) {
       completed.add(lesson.id);
@@ -245,6 +252,7 @@ export function runLearner(o: RunOptions): RunLog {
       hits += r;
       log.questionsAnswered++;
       observeAnswer(model, o.calibration, q, r, cfg);
+      lastPractice.set(topic + 1, l.clock * MS);
     }
     const score = questions.length ? hits / questions.length : 0;
     lastScore[topic] = score;
@@ -324,6 +332,7 @@ export function runLearner(o: RunOptions): RunLog {
             wrongShare:
               x.hasTest && lastScore[topic] !== null ? 1 - lastScore[topic] : 0,
             assignment: null,
+            lastStudiedAt: lastStudied.get(x.id) ?? null,
           })),
       }));
 
@@ -355,6 +364,33 @@ export function runLearner(o: RunOptions): RunLog {
       () => new Set(),
     );
     const evidenceCount = () => model.mastery.map((m) => m.evidence);
+
+    // v3 placement quiz: the same near-medium items for every student; a
+    // topic that reaches «mastered» is credited (its lessons become optional).
+    if (cfg.placementQuestions > 0) {
+      count('PLACEMENT');
+      const pool = course.pool.flatMap((qs, topic) =>
+        qs.map((q) => ({
+          id: q.id,
+          b: calibrationOf(o.calibration, q, cfg).b,
+          sectionId: topic + 1,
+        })),
+      );
+      const byId = new Map(course.pool.flat().map((q) => [q.id, q]));
+      for (const id of assemblePlacementTest(pool, cfg.placementQuestions)) {
+        if (timeLeft() < sim.time.question) break;
+        const q = byId.get(id)!;
+        const r = answer(l, q, rng, sim);
+        log.questionsAnswered++;
+        observeAnswer(model, o.calibration, q, r, cfg);
+        lastPractice.set(q.topic + 1, l.clock * MS);
+      }
+      for (let topic = 0; topic < topics; topic++) {
+        if (masteryLevel(decisionMastery(topic), t, cfg) === 'mastered')
+          passed.add(topic);
+      }
+      checkMilestones();
+    }
     let lastEvidence = evidenceCount();
 
     while (timeLeft() >= sim.time.question) {
@@ -365,8 +401,9 @@ export function runLearner(o: RunOptions): RunLog {
             model.mastery.map((_, i) => [i + 1, decisionMastery(i)]),
           ),
           thresholds: t,
-          now: 0,
+          now: l.clock * MS,
           topN: 10,
+          lastPractice,
         },
         cfg,
       );
